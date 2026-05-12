@@ -779,13 +779,15 @@ async function init() {
   injectPhoneBanner();
 
   const hasData = await loadData();
-  if (!hasData) {
+  const hasRealData = hasData && allStands.length > 0;
+
+  if (!hasRealData) {
     showAuthCard(true);   // データなし → 認証カードを表示
     loadDemoData();
     analyze();
   } else {
     showAuthCard(false);  // データあり → 認証カードを隠す
-    if (allStands.length > 0) analyze();
+    analyze();
   }
 }
 
