@@ -25,7 +25,7 @@ except Exception:
     GITHUB_TOKEN = ""
     GITHUB_REPO  = "min-juggler/juggler"
     GITHUB_BRANCH = "main"
-GITHUB_PATH = "data/stores.json"
+GITHUB_PATH = "docs/data/stores.json"
 
 # ===== 店舗設定 =====
 STORES = [
@@ -45,7 +45,7 @@ STORES = [
     },
 ]
 
-OUTPUT_PATH  = Path(__file__).parent / "data" / "stores.json"
+OUTPUT_PATH  = Path(__file__).parent / "docs" / "data" / "stores.json"
 PROFILE_DIR  = Path(__file__).parent / "data" / "browser_profile"  # Cookie保持フォルダ
 
 

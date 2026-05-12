@@ -35,15 +35,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 def open_browser(ip):
     import time
     time.sleep(0.8)
-    webbrowser.open(f'http://localhost:{PORT}/app/index.html')
+    webbrowser.open(f'http://localhost:{PORT}/docs/index.html')
 
 
 if __name__ == '__main__':
     ip = get_local_ip()
     print(f"🎰 ジャグラー狙い目チェッカー起動中")
     print(f"")
-    print(f"  💻 Mac:    http://localhost:{PORT}/app/index.html")
-    print(f"  📱 スマホ: http://{ip}:{PORT}/app/index.html")
+    print(f"  💻 Mac:    http://localhost:{PORT}/docs/index.html")
+    print(f"  📱 スマホ: http://{ip}:{PORT}/docs/index.html")
     print(f"")
     print(f"  ※ スマホは同じWiFiに繋いでから上のURLを開いてください")
     print(f"  終了するには Ctrl+C を押してください\n")
