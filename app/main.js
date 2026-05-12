@@ -1,0 +1,792 @@
+'use strict';
+
+// ===== ジャグラー設定値テーブル =====
+const JUGGLER_SETTINGS = {
+  "default": {
+    1: { bb: 287.4, rb: 442.5, combined: 176.0 },
+    2: { bb: 282.5, rb: 393.9, combined: 163.8 },
+    3: { bb: 273.1, rb: 331.8, combined: 149.3 },
+    4: { bb: 264.3, rb: 287.4, combined: 138.2 },
+    5: { bb: 252.2, rb: 252.2, combined: 126.1 },
+    6: { bb: 240.9, rb: 240.9, combined: 120.5 },
+  },
+  "ネオアイムジャグラーEX": {
+    1: { bb: 297.9, rb: 455.1, combined: 181.9 },
+    2: { bb: 289.5, rb: 399.6, combined: 168.2 },
+    3: { bb: 278.3, rb: 341.3, combined: 153.2 },
+    4: { bb: 268.0, rb: 292.6, combined: 140.8 },
+    5: { bb: 255.0, rb: 255.0, combined: 127.5 },
+    6: { bb: 242.0, rb: 242.0, combined: 121.0 },
+  },
+  "ミスタージャグラー": {
+    1: { bb: 300.7, rb: 491.3, combined: 190.2 },
+    2: { bb: 291.0, rb: 409.6, combined: 170.7 },
+    3: { bb: 279.7, rb: 357.0, combined: 158.0 },
+    4: { bb: 268.4, rb: 306.3, combined: 143.5 },
+    5: { bb: 256.0, rb: 256.0, combined: 128.0 },
+    6: { bb: 240.1, rb: 240.1, combined: 120.1 },
+  },
+};
+
+const SETTING_EV_PER_GAME = {
+  1: -0.52, 2: -0.39, 3: -0.21,
+  4: -0.08, 5: 0.12,  6: 0.31,
+};
+
+const COINS_PER_1000YEN = 50;
+const GAME_SPEED = 400;
+
+// ===== ストレージ =====
+const Storage = {
+  get(key, fallback = null) {
+    try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+  },
+  set(key, val) { localStorage.setItem(key, JSON.stringify(val)); },
+};
+
+// ===== 設定推測ロジック =====
+function getMachineSettings(machineName) {
+  for (const key of Object.keys(JUGGLER_SETTINGS)) {
+    if (key !== 'default' && machineName.includes(key)) return JUGGLER_SETTINGS[key];
+  }
+  return JUGGLER_SETTINGS.default;
+}
+
+function calcSettingLikelihood(stand, settings) {
+  const { games, bb, rb } = stand;
+  if (!games || games < 100) return null;
+  if (!bb || !rb) return null;
+  const bbProb = games / bb;   // 実際のBB確率の分母（小さいほど良い）
+  const rbProb = games / rb;
+
+  if (!isFinite(bbProb) || !isFinite(rbProb)) return null;
+
+  const likelihoods = {};
+  for (const [setting, vals] of Object.entries(settings)) {
+    const s = parseInt(setting);
+    // 実測値が設定値より「良い（小さい）」場合は距離0とみなす
+    // → 設定6より良い台は設定6との差が0として扱われ正しく高評価になる
+    const bbDiff = Math.max(0, bbProb - vals.bb);
+    const rbDiff = Math.max(0, rbProb - vals.rb);
+    const bbScore = 1 / (1 + bbDiff / vals.bb);
+    const rbScore = 1 / (1 + rbDiff / vals.rb);
+    likelihoods[s] = bbScore * 0.4 + rbScore * 0.6;
+  }
+  const total = Object.values(likelihoods).reduce((a, b) => a + b, 0);
+  const probs = {};
+  for (const [s, l] of Object.entries(likelihoods)) probs[parseInt(s)] = l / total;
+  return probs;
+}
+
+function calcExpectedSetting(probs) {
+  if (!probs) return null;
+  return Object.entries(probs).reduce((sum, [s, p]) => sum + parseInt(s) * p, 0);
+}
+
+function calcExpectedProfitFromProbs(probs, timeMin, budgetYen) {
+  if (!probs) return null;
+  const games = Math.floor(timeMin / 60 * GAME_SPEED);
+  const maxGamesFromBudget = Math.floor((budgetYen / 20) * (1000 / 3));
+  const actualGames = Math.min(games, maxGamesFromBudget);
+  const weightedEvCoins = Object.entries(SETTING_EV_PER_GAME)
+    .reduce((sum, [s, ev]) => sum + (probs[parseInt(s)] || 0) * ev, 0);
+  return Math.round(weightedEvCoins * actualGames * 4);
+}
+
+function calcScore(probs, expectedSetting, stand) {
+  if (!probs || !expectedSetting) return 0;
+  const highProb = (probs[4] || 0) + (probs[5] || 0) + (probs[6] || 0);
+  const s6prob = probs[6] || 0;
+  const gameBonus = Math.min(stand.games / 3000, 1.0);
+  return Math.min(100, Math.round(highProb * 50 + s6prob * 30 + gameBonus * 20));
+}
+
+function scoreToStars(score) {
+  if (score >= 80) return '★★★★★';
+  if (score >= 60) return '★★★★☆';
+  if (score >= 40) return '★★★☆☆';
+  if (score >= 20) return '★★☆☆☆';
+  return '★☆☆☆☆';
+}
+
+function scoreToColor(score) {
+  if (score >= 70) return '#e63946';
+  if (score >= 50) return '#f4a261';
+  if (score >= 30) return '#457b9d';
+  return '#adb5bd';
+}
+
+function rankMedal(rank) {
+  if (rank === 1) return { icon: '🥇', color: '#FFD700' };
+  if (rank === 2) return { icon: '🥈', color: '#C0C0C0' };
+  if (rank === 3) return { icon: '🥉', color: '#CD7F32' };
+  return { icon: `${rank}`, color: '#e63946' };
+}
+
+function buildReasonTags(stand, probs, expectedSetting) {
+  const tags = [];
+  if (!probs) return tags;
+  const s6prob = probs[6] || 0;
+  const s56prob = (probs[5] || 0) + s6prob;
+  const highProb = (probs[4] || 0) + s56prob;
+  if (s6prob > 0.3) tags.push({ text: `設定6推定${Math.round(s6prob * 100)}%`, good: true });
+  else if (s56prob > 0.4) tags.push({ text: `設定5/6推定${Math.round(s56prob * 100)}%`, good: true });
+  else if (highProb > 0.5) tags.push({ text: `高設定推定${Math.round(highProb * 100)}%`, good: true });
+  if (stand.rb > 0 && stand.games > 0) {
+    const rbRate = stand.games / stand.rb;
+    if (rbRate < 250) tags.push({ text: `RB好調 1/${Math.round(rbRate)}`, good: true });
+  }
+  if (stand.games > 2000) tags.push({ text: `十分なサンプル ${stand.games}G`, good: true });
+  else if (stand.games < 500) tags.push({ text: `サンプル少 ${stand.games}G`, good: false });
+  if (expectedSetting < 3) tags.push({ text: '低設定寄り', good: false });
+  return tags;
+}
+
+// ===== データ =====
+let storeData = null;
+let allStands = [];
+
+const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/min-juggler/juggler/main/data/stores.json';
+
+async function loadData() {
+  // まずローカル（Mac上で動いている時）を試みる
+  const urls = ['../data/stores.json', GITHUB_DATA_URL];
+  for (const url of urls) {
+    try {
+      const res = await fetch(url + '?t=' + Date.now());
+      if (!res.ok) continue;
+      storeData = await res.json();
+      buildAllStands();
+      updateDataStatus();
+      populateStoreSelect();
+      return true;
+    } catch { continue; }
+  }
+  updateDataStatus(null);
+  return false;
+}
+
+function buildAllStands() {
+  allStands = [];
+  if (!storeData) return;
+  for (const [storeId, store] of Object.entries(storeData.stores)) {
+    for (const machine of store.machines) {
+      for (const stand of machine.stands) {
+        allStands.push({ ...stand, store_id: storeId, store_name: store.name, machine_name: machine.machine_name });
+      }
+    }
+  }
+}
+
+function updateDataStatus() {
+  const el = document.getElementById('data-last-update');
+  if (storeData?.fetched_at) {
+    const d = new Date(storeData.fetched_at);
+    el.textContent = `最終更新: ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+  } else {
+    el.textContent = 'データ未取得 — scraper.pyを実行してください';
+  }
+}
+
+function populateStoreSelect() {
+  if (!storeData) return;
+  const sel = document.getElementById('select-store');
+  sel.innerHTML = '<option value="all">全店舗</option>';
+  for (const [id, store] of Object.entries(storeData.stores)) {
+    const opt = document.createElement('option');
+    opt.value = id; opt.textContent = store.name;
+    sel.appendChild(opt);
+  }
+}
+
+// ===== 分析 =====
+function scoreStands(stands, budget, timeMin) {
+  return stands.map(stand => {
+    const settings = getMachineSettings(stand.machine_name || '');
+    const probs = calcSettingLikelihood(stand, settings);
+    const expectedSetting = calcExpectedSetting(probs);
+    const score = calcScore(probs, expectedSetting, stand);
+    const expectedProfit = calcExpectedProfitFromProbs(probs, timeMin, budget);
+    const tags = buildReasonTags(stand, probs, expectedSetting);
+    return { ...stand, probs, expectedSetting, score, expectedProfit, tags };
+  });
+}
+
+function analyze() {
+  const budget = parseInt(document.getElementById('input-budget').value) || 5000;
+  const target = parseInt(document.getElementById('input-target').value) || 3000;
+  const timeMin = parseInt(document.getElementById('input-time').value) || 60;
+  const storeFilter = document.getElementById('select-store').value;
+
+  let stands = storeFilter === 'all' ? allStands : allStands.filter(s => s.store_id === storeFilter);
+
+  if (stands.length === 0) { showEmptyState(); return; }
+
+  const scored = scoreStands(stands, budget, timeMin).sort((a, b) => b.score - a.score);
+  // スコア50以上 OR (スコア40以上かつ期待収支プラス) を狙い目とする
+  const recommended = scored.filter(s =>
+    s.score >= 50 ||
+    (s.score >= 40 && s.expectedProfit !== null && s.expectedProfit >= 0)
+  );
+
+  renderRecommendList(recommended.slice(0, 10));
+  renderAllStands(scored);
+}
+
+// ===== 描画 =====
+function renderRecommendList(stands) {
+  const section = document.getElementById('recommend-section');
+  const list = document.getElementById('recommend-list');
+  const badge = document.getElementById('recommend-count');
+  section.classList.remove('hidden');
+  badge.textContent = `${stands.length}台`;
+  if (stands.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><p>条件に合う台が見つかりません</p></div>`;
+    return;
+  }
+  list.innerHTML = stands.map((s, i) => buildStandCard(s, i + 1)).join('');
+}
+
+function buildStandCard(s, rank) {
+  const medal = rankMedal(rank);
+  const stars = scoreToStars(s.score);
+  const color = scoreToColor(s.score);
+  const rankClass = rank <= 3 ? `rank-${rank}` : '';
+  const bbRate = s.bb > 0 ? `1/${Math.round(s.games / s.bb)}` : '-';
+  const rbRate = s.rb > 0 ? `1/${Math.round(s.games / s.rb)}` : '-';
+  const combinedRate = (s.bb + s.rb) > 0 ? `1/${Math.round(s.games / (s.bb + s.rb))}` : '-';
+  const estSetting = s.expectedSetting ? s.expectedSetting.toFixed(1) : '-';
+  const profitClass = (s.expectedProfit || 0) >= 0 ? 'expect-positive' : 'expect-negative';
+  const profitSign = (s.expectedProfit || 0) >= 0 ? '+' : '';
+  const profitText = s.expectedProfit !== null
+    ? `<span class="${profitClass}">${profitSign}${s.expectedProfit.toLocaleString()}円</span>`
+    : '<span>-</span>';
+  const tagsHtml = s.tags.map(t =>
+    `<span class="tag ${t.good ? 'tag-good' : 'tag-warn'}">${t.text}</span>`
+  ).join('');
+
+  // 設定確率のミニバー（設定4〜6の合計）
+  const highProb = ((s.probs?.[4] || 0) + (s.probs?.[5] || 0) + (s.probs?.[6] || 0)) * 100;
+
+  return `
+  <div class="stand-card ${rankClass}" onclick="showDetail('${s.store_id}','${s.rack_no}')">
+    <div class="stand-card-header">
+      <div class="stand-rank" style="color:${medal.color}">${medal.icon}</div>
+      <div class="stand-info">
+        <div class="stand-machine">${s.machine_name || '-'}</div>
+        <div class="stand-rack">${s.rack_no}番台</div>
+        <div class="stand-store-tag">${s.store_name}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="stars">${stars}</div>
+        <div class="score-label" style="color:${color}">スコア ${s.score}</div>
+      </div>
+    </div>
+    <div class="stand-data-grid">
+      <div class="stand-data-cell">
+        <span class="data-label">BB確率</span>
+        <span class="data-value">${bbRate}</span>
+      </div>
+      <div class="stand-data-cell">
+        <span class="data-label">RB確率</span>
+        <span class="data-value">${rbRate}</span>
+      </div>
+      <div class="stand-data-cell">
+        <span class="data-label">合算</span>
+        <span class="data-value">${combinedRate}</span>
+      </div>
+      <div class="stand-data-cell">
+        <span class="data-label">推定設定</span>
+        <span class="data-value" style="color:${color}">${estSetting}</span>
+      </div>
+    </div>
+    <div class="setting-bar-wrap">
+      <div class="setting-bar-label">
+        <span>高設定（4以上）確率</span>
+        <span style="color:${color}">${Math.round(highProb)}%</span>
+      </div>
+      <div class="setting-bar-track">
+        <div class="setting-bar-fill" style="width:${Math.min(100, highProb)}%;background:${color}"></div>
+      </div>
+    </div>
+    <div class="expect-line">
+      <span>期待収支（目安）</span>
+      ${profitText}
+    </div>
+    ${tagsHtml ? `<div class="reason-tags">${tagsHtml}</div>` : ''}
+  </div>`;
+}
+
+function renderAllStands(stands) {
+  document.getElementById('all-stands-section').classList.remove('hidden');
+  document.getElementById('all-stands-list').innerHTML = stands.map((s, i) => buildStandCard(s, i + 1)).join('');
+}
+
+function showEmptyState() {
+  document.getElementById('recommend-section').classList.remove('hidden');
+  document.getElementById('recommend-list').innerHTML =
+    `<div class="empty-state"><div class="icon">📭</div><p>scraper.pyを実行してデータを取得してください</p></div>`;
+}
+
+// ===== 台詳細モーダル（グラフ付き） =====
+let chartSetting = null;
+let chartProb = null;
+
+function showDetail(storeId, rackNo) {
+  const stand = allStands.find(s => s.store_id === storeId && String(s.rack_no) === String(rackNo));
+  if (!stand) return;
+
+  const settings = getMachineSettings(stand.machine_name || '');
+  const probs = calcSettingLikelihood(stand, settings);
+
+  const bbRate = stand.bb > 0 ? `1/${Math.round(stand.games / stand.bb)}` : '-';
+  const rbRate = stand.rb > 0 ? `1/${Math.round(stand.games / stand.rb)}` : '-';
+  const diffColor = (stand.diff || 0) >= 0 ? '#2d6a4f' : '#e63946';
+  const diffSign = (stand.diff || 0) >= 0 ? '+' : '';
+
+  document.getElementById('modal-body').innerHTML = `
+    <h3>${stand.machine_name} <span style="color:#e63946">${stand.rack_no}番台</span></h3>
+    <p style="color:#999;font-size:12px;margin-bottom:14px">${stand.store_name}</p>
+    <div class="modal-grid">
+      <div class="modal-cell"><div class="label">ゲーム数</div><div class="value">${(stand.games||0).toLocaleString()}G</div></div>
+      <div class="modal-cell"><div class="label">差枚数</div><div class="value" style="color:${diffColor}">${diffSign}${(stand.diff||0).toLocaleString()}</div></div>
+      <div class="modal-cell"><div class="label">BB確率</div><div class="value">${bbRate}</div></div>
+      <div class="modal-cell"><div class="label">RB確率</div><div class="value">${rbRate}</div></div>
+    </div>
+
+    <h4 style="font-size:13px;font-weight:700;margin:14px 0 8px;color:#555">設定推測確率</h4>
+    <div style="position:relative;height:160px">
+      <canvas id="chart-setting-prob"></canvas>
+    </div>
+
+    <h4 style="font-size:13px;font-weight:700;margin:16px 0 8px;color:#555">BB/RB確率 vs 設定基準値</h4>
+    <div style="position:relative;height:160px">
+      <canvas id="chart-bb-rb"></canvas>
+    </div>
+  `;
+
+  document.getElementById('modal-overlay').classList.remove('hidden');
+
+  // 少し待ってからグラフ描画（DOM確定後）
+  requestAnimationFrame(() => {
+    drawSettingProbChart(probs);
+    drawBBRBChart(stand, settings);
+  });
+}
+
+function drawSettingProbChart(probs) {
+  if (chartSetting) { chartSetting.destroy(); chartSetting = null; }
+  const canvas = document.getElementById('chart-setting-prob');
+  if (!canvas) return;
+
+  if (!probs) {
+    canvas.parentElement.innerHTML = '<p style="color:#999;font-size:13px;padding:20px 0;text-align:center">ゲーム数不足（最低100G必要）</p>';
+    return;
+  }
+
+  const labels = ['設定1', '設定2', '設定3', '設定4', '設定5', '設定6'];
+  const values = [1,2,3,4,5,6].map(s => Math.round((probs[s] || 0) * 100));
+  const colors = values.map((v, i) => {
+    if (i >= 4) return '#e63946';
+    if (i >= 3) return '#f4a261';
+    return '#adb5bd';
+  });
+
+  chartSetting = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: colors,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.raw}%` } }
+      },
+      scales: {
+        y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%', font: { size: 11 } }, grid: { color: '#f0f0f0' } },
+        x: { ticks: { font: { size: 11 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+function drawBBRBChart(stand, settings) {
+  if (chartProb) { chartProb.destroy(); chartProb = null; }
+  const canvas = document.getElementById('chart-bb-rb');
+  if (!canvas) return;
+
+  const labels = ['設定1', '設定2', '設定3', '設定4', '設定5', '設定6'];
+  const bbBaselines = [1,2,3,4,5,6].map(s => +(1 / settings[s].bb * 1000).toFixed(2));
+  const rbBaselines = [1,2,3,4,5,6].map(s => +(1 / settings[s].rb * 1000).toFixed(2));
+  const actualBB = stand.bb && stand.games ? +(stand.bb / stand.games * 1000).toFixed(2) : null;
+  const actualRB = stand.rb && stand.games ? +(stand.rb / stand.games * 1000).toFixed(2) : null;
+
+  chartProb = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'BB基準値',
+          data: bbBaselines,
+          borderColor: '#457b9d',
+          backgroundColor: 'rgba(69,123,157,0.08)',
+          borderWidth: 2,
+          pointRadius: 3,
+          tension: 0.3,
+          fill: false,
+        },
+        {
+          label: 'RB基準値',
+          data: rbBaselines,
+          borderColor: '#2d6a4f',
+          backgroundColor: 'rgba(45,106,79,0.08)',
+          borderWidth: 2,
+          pointRadius: 3,
+          tension: 0.3,
+          fill: false,
+        },
+        ...(actualBB !== null ? [{
+          label: 'この台BB',
+          data: Array(6).fill(actualBB),
+          borderColor: '#e63946',
+          borderWidth: 2,
+          borderDash: [5, 3],
+          pointRadius: 0,
+          fill: false,
+        }] : []),
+        ...(actualRB !== null ? [{
+          label: 'この台RB',
+          data: Array(6).fill(actualRB),
+          borderColor: '#f4a261',
+          borderWidth: 2,
+          borderDash: [5, 3],
+          pointRadius: 0,
+          fill: false,
+        }] : []),
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 14 } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}‰` } }
+      },
+      scales: {
+        y: { ticks: { font: { size: 10 }, callback: v => v + '‰' }, grid: { color: '#f0f0f0' } },
+        x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ===== 月間収支グラフ =====
+let chartMonthly = null;
+
+function renderMonthlySummary() {
+  const records = Storage.get('juggler_records', []);
+  const now = new Date();
+  const thisMonth = records.filter(r => {
+    const d = new Date(r.date);
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+  });
+
+  const total = thisMonth.reduce((sum, r) => sum + (r.profit || r.return - r.invest), 0);
+  const wins = thisMonth.filter(r => (r.profit || r.return - r.invest) >= 0).length;
+  const winRate = thisMonth.length > 0 ? Math.round(wins / thisMonth.length * 100) : '-';
+
+  const totalEl = document.getElementById('monthly-total');
+  totalEl.textContent = `${total >= 0 ? '+' : ''}${total.toLocaleString()}円`;
+  totalEl.className = `amount ${total >= 0 ? 'positive' : 'negative'}`;
+  document.getElementById('monthly-count').textContent = `${thisMonth.length}回`;
+  document.getElementById('monthly-winrate').textContent = `${winRate}%`;
+
+  drawMonthlyChart(thisMonth);
+}
+
+function drawMonthlyChart(records) {
+  if (chartMonthly) { chartMonthly.destroy(); chartMonthly = null; }
+  const canvas = document.getElementById('chart-monthly');
+  if (!canvas) return;
+
+  if (records.length === 0) {
+    canvas.parentElement.style.display = 'none';
+    return;
+  }
+  canvas.parentElement.style.display = '';
+
+  // 日付順にソート
+  const sorted = [...records].sort((a, b) => a.date.localeCompare(b.date));
+
+  // 累積収支
+  let cumulative = 0;
+  const labels = [];
+  const cumulData = [];
+  const barData = [];
+  const barColors = [];
+
+  for (const r of sorted) {
+    const profit = r.profit || (r.return - r.invest);
+    cumulative += profit;
+    const d = new Date(r.date);
+    labels.push(`${d.getMonth()+1}/${d.getDate()}`);
+    cumulData.push(cumulative);
+    barData.push(profit);
+    barColors.push(profit >= 0 ? 'rgba(45,106,79,0.7)' : 'rgba(230,57,70,0.7)');
+  }
+
+  chartMonthly = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          type: 'line',
+          label: '累積収支',
+          data: cumulData,
+          borderColor: '#e63946',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          pointRadius: 3,
+          tension: 0.2,
+          yAxisID: 'y',
+        },
+        {
+          type: 'bar',
+          label: '1回収支',
+          data: barData,
+          backgroundColor: barColors,
+          borderRadius: 4,
+          yAxisID: 'y',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 14 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.raw >= 0 ? '+' : ''}${ctx.raw.toLocaleString()}円`
+          }
+        }
+      },
+      scales: {
+        y: {
+          ticks: { font: { size: 10 }, callback: v => (v >= 0 ? '+' : '') + v.toLocaleString() },
+          grid: { color: '#f0f0f0' }
+        },
+        x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ===== 収支記録 =====
+function saveRecord() {
+  const date = document.getElementById('record-date').value;
+  const machine = document.getElementById('record-machine').value.trim();
+  const rack = document.getElementById('record-rack').value;
+  const invest = parseInt(document.getElementById('record-invest').value) || 0;
+  const ret = parseInt(document.getElementById('record-return').value) || 0;
+  const games = parseInt(document.getElementById('record-games').value) || 0;
+  if (!date || !machine) { alert('日付と機種名は必須です'); return; }
+  const records = Storage.get('juggler_records', []);
+  records.unshift({ id: Date.now(), date, machine, rack, invest, return: ret, games, profit: ret - invest });
+  Storage.set('juggler_records', records);
+  renderRecords();
+  renderMonthlySummary();
+}
+
+function renderRecords() {
+  const records = Storage.get('juggler_records', []);
+  const list = document.getElementById('record-list');
+  if (records.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="icon">📝</div><p>まだ記録がありません</p></div>`;
+    return;
+  }
+  list.innerHTML = records.map(r => {
+    const profit = r.profit || (r.return - r.invest);
+    return `
+    <div class="record-item">
+      <div class="record-item-left">
+        <div class="record-date">${r.date}</div>
+        <div class="record-machine-name">${r.machine} ${r.rack ? r.rack+'番台' : ''}</div>
+        <div style="font-size:12px;color:#999">${r.games ? r.games+'G' : ''}</div>
+      </div>
+      <div class="record-result" style="color:${profit>=0?'#2d6a4f':'#e63946'}">
+        ${profit>=0?'+':''}${profit.toLocaleString()}円
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== イベント =====
+function initEvents() {
+  document.getElementById('btn-analyze').addEventListener('click', analyze);
+
+  document.getElementById('btn-reload').addEventListener('click', async () => {
+    await loadData();
+    analyze();
+  });
+
+  document.getElementById('btn-record-toggle').addEventListener('click', () => {
+    document.getElementById('view-main').classList.add('hidden');
+    document.getElementById('view-record').classList.remove('hidden');
+    renderRecords();
+    renderMonthlySummary();
+  });
+
+  document.getElementById('btn-back').addEventListener('click', () => {
+    document.getElementById('view-record').classList.add('hidden');
+    document.getElementById('view-main').classList.remove('hidden');
+  });
+
+  document.getElementById('btn-save-record').addEventListener('click', saveRecord);
+
+  document.getElementById('modal-close').addEventListener('click', () => {
+    document.getElementById('modal-overlay').classList.add('hidden');
+  });
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal-overlay')) {
+      document.getElementById('modal-overlay').classList.add('hidden');
+    }
+  });
+
+  document.getElementById('sort-select').addEventListener('change', () => {
+    const key = document.getElementById('sort-select').value;
+    const budget = parseInt(document.getElementById('input-budget').value) || 5000;
+    const timeMin = parseInt(document.getElementById('input-time').value) || 60;
+    const scored = scoreStands(allStands, budget, timeMin);
+    const sortFns = {
+      score: (a, b) => b.score - a.score,
+      bb_prob: (a, b) => (b.bb/(b.games||1)) - (a.bb/(a.games||1)),
+      combined_prob: (a, b) => ((b.bb+b.rb)/(b.games||1)) - ((a.bb+a.rb)/(a.games||1)),
+      diff: (a, b) => (b.diff||0) - (a.diff||0),
+    };
+    scored.sort(sortFns[key] || sortFns.score);
+    renderAllStands(scored);
+  });
+
+  document.getElementById('record-date').value = new Date().toISOString().slice(0, 10);
+}
+
+// ===== デモデータ =====
+function loadDemoData() {
+  storeData = {
+    fetched_at: new Date().toISOString(),
+    stores: {
+      yonezawa: {
+        name: "アイランド米沢店",
+        machines: [{
+          machine_name: "S ネオアイムジャグラーEX KK②",
+          count: 18,
+          stands: [
+            { rack_no: 3,  games: 2850, bb: 14, rb: 16, diff:  320 },
+            { rack_no: 5,  games: 3120, bb: 16, rb: 17, diff:  680 },
+            { rack_no: 8,  games: 1240, bb:  4, rb:  3, diff: -420 },
+            { rack_no: 11, games: 2960, bb: 12, rb: 14, diff: -180 },
+            { rack_no: 14, games: 3400, bb: 19, rb: 20, diff: 1240 },
+            { rack_no: 17, games:  890, bb:  2, rb:  3, diff: -310 },
+            { rack_no: 21, games: 2200, bb: 10, rb: 11, diff:  140 },
+            { rack_no: 24, games: 3050, bb: 15, rb: 18, diff:  920 },
+          ]
+        }, {
+          machine_name: "S ミスタージャグラー KK⑤",
+          count: 5,
+          stands: [
+            { rack_no: 32, games: 1800, bb:  7, rb:  8, diff:  -90 },
+            { rack_no: 33, games: 2400, bb: 11, rb: 12, diff:  460 },
+            { rack_no: 35, games:  950, bb:  3, rb:  2, diff: -280 },
+          ]
+        }]
+      },
+      kaminoyama: {
+        name: "1円劇場上山店",
+        machines: [{
+          machine_name: "S ネオアイムジャグラーEX KK②",
+          count: 18,
+          stands: [
+            { rack_no: 101, games: 3200, bb: 17, rb: 15, diff:  540 },
+            { rack_no: 103, games: 2700, bb: 11, rb: 13, diff: -120 },
+            { rack_no: 105, games: 3600, bb: 21, rb: 22, diff: 1580 },
+            { rack_no: 107, games: 1100, bb:  3, rb:  4, diff: -340 },
+          ]
+        }]
+      }
+    }
+  };
+  buildAllStands();
+  populateStoreSelect();
+  document.getElementById('data-last-update').textContent = '⚠️ デモデータ (scraper.pyを実行してください)';
+}
+
+// ===== 店舗認証カード =====
+const STORE_AUTH_URLS = [
+  {
+    name: 'アイランド米沢店',
+    url: 'https://island.pt.teramoba2.com/yonezawa/standlist_slot?kind_code=21&machine_name=S+%E3%83%8D%E3%82%AA%E3%82%A2%E3%82%A4%E3%83%A0%E3%82%B8%E3%83%A3%E3%82%B0%E3%83%A9%E3%83%BCEX',
+  },
+  {
+    name: '1円劇場上山店',
+    url: 'https://island.pt.teramoba2.com/kaminoyama/standlist_slot?kind_code=21&machine_name=S+%E3%83%8D%E3%82%AA%E3%82%A2%E3%82%A4%E3%83%A0%E3%82%B8%E3%83%A3%E3%82%B0%E3%83%A9%E3%83%BCEX',
+  },
+];
+
+function buildAuthCard() {
+  const container = document.getElementById('auth-store-buttons');
+  if (!container) return;
+  container.innerHTML = STORE_AUTH_URLS.map(s => `
+    <a class="auth-store-btn" href="${s.url}" target="_blank" rel="noopener">
+      <span>📍 ${s.name}</span>
+      <span class="arrow">認証ページへ →</span>
+    </a>
+  `).join('');
+}
+
+function showAuthCard(show) {
+  const card = document.getElementById('auth-card');
+  if (card) card.classList.toggle('hidden', !show);
+}
+
+// ===== スマホURL バナー =====
+function injectPhoneBanner() {
+  // localhostでない = スマホからアクセス中のため不要
+  if (!location.hostname.includes('localhost') && !location.hostname.includes('127.')) return;
+  const banner = document.createElement('div');
+  banner.className = 'phone-banner';
+  banner.innerHTML = `
+    📱 スマホから見るには同じWiFiで
+    <code>http://<strong>MacのIPアドレス</strong>:8080/app/index.html</code>
+    を開いてください
+  `;
+  document.querySelector('.header').insertAdjacentElement('afterend', banner);
+}
+
+// ===== 初期化 =====
+async function init() {
+  initEvents();
+  buildAuthCard();
+  injectPhoneBanner();
+
+  const hasData = await loadData();
+  if (!hasData) {
+    showAuthCard(true);   // データなし → 認証カードを表示
+    loadDemoData();
+    analyze();
+  } else {
+    showAuthCard(false);  // データあり → 認証カードを隠す
+    if (allStands.length > 0) analyze();
+  }
+}
+
+init();

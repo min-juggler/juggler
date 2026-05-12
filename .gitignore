@@ -1,0 +1,14 @@
+# ブラウザプロファイル（Cookieなど個人情報含む）
+data/browser_profile/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
+
+# 設定ファイル（トークン含む）
+config.json
+.env

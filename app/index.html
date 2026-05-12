@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ジャグラー狙い目チェッカー</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div id="app">
+
+    <!-- ヘッダー -->
+    <header class="header">
+      <h1>🎰 ジャグラー狙い目</h1>
+      <button id="btn-record-toggle" class="btn-secondary btn-sm">📊 収支記録</button>
+    </header>
+
+    <!-- メインビュー -->
+    <div id="view-main">
+
+      <!-- セッション入力 -->
+      <section class="card" id="session-card">
+        <h2 class="card-title">今日の条件</h2>
+        <div class="form-row">
+          <label>予算</label>
+          <div class="input-group">
+            <input type="number" id="input-budget" value="5000" min="0" step="500">
+            <span class="unit">円</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>目標利益</label>
+          <div class="input-group">
+            <input type="number" id="input-target" value="3000" min="0" step="500">
+            <span class="unit">円</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>プレイ時間</label>
+          <div class="input-group">
+            <input type="number" id="input-time" value="60" min="10" step="10">
+            <span class="unit">分</span>
+          </div>
+        </div>
+
+        <!-- 店舗選択 -->
+        <div class="form-row">
+          <label>店舗</label>
+          <select id="select-store">
+            <option value="all">全店舗</option>
+          </select>
+        </div>
+
+        <button id="btn-analyze" class="btn-primary btn-full">🔍 狙い目を探す</button>
+      </section>
+
+      <!-- データ更新ボタン -->
+      <div class="data-status" id="data-status">
+        <span id="data-last-update">データ未取得</span>
+        <button id="btn-reload" class="btn-ghost btn-sm">↻ 再読み込み</button>
+      </div>
+
+      <!-- 店舗認証カード（データ未取得時に表示） -->
+      <section class="card auth-card" id="auth-card">
+        <h2 class="card-title">🔐 店舗データ認証</h2>
+        <p class="auth-desc">初回は各店舗のサイトで認証が必要です。<br>ボタンを押して開いたページで「同意する」などをタップしてください。</p>
+        <div id="auth-store-buttons"></div>
+        <div class="auth-hint">
+          <span>✅ 認証後は</span>
+          <code>データ取得.command</code>
+          <span>をダブルクリックして取得してください</span>
+        </div>
+      </section>
+
+      <!-- 推奨台リスト -->
+      <section id="recommend-section" class="hidden">
+        <div class="section-header">
+          <h2>狙い目台</h2>
+          <span id="recommend-count" class="badge"></span>
+        </div>
+        <div id="recommend-list"></div>
+      </section>
+
+      <!-- 全台リスト -->
+      <section id="all-stands-section" class="hidden">
+        <div class="section-header">
+          <h2>全台データ</h2>
+          <div class="sort-controls">
+            <select id="sort-select">
+              <option value="score">スコア順</option>
+              <option value="bb_prob">BB確率順</option>
+              <option value="combined_prob">合算確率順</option>
+              <option value="diff">差枚数順</option>
+            </select>
+          </div>
+        </div>
+        <div id="all-stands-list"></div>
+      </section>
+
+    </div><!-- /view-main -->
+
+    <!-- 収支記録ビュー -->
+    <div id="view-record" class="hidden">
+      <div class="section-header">
+        <button id="btn-back" class="btn-ghost">← 戻る</button>
+        <h2>月間収支</h2>
+      </div>
+
+      <!-- 月次収支グラフ -->
+      <div class="card" style="margin:12px">
+        <h3 class="card-title">月間収支グラフ</h3>
+        <canvas id="chart-monthly" height="160"></canvas>
+      </div>
+
+      <!-- 月次サマリー -->
+      <div class="monthly-summary card">
+        <div class="summary-row">
+          <span>今月の収支</span>
+          <span id="monthly-total" class="amount">¥0</span>
+        </div>
+        <div class="summary-row">
+          <span>稼働回数</span>
+          <span id="monthly-count">0回</span>
+        </div>
+        <div class="summary-row">
+          <span>勝率</span>
+          <span id="monthly-winrate">-%</span>
+        </div>
+      </div>
+
+      <!-- 記録追加フォーム -->
+      <section class="card">
+        <h3 class="card-title">今日の結果を記録</h3>
+        <div class="form-row">
+          <label>日付</label>
+          <input type="date" id="record-date">
+        </div>
+        <div class="form-row">
+          <label>機種</label>
+          <input type="text" id="record-machine" placeholder="例: ネオアイムジャグラー">
+        </div>
+        <div class="form-row">
+          <label>台番号</label>
+          <input type="number" id="record-rack" placeholder="例: 5">
+        </div>
+        <div class="form-row">
+          <label>投資額</label>
+          <div class="input-group">
+            <input type="number" id="record-invest" placeholder="5000" step="500">
+            <span class="unit">円</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>回収額</label>
+          <div class="input-group">
+            <input type="number" id="record-return" placeholder="8000" step="500">
+            <span class="unit">円</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>ゲーム数</label>
+          <div class="input-group">
+            <input type="number" id="record-games" placeholder="400" step="10">
+            <span class="unit">G</span>
+          </div>
+        </div>
+        <button id="btn-save-record" class="btn-primary btn-full">保存する</button>
+      </section>
+
+      <!-- 履歴リスト -->
+      <section>
+        <h3 style="padding: 8px 16px; font-size: 14px; color: #666;">履歴</h3>
+        <div id="record-list"></div>
+      </section>
+    </div><!-- /view-record -->
+
+    <!-- 台詳細モーダル -->
+    <div id="modal-overlay" class="hidden">
+      <div id="modal-content" class="modal">
+        <button id="modal-close" class="modal-close">✕</button>
+        <div id="modal-body"></div>
+      </div>
+    </div>
+
+  </div><!-- /app -->
+
+  <script src="main.js"></script>
+</body>
+</html>
