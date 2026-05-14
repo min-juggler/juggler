@@ -1,4 +1,39 @@
 {
-  "fetched_at": null,
-  "stores": {}
+  "fetched_at": "2026-05-15T08:57:38.526002",
+  "stores": {
+    "yonezawa": {
+      "name": "アイランド米沢店",
+      "machines": []
+    },
+    "kaminoyama": {
+      "name": "1円劇場上山店",
+      "machines": [
+        {
+          "machine_name": "S ネオアイムジャグラーEX KK⑱",
+          "count": 18,
+          "stands": []
+        },
+        {
+          "machine_name": "S ミスタージャグラー KK⑤",
+          "count": 5,
+          "stands": []
+        },
+        {
+          "machine_name": "S ウルトラミラクルジャグラー KT",
+          "count": 1,
+          "stands": []
+        },
+        {
+          "machine_name": "S ゴーゴージャグラー3 KA",
+          "count": 1,
+          "stands": []
+        },
+        {
+          "machine_name": "S ファンキージャグラー2 KT",
+          "count": 1,
+          "stands": []
+        }
+      ]
+    }
+  }
 }
