@@ -45,7 +45,7 @@ STORES = [
     },
 ]
 
-OUTPUT_PATH  = Path(__file__).parent / "docs" / "data" / "stores.json"
+OUTPUT_PATH  = Path(__file__).parent / "data" / "stores.json"
 PROFILE_DIR  = Path(__file__).parent / "data" / "browser_profile"  # Cookie保持フォルダ
 
 
@@ -123,30 +123,29 @@ def get_machine_list(page, store: dict) -> list:
     return []
 
 
+def fetch_stands_api(page, store: dict, machine_name_enc: str, machine_name: str) -> list:
+    """n-APIから台データを直接取得（Cloudflare不要）"""
+    api_patterns = [
+        f"https://island.pt.teramoba2.com/n-api/rack_info/stand_list?hall_id={store['hall_id']}&kind_code={store['kind_code']}&machine_name={machine_name_enc}",
+        f"https://island.pt.teramoba2.com/n-api/dai_data/list?hall_id={store['hall_id']}&kind_code={store['kind_code']}&machine_name={machine_name_enc}",
+        f"https://island.pt.teramoba2.com/n-api/rack_info/search_stand?hall_id={store['hall_id']}&kind_code={store['kind_code']}&machine_name={machine_name_enc}",
+    ]
+    for api_url in api_patterns:
+        try:
+            r = page.request.get(api_url)
+            if r.status == 200:
+                data = r.json()
+                if isinstance(data, list) and len(data) > 0:
+                    print(f"    ✅ APIで取得成功！")
+                    return normalize_stands(data, machine_name)
+        except Exception:
+            continue
+    return []
+
+
 def fetch_stands(page, store: dict, machine_name_enc: str, machine_name: str) -> list:
-    """standlist_slotから台データを取得"""
-    url = (
-        f"{store['base_url']}/standlist_slot"
-        f"?kind_code={store['kind_code']}&machine_name={machine_name_enc}"
-    )
-    try:
-        page.goto(url, wait_until="networkidle", timeout=30000)
-        time.sleep(1.5)
-    except PWTimeout:
-        print(f"    ⏱️  タイムアウト")
-        return []
-
-    if not wait_past_protection(page, url, store["name"]):
-        return []
-
-    # --- 1. Inertia.js props ---
-    props = get_props(page)
-    raw_list = (
-        props.get("stand_list") or props.get("stands") or
-        props.get("rack_list") or props.get("dai_data_list") or []
-    )
-    if raw_list:
-        return normalize_stands(raw_list, machine_name)
+    """台データをAPIで取得（Cloudflare完全回避）"""
+    return fetch_stands_api(page, store, machine_name_enc, machine_name)
 
     # --- 2. DOMのテーブル ---
     dom = scrape_table(page, machine_name)
@@ -202,6 +201,32 @@ def scrape_table(page, machine_name: str) -> list:
     return result
 
 
+# ===== Chrome Cookie注入 =====
+def inject_chrome_cookies(ctx):
+    """普通のChromeからCookieを借りてCloudflare認証をバイパスする"""
+    try:
+        import browser_cookie3
+        cookies = list(browser_cookie3.chrome(domain_name='teramoba2.com'))
+        if not cookies:
+            print("  ℹ️  Chrome Cookieなし（初回は手動認証が必要です）")
+            return
+        cookie_list = []
+        for c in cookies:
+            cookie_list.append({
+                'name': c.name,
+                'value': c.value,
+                'domain': c.domain or '.teramoba2.com',
+                'path': c.path or '/',
+                'secure': bool(c.secure),
+            })
+        ctx.add_cookies(cookie_list)
+        print(f"  🍪 Chrome Cookieを注入しました（{len(cookie_list)}個）")
+    except ImportError:
+        print("  ℹ️  browser-cookie3未インストール")
+    except Exception as e:
+        print(f"  ⚠️  Cookie取得エラー: {e}")
+
+
 # ===== メイン =====
 def scrape_all():
     now = datetime.now()
@@ -230,14 +255,10 @@ def scrape_all():
         # persistent_context でCookieを保持（2回目以降は認証スキップ）
         ctx = p.chromium.launch_persistent_context(
             user_data_dir=str(PROFILE_DIR),
-            headless=False,
+            headless=True,   # ブラウザ画面を表示しない（APIのみ使用）
             args=["--no-sandbox"],
-            user_agent=(
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-            ),
-            viewport={"width": 1280, "height": 800},
         )
+        inject_chrome_cookies(ctx)
         page = ctx.new_page()
 
         for store in STORES:
@@ -246,8 +267,7 @@ def scrape_all():
             print(f"{'─'*40}")
             store_result = {"name": store["name"], "machines": []}
 
-            # 機種一覧
-            page.goto(f"{store['base_url']}/", wait_until="networkidle", timeout=20000)
+            # 機種一覧はAPIで直接取得（ブラウザ不要・Cloudflare回避）
             machines = get_machine_list(page, store)
 
             if not machines:
@@ -288,8 +308,12 @@ def scrape_all():
 
         ctx.close()
 
-    # ローカル保存
+    # ローカル保存（現在のデータを前日データとして保存してから上書き）
     OUTPUT_PATH.parent.mkdir(exist_ok=True)
+    PREV_PATH = OUTPUT_PATH.parent / "stores_prev.json"
+    if OUTPUT_PATH.exists():
+        import shutil
+        shutil.copy(OUTPUT_PATH, PREV_PATH)
     json_str = json.dumps(result, ensure_ascii=False, indent=2)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         f.write(json_str)
@@ -306,9 +330,12 @@ def scrape_all():
         print(f"  ⚠️  データが0件でした。開店後(10時以降)に再実行してください。")
     print(f"  📁 {OUTPUT_PATH}")
 
-    # GitHubへ自動アップロード
+    # GitHubへ自動アップロード（当日＋前日データ）
     print(f"\n  📡 GitHubへアップロード中...")
-    if push_to_github(json_str):
+    ok1 = push_to_github(json_str, "data/stores.json")
+    prev_str = open(PREV_PATH, encoding="utf-8").read() if PREV_PATH.exists() else None
+    ok2 = push_to_github(prev_str, "data/stores_prev.json") if prev_str else True
+    if ok1:
         print(f"  🌐 スマホからはこのURLで見られます:")
         print(f"     https://min-juggler.github.io/juggler/")
     else:
@@ -317,10 +344,10 @@ def scrape_all():
     print("\n  ブラウザで http://localhost:8080 をリロードしてください\n")
 
 
-def push_to_github(json_str: str) -> bool:
-    """stores.jsonをGitHub APIでアップロード"""
+def push_to_github(json_str: str, path: str = "data/stores.json") -> bool:
+    """指定パスにJSONをGitHub APIでアップロード"""
     try:
-        api_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_PATH}"
+        api_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{path}"
         headers = {
             "Authorization": f"token {GITHUB_TOKEN}",
             "Accept": "application/vnd.github.v3+json",

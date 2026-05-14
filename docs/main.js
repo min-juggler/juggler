@@ -144,13 +144,14 @@ function buildReasonTags(stand, probs, expectedSetting) {
 
 // ===== データ =====
 let storeData = null;
+let prevStoreData = null;
 let allStands = [];
+let prevAllStands = [];
 
-const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/min-juggler/juggler/main/docs/data/stores.json';
+const GITHUB_BASE = 'https://raw.githubusercontent.com/min-juggler/juggler/main/data/';
 
 async function loadData() {
-  // まずローカル（Mac上で動いている時）を試みる
-  const urls = ['data/stores.json', GITHUB_DATA_URL];
+  const urls = ['data/stores.json', GITHUB_BASE + 'stores.json'];
   for (const url of urls) {
     try {
       const res = await fetch(url + '?t=' + Date.now());
@@ -159,11 +160,29 @@ async function loadData() {
       buildAllStands();
       updateDataStatus();
       populateStoreSelect();
+      // 前日データも読み込む
+      loadPrevData(url.replace('stores.json', 'stores_prev.json'));
       return true;
     } catch { continue; }
   }
   updateDataStatus(null);
   return false;
+}
+
+async function loadPrevData(url) {
+  try {
+    const res = await fetch(url + '?t=' + Date.now());
+    if (!res.ok) return;
+    prevStoreData = await res.json();
+    prevAllStands = [];
+    for (const [storeId, store] of Object.entries(prevStoreData.stores)) {
+      for (const machine of store.machines) {
+        for (const stand of machine.stands) {
+          prevAllStands.push({ ...stand, store_id: storeId, store_name: store.name, machine_name: machine.machine_name });
+        }
+      }
+    }
+  } catch { prevAllStands = []; }
 }
 
 function buildAllStands() {
@@ -214,23 +233,58 @@ function scoreStands(stands, budget, timeMin) {
 
 function analyze() {
   const budget = parseInt(document.getElementById('input-budget').value) || 5000;
-  const target = parseInt(document.getElementById('input-target').value) || 3000;
   const timeMin = parseInt(document.getElementById('input-time').value) || 60;
   const storeFilter = document.getElementById('select-store').value;
 
-  let stands = storeFilter === 'all' ? allStands : allStands.filter(s => s.store_id === storeFilter);
+  const filterStore = stands => storeFilter === 'all' ? stands : stands.filter(s => s.store_id === storeFilter);
 
-  if (stands.length === 0) { showEmptyState(); return; }
+  // ===== 朝イチランキング（前日データ） =====
+  const prevStands = filterStore(prevAllStands);
+  if (prevStands.length > 0) {
+    const prevScored = scoreStands(prevStands, budget, timeMin).sort((a, b) => b.score - a.score);
+    // 前日スコア40以上 = 据え置き期待台
+    const morning = prevScored.filter(s => s.score >= 40).slice(0, 10);
+    morning.forEach(s => { s._morning = true; });
+    renderMorningList(morning);
+  } else {
+    document.getElementById('morning-section').classList.add('hidden');
+  }
 
-  const scored = scoreStands(stands, budget, timeMin).sort((a, b) => b.score - a.score);
-  // スコア50以上 OR (スコア40以上かつ期待収支プラス) を狙い目とする
-  const recommended = scored.filter(s =>
-    s.score >= 50 ||
-    (s.score >= 40 && s.expectedProfit !== null && s.expectedProfit >= 0)
-  );
+  // ===== 夕方ランキング（当日データ・1000G以上） =====
+  const todayStands = filterStore(allStands);
+  if (todayStands.length === 0) { showEmptyState(); return; }
 
-  renderRecommendList(recommended.slice(0, 10));
+  const scored = scoreStands(todayStands, budget, timeMin).sort((a, b) => b.score - a.score);
+  // 夕方：1000G以上で高スコア台
+  const evening = scored.filter(s => s.games >= 1000 && s.score >= 45).slice(0, 10);
+  renderEveningList(evening);
   renderAllStands(scored);
+}
+
+function renderMorningList(stands) {
+  const section = document.getElementById('morning-section');
+  const list = document.getElementById('morning-list');
+  const badge = document.getElementById('morning-count');
+  section.classList.remove('hidden');
+  badge.textContent = `${stands.length}台`;
+  if (stands.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="icon">🌅</div><p>前日データがありません</p></div>`;
+    return;
+  }
+  list.innerHTML = stands.map((s, i) => buildStandCard(s, i + 1, '昨日高設定')).join('');
+}
+
+function renderEveningList(stands) {
+  const section = document.getElementById('evening-section');
+  const list = document.getElementById('evening-list');
+  const badge = document.getElementById('evening-count');
+  section.classList.remove('hidden');
+  badge.textContent = `${stands.length}台`;
+  if (stands.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="icon">🌆</div><p>1000G以上の高設定期待台がありません</p></div>`;
+    return;
+  }
+  list.innerHTML = stands.map((s, i) => buildStandCard(s, i + 1, '設定確定期待')).join('');
 }
 
 // ===== 描画 =====
@@ -247,7 +301,7 @@ function renderRecommendList(stands) {
   list.innerHTML = stands.map((s, i) => buildStandCard(s, i + 1)).join('');
 }
 
-function buildStandCard(s, rank) {
+function buildStandCard(s, rank, label = null) {
   const medal = rankMedal(rank);
   const stars = scoreToStars(s.score);
   const color = scoreToColor(s.score);
@@ -276,6 +330,7 @@ function buildStandCard(s, rank) {
         <div class="stand-machine">${s.machine_name || '-'}</div>
         <div class="stand-rack">${s.rack_no}番台</div>
         <div class="stand-store-tag">${s.store_name}</div>
+        ${label ? `<div class="stand-store-tag" style="background:#fff3cd;color:#856404;margin-top:3px">${label}</div>` : ''}
       </div>
       <div style="text-align:right">
         <div class="stars">${stars}</div>
