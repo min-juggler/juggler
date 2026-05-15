@@ -843,14 +843,37 @@ try{
   bar.textContent='props keys: '+Object.keys(pp).join(', ');
   await new Promise(r=>setTimeout(r,8000));
 
-  // ② alert でデータ構造を確認（ブロッキング）
+  // ② pp.data の全フィールドを確認（暗号化データの構造把握）
   try{
-    var lkStr=JSON.stringify(pp.list_kind).slice(0,600);
-    var dvType=typeof pp.data;
-    var dvLen=Array.isArray(pp.data)?pp.data.length:(pp.data&&typeof pp.data==='object'?Object.keys(pp.data).length:0);
-    var dvFirst=JSON.stringify(Array.isArray(pp.data)?pp.data[0]:Object.values(pp.data||{})[0]).slice(0,400);
-    alert('list_kind:\n'+lkStr+'\n\ndata type:'+dvType+' len:'+dvLen+'\n先頭:\n'+dvFirst);
-  }catch(e){alert('debug err:'+e.message);}
+    var dkeys=pp.data?Object.keys(pp.data):[];
+    var dvals=dkeys.map(k=>k+'='+JSON.stringify(pp.data[k]).slice(0,80)).join('\n');
+    alert('pp.data keys('+dkeys.length+'):\n'+dvals);
+  }catch(e){alert('data debug err:'+e.message);}
+
+  // ③ 暗号化データを WebCrypto で復号試行
+  var decryptedData=null;
+  if(pp.data&&pp.data.key&&pp.data.iv){
+    try{
+      var keyHex=pp.data.key;
+      var ivHex=pp.data.iv;
+      // 暗号文フィールドを探す（key,iv,is_cache_updated以外）
+      var cipherKey=Object.keys(pp.data).find(k=>!['key','iv','is_cache_updated'].includes(k));
+      bar.textContent='暗号化キー確認: keyLen='+keyHex.length+' ivLen='+ivHex.length+' cipherKey='+cipherKey;
+      await new Promise(r=>setTimeout(r,6000));
+      if(cipherKey){
+        var cipherHex=pp.data[cipherKey];
+        function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
+        var ck=await crypto.subtle.importKey('raw',h2b(keyHex),{name:'AES-CBC'},false,['decrypt']);
+        var plain=await crypto.subtle.decrypt({name:'AES-CBC',iv:h2b(ivHex)},ck,h2b(cipherHex));
+        decryptedData=JSON.parse(new TextDecoder().decode(plain));
+        bar.textContent='✅ 復号成功! type:'+typeof decryptedData+' isArray:'+Array.isArray(decryptedData)+' len:'+(Array.isArray(decryptedData)?decryptedData.length:Object.keys(decryptedData).length);
+        await new Promise(r=>setTimeout(r,6000));
+      }
+    }catch(e){
+      bar.textContent='復号失敗: '+e.message;
+      await new Promise(r=>setTimeout(r,6000));
+    }
+  }
 
   // ③ n-APIをdai_hall_idとmachine_ranking_filter_idで試す
   var mRankFilterId=null;
@@ -877,20 +900,26 @@ try{
       }
     }catch(e){}
   }
-  // n-API失敗時はkind_listフォールバック
-  if(!machines.length&&machineListKey){
-    var mlVal2=pp[machineListKey];
-    var mlArr2=Array.isArray(mlVal2)?mlVal2:Object.values(mlVal2);
-    var machinesFromPage=mlArr2.filter(v=>v&&(v.machine_name||v.name||v.ps_kind_name)).map(v=>({
-      machine_name:v.machine_name||v.name||v.ps_kind_name||'不明',
-      kind_code:v.kind_code||v.ps_kind_code||21,
-      cnt:v.cnt||v.count||0,
-      machine_name_enc:v.machine_name_enc||encodeURIComponent(v.machine_name||v.name||v.ps_kind_name||'')
-    }));
-    if(machinesFromPage.length){
-      bar.textContent='⚠️ n-API失敗→'+machineListKey+'使用: '+machinesFromPage.length+'機種';
-      await new Promise(r=>setTimeout(r,5000));
-      machines=machinesFromPage;
+  // n-API失敗かつ暗号解読成功の場合はdecryptedDataを使用
+  if(!machines.length&&decryptedData){
+    var ddArr=Array.isArray(decryptedData)?decryptedData:Object.values(decryptedData);
+    // 機種リストとして使えるか確認
+    var ddMachines=ddArr.filter(v=>v&&(v.machine_name||v.name));
+    if(ddMachines.length){machines=ddMachines;}
+    else{
+      // 台データとして直接使う
+      bar.textContent='復号データを台データとして使用: '+ddArr.length+'台';
+      await new Promise(r=>setTimeout(r,4000));
+      // 機種別にグループ化
+      var mmap={};
+      for(var ds of ddArr){
+        var dmn=ds.machine_name||ds.ki_name||'不明';
+        if(!mmap[dmn])mmap[dmn]=[];
+        mmap[dmn].push({rack_no:String(ds.rack_no||ds.dai_no||ds.no||'?'),machine_name:dmn,games:parseInt(ds.total_games||ds.games||ds.gk||0),bb:parseInt(ds.bb_count||ds.bb||ds.big||0),rb:parseInt(ds.rb_count||ds.rb||ds.reg||0),diff:parseInt(ds.diff||ds.sa_mai||0)});
+      }
+      var result2={name:sname,machines:[]};
+      for(var[mn,sts]of Object.entries(mmap))result2.machines.push({machine_name:mn,count:sts.length,stands:sts});
+      await push(result2);return;
     }
   }
   if(!machines.length){bar.textContent='❌ 機種0件。全API失敗。propsキー:'+Object.keys(pp).join(',');setTimeout(()=>bar.remove(),8000);return;}
