@@ -821,35 +821,47 @@ function buildBookmarklet() {
   var sid=location.href.includes('yonezawa')?'yonezawa':location.href.includes('kaminoyama')?'kaminoyama':null;
   if(!sid){alert('店舗サイトで実行してください');return;}
   var sname={yonezawa:'アイランド米沢店',kaminoyama:'1円劇場上山店'}[sid];
-  var hid={yonezawa:292,kaminoyama:1303}[sid];
   var bar=document.createElement('div');
   bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:14px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3)';
-  bar.textContent='🎰 機種リスト取得中...';document.body.appendChild(bar);
+  bar.textContent='🎰 データ読み取り中...';document.body.appendChild(bar);
   try{
-    var mr=await fetch('/n-api/rack_info/search_kind?hall_id='+hid);
-    var mtext=await mr.text();
-    bar.textContent='status:'+mr.status+' '+mtext.slice(0,200);
+    // ページのdata-pageからデータ取得（fetch不要）
+    var pageEl=document.querySelector('[data-page]');
+    if(!pageEl){bar.textContent='❌ data-page要素なし';setTimeout(()=>bar.remove(),5000);return;}
+    var pd=JSON.parse(pageEl.dataset.page);
+    var props=pd.props||{};
+    var keys=Object.keys(props);
+    bar.textContent='props keys: '+keys.join(', ');
     await new Promise(r=>setTimeout(r,10000));
-    var machines=[];try{machines=JSON.parse(mtext);}catch(e){machines=[];}
-    if(!Array.isArray(machines))machines=[];
-    if(!machines.length){bar.textContent='📭 データなし（開店後に再試行）';setTimeout(()=>bar.remove(),4000);return;}
-    var result={name:sname,machines:[]};
-    for(var m of machines){
-      bar.textContent='🎰 '+m.machine_name+' 取得中...';
-      var kc=m.kind_code||m.kc||21;
-      var r=await fetch('/'+sid+'/standlist_slot?kind_code='+kc+'&machine_name='+m.machine_name_enc);
-      var html=await r.text();
-      var match=html.match(/data-page="([^"]+)"/);
-      var stands=[];
-      if(match){
+    var rawList=props.stand_list||props.stands||props.rack_list||props.dai_data_list||props.standList||[];
+    bar.textContent='stands found: '+rawList.length+' / keys: '+keys.slice(0,5).join(',');
+    await new Promise(r=>setTimeout(r,8000));
+    if(!rawList.length){bar.textContent='📭 このページにデータなし';setTimeout(()=>bar.remove(),4000);return;}
+    var machineName=props.machine_name||props.machineName||(props.machine||{}).name||'不明';
+    var stands=rawList.map(s=>({rack_no:String(s.rack_no||s.dai_no||s.no||'?'),machine_name:machineName,games:parseInt(s.total_games||s.games||s.gk||0),bb:parseInt(s.bb_count||s.bb||s.big||0),rb:parseInt(s.rb_count||s.rb||s.reg||0),diff:parseInt(s.diff||s.sa_mai||0)}));
+    var result={name:sname,machines:[{machine_name:machineName,count:stands.length,stands:stands}]};
+    // 複数機種対応：他機種リンクを探す
+    var links=[...document.querySelectorAll('a[href*="standlist_slot"]')];
+    var machines_done=[location.href];
+    for(var lnk of links){
+      var href=lnk.href;
+      if(machines_done.includes(href))continue;
+      machines_done.push(href);
+      bar.textContent='🎰 他機種取得中...'+href.slice(-30);
+      var r2=await fetch(href);var h2=await r2.text();
+      var m2=h2.match(/data-page="([^"]+)"/);
+      if(m2){
         try{
-          var pd=JSON.parse(match[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\\d+);/g,(_,n)=>String.fromCharCode(n)));
-          var sl=(pd.props||{});
-          var list=sl.stand_list||sl.stands||sl.rack_list||sl.dai_data_list||[];
-          stands=list.map(s=>({rack_no:String(s.rack_no||s.dai_no||s.no||'?'),machine_name:m.machine_name,games:parseInt(s.total_games||s.games||s.gk||0),bb:parseInt(s.bb_count||s.bb||s.big||0),rb:parseInt(s.rb_count||s.rb||s.reg||0),diff:parseInt(s.diff||s.sa_mai||0)}));
+          var pd2=JSON.parse(m2[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
+          var p2=pd2.props||{};
+          var rl2=p2.stand_list||p2.stands||p2.rack_list||p2.dai_data_list||p2.standList||[];
+          var mn2=p2.machine_name||p2.machineName||(p2.machine||{}).name||'不明';
+          if(rl2.length){
+            var st2=rl2.map(s=>({rack_no:String(s.rack_no||s.dai_no||s.no||'?'),machine_name:mn2,games:parseInt(s.total_games||s.games||s.gk||0),bb:parseInt(s.bb_count||s.bb||s.big||0),rb:parseInt(s.rb_count||s.rb||s.reg||0),diff:parseInt(s.diff||s.sa_mai||0)}));
+            result.machines.push({machine_name:mn2,count:st2.length,stands:st2});
+          }
         }catch(e){}
       }
-      result.machines.push({machine_name:m.machine_name,count:m.cnt,kind_code:kc,stands:stands});
       await new Promise(r=>setTimeout(r,600));
     }
     bar.textContent='📡 GitHubへ送信中...';
