@@ -864,16 +864,33 @@ try{
     bar.textContent='localStorage: keyHex存在='+(lsVal?'yes':'no')+' 全件scan='+(cipherText?'hit':'miss')+' len='+(cipherText?cipherText.length:0);
     await new Promise(r=>setTimeout(r,6000));
     if(cipherText){
-      try{
-        function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
-        var ck=await crypto.subtle.importKey('raw',h2b(keyHex),{name:'AES-CBC'},false,['decrypt']);
-        var plain=await crypto.subtle.decrypt({name:'AES-CBC',iv:h2b(ivHex)},ck,h2b(cipherText));
-        decryptedData=JSON.parse(new TextDecoder().decode(plain));
-        bar.textContent='✅ 復号成功! isArray:'+Array.isArray(decryptedData)+' len:'+(Array.isArray(decryptedData)?decryptedData.length:Object.keys(decryptedData).length)+' 先頭:'+JSON.stringify(Array.isArray(decryptedData)?decryptedData[0]:Object.values(decryptedData)[0]).slice(0,100);
-        await new Promise(r=>setTimeout(r,8000));
-      }catch(e){
-        bar.textContent='復号失敗: '+e.message;
-        await new Promise(r=>setTimeout(r,5000));
+      // まず中身を表示
+      bar.textContent='暗号文候補: len='+cipherText.length+' 先頭='+cipherText.slice(0,80);
+      await new Promise(r=>setTimeout(r,6000));
+      function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
+      function b642b(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0));}
+      // hex か base64 か判定
+      var isHex=/^[0-9a-fA-F]+$/.test(cipherText)&&cipherText.length%2===0;
+      var cipherBytes=isHex?h2b(cipherText):b642b(cipherText);
+      bar.textContent='暗号文 format:'+(isHex?'hex':'base64')+' bytes:'+cipherBytes.length+' key:'+keyHex.slice(0,16)+'... iv:'+ivHex.slice(0,16)+'...';
+      await new Promise(r=>setTimeout(r,6000));
+      // AES-CBC → AES-GCM の順で試す
+      var modes=['AES-CBC','AES-GCM'];
+      for(var mode of modes){
+        try{
+          var ck=await crypto.subtle.importKey('raw',h2b(keyHex),{name:mode},false,['decrypt']);
+          var ivBytes=h2b(ivHex);
+          var plain;
+          if(mode==='AES-CBC')plain=await crypto.subtle.decrypt({name:mode,iv:ivBytes},ck,cipherBytes);
+          else plain=await crypto.subtle.decrypt({name:mode,iv:ivBytes.slice(0,12)},ck,cipherBytes);
+          decryptedData=JSON.parse(new TextDecoder().decode(plain));
+          bar.textContent='✅ 復号成功('+mode+')! isArray:'+Array.isArray(decryptedData)+' len:'+(Array.isArray(decryptedData)?decryptedData.length:Object.keys(decryptedData).length)+' 先頭:'+JSON.stringify(Array.isArray(decryptedData)?decryptedData[0]:Object.values(decryptedData)[0]).slice(0,100);
+          await new Promise(r=>setTimeout(r,8000));
+          break;
+        }catch(e){
+          bar.textContent='復号失敗('+mode+'): '+e.message;
+          await new Promise(r=>setTimeout(r,4000));
+        }
       }
     } else {
       // localStorageになければAPIで試す
