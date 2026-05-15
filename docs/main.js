@@ -869,7 +869,11 @@ function buildBookmarklet() {
 })();`;
 
   const el = document.getElementById('bookmarklet-link');
-  if (el) el.href = 'javascript:' + encodeURIComponent(code);
+  if (el) {
+    el.href = 'javascript:' + encodeURIComponent(code);
+    el.textContent = '🎰 ジャグラーデータ取得';
+    el.style.background = '#e63946';
+  }
 }
 
 function buildAuthCard() {
