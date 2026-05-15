@@ -843,14 +843,15 @@ try{
   bar.textContent='props keys: '+Object.keys(pp).join(', ');
   await new Promise(r=>setTimeout(r,8000));
 
-  // ② 機種リスト候補キーの中身を確認
-  var machineListKey=['kind_list','machine_list','ps_kind_list','stand_list','machines','rack_list','dai_data_list','dai_kind_list'].find(k=>pp[k]);
-  if(machineListKey){
-    var mlVal=pp[machineListKey];
-    var mlArr=Array.isArray(mlVal)?mlVal:Object.values(mlVal);
-    bar.textContent=machineListKey+'('+mlArr.length+'件) 先頭:'+JSON.stringify(mlArr[0]||{}).slice(0,200);
-    await new Promise(r=>setTimeout(r,8000));
-  }
+  // ② list_kindの中身を確認
+  var lk=pp.list_kind;
+  bar.textContent='list_kind type:'+typeof lk+' isArray:'+Array.isArray(lk)+' len:'+(lk?( Array.isArray(lk)?lk.length:Object.keys(lk).length):'none')+' 先頭:'+JSON.stringify(Array.isArray(lk)?lk[0]:Object.values(lk||{})[0]||{}).slice(0,200);
+  await new Promise(r=>setTimeout(r,8000));
+
+  // ③ dataの中身を確認
+  var dv=pp.data;
+  bar.textContent='data type:'+typeof dv+' isArray:'+Array.isArray(dv)+' keys:'+(dv&&typeof dv==='object'?Object.keys(dv).slice(0,8).join(','):'none')+' 先頭:'+JSON.stringify(Array.isArray(dv)?dv[0]:Object.values(dv||{})[0]||{}).slice(0,150);
+  await new Promise(r=>setTimeout(r,8000));
 
   // ③ n-APIをdai_hall_idとmachine_ranking_filter_idで試す
   var mRankFilterId=null;
