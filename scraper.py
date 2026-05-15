@@ -1,31 +1,22 @@
 """
 ジャグラー台データ取得スクリプト
 使い方: python3 scraper.py
-※ 開店後（10時以降）に実行してください
 """
 
 import json
-import time
+import re
 import html as html_module
 import base64
 import urllib.request
 import urllib.error
+import shutil
 from datetime import datetime
 from pathlib import Path
-from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 
-# ===== GitHub自動アップロード設定（config.jsonから読み込み）=====
-_CONFIG_PATH = Path(__file__).parent / "config.json"
-try:
-    _cfg = json.loads(_CONFIG_PATH.read_text(encoding="utf-8"))
-    GITHUB_TOKEN  = _cfg.get("github_token", "")
-    GITHUB_REPO   = _cfg.get("github_repo", "min-juggler/juggler")
-    GITHUB_BRANCH = _cfg.get("github_branch", "main")
-except Exception:
-    GITHUB_TOKEN = ""
-    GITHUB_REPO  = "min-juggler/juggler"
-    GITHUB_BRANCH = "main"
-GITHUB_PATH = "docs/data/stores.json"
+# ===== GitHub設定 =====
+GITHUB_TOKEN  = ""  # ← ここにGitHubトークンを入力（ghp_xxxxx）
+GITHUB_REPO   = "min-juggler/juggler"
+GITHUB_BRANCH = "main"
 
 # ===== 店舗設定 =====
 STORES = [
@@ -45,118 +36,88 @@ STORES = [
     },
 ]
 
-OUTPUT_PATH  = Path(__file__).parent / "data" / "stores.json"
-PROFILE_DIR  = Path(__file__).parent / "data" / "browser_profile"  # Cookie保持フォルダ
+OUTPUT_PATH = Path(__file__).parent / "data" / "stores.json"
+PREV_PATH   = Path(__file__).parent / "data" / "stores_prev.json"
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "ja,en-US;q=0.7,en;q=0.3",
+}
 
 
-# ===== ユーティリティ =====
-def pause(msg: str):
-    print(f"\n{'─'*50}")
-    print(f"  ⚠️  {msg}")
-    print(f"{'─'*50}")
-    input("     完了したらEnterを押してください... ")
-    print()
-
-
-def get_props(page) -> dict:
-    """Inertia.jsのdata-pageからpropsを取得"""
+# ===== Chromeからセッションを取得 =====
+def make_session():
+    """ChromeのCookieを使ったrequestsセッションを作成"""
     try:
-        raw = page.locator("[data-page]").get_attribute("data-page", timeout=5000)
-        if raw:
-            return json.loads(html_module.unescape(raw)).get("props", {})
-    except Exception:
-        pass
-    return {}
+        import requests
+        import browser_cookie3
+        session = requests.Session()
+        session.headers.update(HEADERS)
+        cookies = list(browser_cookie3.chrome(domain_name='teramoba2.com'))
+        for c in cookies:
+            session.cookies.set(c.name, c.value, domain=c.domain or '.teramoba2.com')
+        print(f"  🍪 Chrome Cookieを注入しました（{len(cookies)}個）")
+        return session
+    except ImportError:
+        print("  ⚠️  requestsまたはbrowser-cookie3が未インストールです")
+        print("     pip3 install requests browser-cookie3")
+        return None
+    except Exception as e:
+        print(f"  ⚠️  Cookie取得エラー: {e}")
+        return None
 
 
-def is_protected(page) -> bool:
-    return "protection" in page.url
-
-
-def wait_past_protection(page, url: str, store_name: str, retry: int = 2) -> bool:
-    """
-    保護ページを検出したらユーザーに手動操作を促す。
-    Turnstile（Cloudflare）が自動通過できる場合もある。
-    """
-    for i in range(retry):
-        if not is_protected(page):
-            return True  # 通過済み
-
-        if i == 0:
-            # まず少し待って自動通過を試みる（Turnstileは本物ブラウザなら通ることがある）
-            print(f"    🔄 認証待機中...", end="", flush=True)
-            for _ in range(8):
-                time.sleep(1)
-                print(".", end="", flush=True)
-                if not is_protected(page):
-                    print(" 通過！")
-                    return True
-            print()
-
-        # 自動通過できなかった → 手動操作
-        pause(
-            f"[{store_name}] 認証/同意画面が表示されています。\n"
-            f"     ブラウザで「同意する」や「チェックボックス」をクリックしてください。\n"
-            f"     ページが切り替わったらEnterを押してください。"
-        )
-        page.goto(url, wait_until="networkidle", timeout=30000)
-        time.sleep(1.5)
-
-    if is_protected(page):
-        print(f"    ❌ アクセスできません。スキップします。")
-        return False
-    return True
-
-
-# ===== データ取得 =====
-def get_machine_list(page, store: dict) -> list:
-    """機種一覧API"""
+# ===== 機種リスト取得 =====
+def get_machine_list(session, store: dict) -> list:
     try:
-        r = page.request.get(
+        url = (
             f"https://island.pt.teramoba2.com/n-api/rack_info/search_kind"
             f"?hall_id={store['hall_id']}&kind_code={store['kind_code']}"
         )
-        if r.status == 200:
-            return r.json()
+        r = session.get(url, timeout=15)
+        if r.status_code == 200:
+            data = r.json()
+            if isinstance(data, list):
+                return data
     except Exception as e:
         print(f"  機種取得エラー: {e}")
     return []
 
 
-def fetch_stands_api(page, store: dict, machine_name_enc: str, machine_name: str) -> list:
-    """n-APIから台データを直接取得（Cloudflare不要）"""
-    api_patterns = [
-        f"https://island.pt.teramoba2.com/n-api/rack_info/stand_list?hall_id={store['hall_id']}&kind_code={store['kind_code']}&machine_name={machine_name_enc}",
-        f"https://island.pt.teramoba2.com/n-api/dai_data/list?hall_id={store['hall_id']}&kind_code={store['kind_code']}&machine_name={machine_name_enc}",
-        f"https://island.pt.teramoba2.com/n-api/rack_info/search_stand?hall_id={store['hall_id']}&kind_code={store['kind_code']}&machine_name={machine_name_enc}",
-    ]
-    for api_url in api_patterns:
-        try:
-            r = page.request.get(api_url)
-            if r.status == 200:
-                data = r.json()
-                if isinstance(data, list) and len(data) > 0:
-                    print(f"    ✅ APIで取得成功！")
-                    return normalize_stands(data, machine_name)
-        except Exception:
-            continue
-    return []
+# ===== 台データ取得 =====
+def fetch_stands(session, store: dict, machine_name_enc: str, machine_name: str) -> list:
+    url = (
+        f"{store['base_url']}/standlist_slot"
+        f"?kind_code={store['kind_code']}&machine_name={machine_name_enc}"
+    )
+    try:
+        r = session.get(url, timeout=20)
+        if r.status_code != 200:
+            print(f"    ❌ HTTPエラー: {r.status_code}")
+            return []
 
+        # protection_redirectに飛ばされたか確認
+        if "protection_redirect" in r.url or "protection" in r.url:
+            print(f"    ❌ Cloudflareブロック")
+            return []
 
-def fetch_stands(page, store: dict, machine_name_enc: str, machine_name: str) -> list:
-    """台データをAPIで取得（Cloudflare完全回避）"""
-    return fetch_stands_api(page, store, machine_name_enc, machine_name)
+        html = r.text
 
-    # --- 2. DOMのテーブル ---
-    dom = scrape_table(page, machine_name)
-    if dom:
-        return dom
+        # Inertia.jsのdata-page属性からデータ取得
+        match = re.search(r'data-page="([^"]+)"', html)
+        if match:
+            raw = html_module.unescape(match.group(1))
+            props = json.loads(raw).get("props", {})
+            raw_list = (
+                props.get("stand_list") or props.get("stands") or
+                props.get("rack_list") or props.get("dai_data_list") or []
+            )
+            if raw_list:
+                return normalize_stands(raw_list, machine_name)
 
-    # --- 3. データなし（朝イチ・未登録） ---
-    # ページタイトルやテキストで「データなし」を判定
-    body_text = page.inner_text("body")
-    if "データがありません" in body_text or "準備中" in body_text or len(raw_list) == 0:
-        print(f"    📭 本日データ未登録（開店前/集計前の可能性）")
+    except Exception as e:
+        print(f"    エラー: {e}")
     return []
 
 
@@ -176,176 +137,8 @@ def normalize_stands(raw: list, machine_name: str) -> list:
     return result
 
 
-def scrape_table(page, machine_name: str) -> list:
-    result = []
-    try:
-        rows = page.locator("table tbody tr").all()
-        for row in rows:
-            cells = row.locator("td").all()
-            if len(cells) < 4:
-                continue
-            texts = [c.inner_text().strip().replace(",", "").replace("+", "") for c in cells]
-            try:
-                result.append({
-                    "rack_no":      texts[0],
-                    "machine_name": machine_name,
-                    "games": int(texts[2]) if texts[2].lstrip("-").isdigit() else 0,
-                    "bb":    int(texts[3]) if texts[3].lstrip("-").isdigit() else 0,
-                    "rb":    int(texts[4]) if len(texts) > 4 and texts[4].lstrip("-").isdigit() else 0,
-                    "diff":  int(texts[5]) if len(texts) > 5 and texts[5].lstrip("-").isdigit() else 0,
-                })
-            except (ValueError, IndexError):
-                continue
-    except Exception:
-        pass
-    return result
-
-
-# ===== Chrome Cookie注入 =====
-def inject_chrome_cookies(ctx):
-    """普通のChromeからCookieを借りてCloudflare認証をバイパスする"""
-    try:
-        import browser_cookie3
-        cookies = list(browser_cookie3.chrome(domain_name='teramoba2.com'))
-        if not cookies:
-            print("  ℹ️  Chrome Cookieなし（初回は手動認証が必要です）")
-            return
-        cookie_list = []
-        for c in cookies:
-            cookie_list.append({
-                'name': c.name,
-                'value': c.value,
-                'domain': c.domain or '.teramoba2.com',
-                'path': c.path or '/',
-                'secure': bool(c.secure),
-            })
-        ctx.add_cookies(cookie_list)
-        print(f"  🍪 Chrome Cookieを注入しました（{len(cookie_list)}個）")
-    except ImportError:
-        print("  ℹ️  browser-cookie3未インストール")
-    except Exception as e:
-        print(f"  ⚠️  Cookie取得エラー: {e}")
-
-
-# ===== メイン =====
-def scrape_all():
-    now = datetime.now()
-    print("=" * 52)
-    print("  🎰 ジャグラー台データ取得")
-    print(f"  実行日時: {now.strftime('%Y-%m-%d %H:%M')}")
-    print("=" * 52)
-
-    # 開店前チェック
-    if now.hour < 10:
-        print(f"\n  ⏰ 現在 {now.strftime('%H:%M')} です。")
-        print("  多くの店舗は10時以降にデータが更新されます。")
-        print("  このまま実行することもできます（データが0件になる場合があります）")
-        ans = input("  続けますか？ [y/N]: ").strip().lower()
-        if ans != "y":
-            print("  終了します。10時以降に再実行してください。")
-            return
-
-    print("\n  ブラウザが起動します。")
-    print("  認証画面が出たら手動でクリックしてください。\n")
-
-    result = {"fetched_at": now.isoformat(), "stores": {}}
-    PROFILE_DIR.mkdir(parents=True, exist_ok=True)
-
-    with sync_playwright() as p:
-        # persistent_context でCookieを保持（2回目以降は認証スキップ）
-        ctx = p.chromium.launch_persistent_context(
-            user_data_dir=str(PROFILE_DIR),
-            headless=True,   # ブラウザ画面を表示しない（APIのみ使用）
-            args=["--no-sandbox"],
-        )
-        inject_chrome_cookies(ctx)
-        page = ctx.new_page()
-
-        for store in STORES:
-            print(f"\n{'─'*40}")
-            print(f"📍 {store['name']}")
-            print(f"{'─'*40}")
-            store_result = {"name": store["name"], "machines": []}
-
-            # 機種一覧はAPIで直接取得（ブラウザ不要・Cloudflare回避）
-            machines = get_machine_list(page, store)
-
-            if not machines:
-                print(f"  📭 機種リスト未取得（開店前/本日データなし）")
-                result["stores"][store["id"]] = store_result
-                continue
-
-            print(f"  {len(machines)}機種を確認:")
-            for m in machines:
-                print(f"    • {m['machine_name']} ({m.get('cnt', '?')}台)")
-
-            # 各機種の台データ
-            for machine in machines:
-                mname     = machine.get("machine_name", "不明")
-                mname_enc = machine.get("machine_name_enc", "")
-                cnt       = machine.get("cnt", 0)
-                print(f"\n  🎰 {mname} ({cnt}台) 取得中...")
-
-                stands = fetch_stands(page, store, mname_enc, mname)
-
-                if stands:
-                    print(f"     ✅ {len(stands)}台取得完了")
-                    for s in stands[:3]:
-                        bb_r = f"1/{round(s['games']/s['bb'])}" if s["bb"] else "-"
-                        rb_r = f"1/{round(s['games']/s['rb'])}" if s["rb"] else "-"
-                        print(f"       {s['rack_no']}番台  {s['games']}G  BB:{bb_r}  RB:{rb_r}  差:{s['diff']:+}")
-                    if len(stands) > 3:
-                        print(f"       … 他{len(stands)-3}台")
-
-                store_result["machines"].append({
-                    "machine_name": mname,
-                    "count": cnt,
-                    "stands": stands,
-                })
-                time.sleep(1.0)
-
-            result["stores"][store["id"]] = store_result
-
-        ctx.close()
-
-    # ローカル保存（現在のデータを前日データとして保存してから上書き）
-    OUTPUT_PATH.parent.mkdir(exist_ok=True)
-    PREV_PATH = OUTPUT_PATH.parent / "stores_prev.json"
-    if OUTPUT_PATH.exists():
-        import shutil
-        shutil.copy(OUTPUT_PATH, PREV_PATH)
-    json_str = json.dumps(result, ensure_ascii=False, indent=2)
-    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        f.write(json_str)
-
-    total = sum(
-        len(m["stands"])
-        for s in result["stores"].values()
-        for m in s["machines"]
-    )
-    print(f"\n{'='*52}")
-    if total > 0:
-        print(f"  ✅ 完了！ {total}台分のデータを保存しました")
-    else:
-        print(f"  ⚠️  データが0件でした。開店後(10時以降)に再実行してください。")
-    print(f"  📁 {OUTPUT_PATH}")
-
-    # GitHubへ自動アップロード（当日＋前日データ）
-    print(f"\n  📡 GitHubへアップロード中...")
-    ok1 = push_to_github(json_str, "data/stores.json")
-    prev_str = open(PREV_PATH, encoding="utf-8").read() if PREV_PATH.exists() else None
-    ok2 = push_to_github(prev_str, "data/stores_prev.json") if prev_str else True
-    if ok1:
-        print(f"  🌐 スマホからはこのURLで見られます:")
-        print(f"     https://min-juggler.github.io/juggler/")
-    else:
-        print(f"  ⚠️  GitHubアップロード失敗。ローカルのみ保存されました。")
-    print(f"{'='*52}")
-    print("\n  ブラウザで http://localhost:8080 をリロードしてください\n")
-
-
+# ===== GitHubアップロード =====
 def push_to_github(json_str: str, path: str = "data/stores.json") -> bool:
-    """指定パスにJSONをGitHub APIでアップロード"""
     try:
         api_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{path}"
         headers = {
@@ -353,19 +146,15 @@ def push_to_github(json_str: str, path: str = "data/stores.json") -> bool:
             "Accept": "application/vnd.github.v3+json",
             "Content-Type": "application/json",
         }
-
-        # 既存ファイルのSHAを取得（更新時に必要）
         sha = None
         try:
             req = urllib.request.Request(api_url, headers=headers)
             with urllib.request.urlopen(req) as resp:
-                existing = json.loads(resp.read())
-                sha = existing.get("sha")
+                sha = json.loads(resp.read()).get("sha")
         except urllib.error.HTTPError as e:
             if e.code != 404:
-                print(f"    SHA取得エラー: {e}")
+                pass
 
-        # ファイルをBase64エンコードしてPUT
         content_b64 = base64.b64encode(json_str.encode("utf-8")).decode("ascii")
         body = {
             "message": f"データ更新 {datetime.now().strftime('%Y-%m-%d %H:%M')}",
@@ -385,5 +174,118 @@ def push_to_github(json_str: str, path: str = "data/stores.json") -> bool:
         return False
 
 
+# ===== メイン =====
+def scrape_all():
+    now = datetime.now()
+    print("=" * 52)
+    print("  🎰 ジャグラー台データ取得")
+    print(f"  実行日時: {now.strftime('%Y-%m-%d %H:%M')}")
+    print("=" * 52)
+
+    if now.hour < 10:
+        print(f"\n  ⏰ 現在 {now.strftime('%H:%M')} です。")
+        print("  多くの店舗は10時以降にデータが更新されます。")
+        print("  （前日データが表示される場合は取得できます）")
+        ans = input("  続けますか？ [y/N]: ").strip().lower()
+        if ans != "y":
+            print("  終了します。")
+            return
+
+    session = make_session()
+    if not session:
+        print("  ❌ セッション作成失敗。終了します。")
+        return
+
+    result = {"fetched_at": now.isoformat(), "stores": {}}
+
+    for store in STORES:
+        print(f"\n{'─'*40}")
+        print(f"📍 {store['name']}")
+        print(f"{'─'*40}")
+        store_result = {"name": store["name"], "machines": []}
+
+        machines = get_machine_list(session, store)
+        if not machines:
+            print(f"  📭 機種リスト未取得")
+            result["stores"][store["id"]] = store_result
+            continue
+
+        print(f"  {len(machines)}機種を確認:")
+        for m in machines:
+            print(f"    • {m['machine_name']} ({m.get('cnt', '?')}台)")
+
+        for machine in machines:
+            mname     = machine.get("machine_name", "不明")
+            mname_enc = machine.get("machine_name_enc", "")
+            cnt       = machine.get("cnt", 0)
+            print(f"\n  🎰 {mname} ({cnt}台) 取得中...")
+
+            stands = fetch_stands(session, store, mname_enc, mname)
+
+            if stands:
+                print(f"     ✅ {len(stands)}台取得完了")
+                for s in stands[:3]:
+                    bb_r = f"1/{round(s['games']/s['bb'])}" if s["bb"] else "-"
+                    rb_r = f"1/{round(s['games']/s['rb'])}" if s["rb"] else "-"
+                    print(f"       {s['rack_no']}番台  {s['games']}G  BB:{bb_r}  RB:{rb_r}  差:{s['diff']:+}")
+                if len(stands) > 3:
+                    print(f"       … 他{len(stands)-3}台")
+            else:
+                print(f"     📭 データなし")
+
+            store_result["machines"].append({
+                "machine_name": mname,
+                "count": cnt,
+                "stands": stands,
+            })
+
+        result["stores"][store["id"]] = store_result
+
+    # 保存
+    OUTPUT_PATH.parent.mkdir(exist_ok=True)
+    json_str = json.dumps(result, ensure_ascii=False, indent=2)
+
+    # 既存データを前日データとして保存
+    if OUTPUT_PATH.exists():
+        shutil.copy(OUTPUT_PATH, PREV_PATH)
+    else:
+        with open(PREV_PATH, "w", encoding="utf-8") as f:
+            f.write(json_str)
+
+    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+        f.write(json_str)
+
+    total = sum(
+        len(m["stands"])
+        for s in result["stores"].values()
+        for m in s["machines"]
+    )
+
+    print(f"\n{'='*52}")
+    if total > 0:
+        print(f"  ✅ 完了！ {total}台分のデータを保存しました")
+    else:
+        print(f"  ⚠️  データが0件でした")
+    print(f"  📁 {OUTPUT_PATH}")
+
+    print(f"\n  📡 GitHubへアップロード中...")
+    ok1 = push_to_github(json_str, "data/stores.json")
+    prev_str = open(PREV_PATH, encoding="utf-8").read() if PREV_PATH.exists() else None
+    if prev_str:
+        push_to_github(prev_str, "data/stores_prev.json")
+    if ok1:
+        print(f"  🌐 https://min-juggler.github.io/juggler/")
+    print(f"{'='*52}\n")
+
+
 if __name__ == "__main__":
+    # requestsが入っていなければインストール
+    try:
+        import requests
+    except ImportError:
+        import subprocess, sys
+        print("  📦 requestsをインストール中...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "requests"])
+        import requests
+
     scrape_all()

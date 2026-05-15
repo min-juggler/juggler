@@ -787,15 +787,90 @@ function loadDemoData() {
 
 // ===== 店舗認証カード =====
 const STORE_AUTH_URLS = [
-  {
-    name: 'アイランド米沢店',
-    url: 'https://island.pt.teramoba2.com/yonezawa/standlist_slot?kind_code=21&machine_name=S+%E3%83%8D%E3%82%AA%E3%82%A2%E3%82%A4%E3%83%A0%E3%82%B8%E3%83%A3%E3%82%B0%E3%83%A9%E3%83%BCEX',
-  },
-  {
-    name: '1円劇場上山店',
-    url: 'https://island.pt.teramoba2.com/kaminoyama/standlist_slot?kind_code=21&machine_name=S+%E3%83%8D%E3%82%AA%E3%82%A2%E3%82%A4%E3%83%A0%E3%82%B8%E3%83%A3%E3%82%B0%E3%83%A9%E3%83%BCEX',
-  },
+  { name: 'アイランド米沢店',  url: 'https://island.pt.teramoba2.com/yonezawa/' },
+  { name: '1円劇場上山店', url: 'https://island.pt.teramoba2.com/kaminoyama/' },
 ];
+
+// ===== GitHubトークン保存 =====
+function saveToken() {
+  const el = document.getElementById('input-token');
+  if (!el) return;
+  const token = el.value.trim();
+  if (!token) { alert('トークンを入力してください'); return; }
+  Storage.set('github_token', token);
+  el.value = '';
+  alert('✅ トークンを保存しました');
+  buildBookmarklet();
+}
+
+// ===== ブックマークレット =====
+function buildBookmarklet() {
+  const token = Storage.get('github_token', '');
+  const repo  = 'min-juggler/juggler';
+  if (!token) {
+    const el = document.getElementById('bookmarklet-link');
+    if (el) {
+      el.textContent = '⚠️ 下でトークンを設定してください';
+      el.href = '#';
+      el.style.background = '#aaa';
+    }
+    return;
+  }
+
+  const code = `(async function(){
+  var sid=location.href.includes('yonezawa')?'yonezawa':location.href.includes('kaminoyama')?'kaminoyama':null;
+  if(!sid){alert('店舗サイトで実行してください');return;}
+  var sname={yonezawa:'アイランド米沢店',kaminoyama:'1円劇場上山店'}[sid];
+  var hid={yonezawa:292,kaminoyama:1303}[sid];
+  var bar=document.createElement('div');
+  bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:14px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3)';
+  bar.textContent='🎰 機種リスト取得中...';document.body.appendChild(bar);
+  try{
+    var mr=await fetch('/n-api/rack_info/search_kind?hall_id='+hid+'&kind_code=21');
+    var machines=await mr.json();
+    if(!machines.length){bar.textContent='📭 データなし（開店後に再試行）';setTimeout(()=>bar.remove(),4000);return;}
+    var result={name:sname,machines:[]};
+    for(var m of machines){
+      bar.textContent='🎰 '+m.machine_name+' 取得中...';
+      var r=await fetch('/'+sid+'/standlist_slot?kind_code=21&machine_name='+m.machine_name_enc);
+      var html=await r.text();
+      var match=html.match(/data-page="([^"]+)"/);
+      var stands=[];
+      if(match){
+        try{
+          var pd=JSON.parse(match[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\\d+);/g,(_,n)=>String.fromCharCode(n)));
+          var sl=(pd.props||{});
+          var list=sl.stand_list||sl.stands||sl.rack_list||sl.dai_data_list||[];
+          stands=list.map(s=>({rack_no:String(s.rack_no||s.dai_no||s.no||'?'),machine_name:m.machine_name,games:parseInt(s.total_games||s.games||s.gk||0),bb:parseInt(s.bb_count||s.bb||s.big||0),rb:parseInt(s.rb_count||s.rb||s.reg||0),diff:parseInt(s.diff||s.sa_mai||0)}));
+        }catch(e){}
+      }
+      result.machines.push({machine_name:m.machine_name,count:m.cnt,stands:stands});
+      await new Promise(r=>setTimeout(r,600));
+    }
+    bar.textContent='📡 GitHubへ送信中...';
+    var sha=null,cur={};
+    try{
+      var er=await fetch('https://api.github.com/repos/${repo}/contents/data/stores.json',{headers:{'Authorization':'token ${token}','Accept':'application/vnd.github.v3+json'}});
+      if(er.ok){var ej=await er.json();sha=ej.sha;cur=JSON.parse(atob(ej.content.replace(/\\n/g,'')));}
+    }catch(e){}
+    if(!cur.stores)cur={fetched_at:null,stores:{}};
+    cur.fetched_at=new Date().toISOString();
+    var prev=JSON.parse(JSON.stringify(cur));
+    cur.stores[sid]=result;
+    var js=JSON.stringify(cur,null,2);
+    var body={message:'データ更新 '+new Date().toLocaleString('ja'),content:btoa(unescape(encodeURIComponent(js))),branch:'main'};
+    if(sha)body.sha=sha;
+    var pr=await fetch('https://api.github.com/repos/${repo}/contents/data/stores.json',{method:'PUT',headers:{'Authorization':'token ${token}','Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+    var total=result.machines.reduce((a,m)=>a+m.stands.length,0);
+    if(pr.ok){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+total+'台 送信完了！';}
+    else{bar.style.background='#888';bar.textContent='⚠️ GitHub送信失敗 ('+await pr.text()+')';}
+  }catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
+  setTimeout(()=>bar.remove(),6000);
+})();`;
+
+  const el = document.getElementById('bookmarklet-link');
+  if (el) el.href = 'javascript:' + encodeURIComponent(code);
+}
 
 function buildAuthCard() {
   const container = document.getElementById('auth-store-buttons');
@@ -831,6 +906,7 @@ function injectPhoneBanner() {
 async function init() {
   initEvents();
   buildAuthCard();
+  buildBookmarklet();
   injectPhoneBanner();
 
   const hasData = await loadData();
