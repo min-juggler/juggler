@@ -843,9 +843,34 @@ try{
   bar.textContent='props keys: '+Object.keys(pp).join(', ');
   await new Promise(r=>setTimeout(r,8000));
 
-  // ② 暗号文をlocalStorageから取得して復号試行
+  // ② ページが既に復号済みデータを持っていないか確認
   var decryptedData=null;
-  if(pp.data&&pp.data.key&&pp.data.iv){
+
+  // Inertia/React の window グローバルを探す
+  var pageProps=null;
+  try{
+    var inertiaKeys=['__inertia','__page','Inertia','inertia'];
+    for(var ik of inertiaKeys){if(window[ik]&&window[ik].props){pageProps=window[ik].props;break;}}
+    // data-page要素から再取得（アプリが書き換えた可能性）
+    if(!pageProps){var dpEl=document.querySelector('[data-page]');if(dpEl){var dpJ=JSON.parse(dpEl.getAttribute('data-page'));if(dpJ&&dpJ.props)pageProps=dpJ.props;}}
+    if(pageProps&&pageProps.data&&!pageProps.data.key){
+      // 復号済みのdataが直接入っている
+      decryptedData=pageProps.data;
+      bar.textContent='✅ Inertiaから復号済みデータ取得! type:'+typeof decryptedData+' len:'+(Array.isArray(decryptedData)?decryptedData.length:Object.keys(decryptedData).length);
+      await new Promise(r=>setTimeout(r,5000));
+    }
+  }catch(e){}
+
+  // ページが実際に叩いたAPIを調べる
+  if(!decryptedData){
+    var perf=performance.getEntriesByType('resource');
+    var apiCalls=perf.filter(r=>(r.initiatorType==='fetch'||r.initiatorType==='xmlhttprequest')&&r.name.includes('/'));
+    bar.textContent='ページAPIコール数:'+apiCalls.length+' 例:'+apiCalls.slice(0,3).map(r=>r.name.split('/').slice(-2).join('/')).join(' | ');
+    await new Promise(r=>setTimeout(r,6000));
+  }
+
+  // 暗号文をlocalStorageから取得して復号試行
+  if(!decryptedData&&pp.data&&pp.data.key&&pp.data.iv){
     var keyHex=pp.data.key;
     var ivHex=pp.data.iv;
     // localStorageからkeyで暗号文を検索
