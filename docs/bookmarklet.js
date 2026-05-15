@@ -33,45 +33,40 @@
     bar.textContent = '一覧props: ' + Object.keys(listProps).join(', ');
     await new Promise(r => setTimeout(r, 8000));
 
-    var machineList = listProps.machine_list || listProps.machines || listProps.kind_list
-                   || listProps.kindList    || listProps.machine_kinds || listProps.rack_kinds || [];
+    // dataとlist_kindの内容を確認
+    var rawData = listProps.data;
+    var listKind = listProps.list_kind || [];
+    bar.textContent = 'data型:' + typeof rawData + ' isArr:' + Array.isArray(rawData)
+      + ' list_kind件数:' + listKind.length
+      + ' | data先頭:' + JSON.stringify(rawData).slice(0, 150);
+    await new Promise(r => setTimeout(r, 12000));
 
-    if (!machineList.length) {
-      bar.textContent = '❌ 機種リストなし | ' + JSON.stringify(listProps).slice(0, 200);
-      await new Promise(r => setTimeout(r, 12000));
-      bar.remove(); return;
+    // dataが配列なら直接スタンドリストとして使う
+    var standRows = Array.isArray(rawData) ? rawData
+                  : (rawData && Array.isArray(rawData.stands)) ? rawData.stands
+                  : (rawData && Array.isArray(rawData.list)) ? rawData.list : [];
+
+    bar.textContent = 'standRows件数: ' + standRows.length
+      + ' 先頭:' + JSON.stringify(standRows[0] || {}).slice(0, 150);
+    await new Promise(r => setTimeout(r, 12000));
+
+    if (!standRows.length) { bar.textContent = '❌ データなし'; await new Promise(r=>setTimeout(r,5000)); bar.remove(); return; }
+
+    // 機種ごとにグループ化
+    var machineMap = {};
+    for (var s of standRows) {
+      var mname = s.machine_name || s.kind_name || s.name || '不明';
+      if (!machineMap[mname]) machineMap[mname] = [];
+      machineMap[mname].push({
+        rack_no: String(s.rack_no || s.dai_no || s.no || '?'),
+        machine_name: mname,
+        games: parseInt(s.total_games || s.games || s.gk || 0),
+        bb:    parseInt(s.bb_count   || s.bb    || s.big  || 0),
+        rb:    parseInt(s.rb_count   || s.rb    || s.reg  || 0),
+        diff:  parseInt(s.diff       || s.sa_mai || 0)
+      });
     }
-
-    var result = { name: sname, machines: [] };
-
-    for (var m of machineList) {
-      var mname = m.machine_name || m.name || m.kind_name || '不明';
-      var menc  = m.machine_name_enc || m.name_enc || encodeURIComponent(mname);
-      var mkc   = m.kind_code || m.kc || 21;
-      bar.textContent = '🎰 ' + mname + ' 取得中...';
-
-      var mresp = await fetch('/' + sid + '/standlist_slot?kind_code=' + mkc + '&machine_name=' + menc);
-      var mhtml = await mresp.text();
-      var mmatch = mhtml.match(/data-page="([^"]+)"/);
-      var stands = [];
-
-      if (mmatch) {
-        try {
-          var mp = JSON.parse(unescape_html(mmatch[1])).props || {};
-          var rl = mp.stand_list || mp.stands || mp.rack_list || mp.dai_data_list || [];
-          stands = rl.map(s => ({
-            rack_no: String(s.rack_no || s.dai_no || s.no || '?'),
-            machine_name: mname,
-            games: parseInt(s.total_games || s.games || s.gk || 0),
-            bb:    parseInt(s.bb_count   || s.bb    || s.big  || 0),
-            rb:    parseInt(s.rb_count   || s.rb    || s.reg  || 0),
-            diff:  parseInt(s.diff       || s.sa_mai || 0)
-          }));
-        } catch(e) {}
-      }
-      result.machines.push({ machine_name: mname, count: m.cnt || stands.length, stands: stands });
-      await new Promise(r => setTimeout(r, 600));
-    }
+    var result = { name: sname, machines: Object.entries(machineMap).map(([n, stands]) => ({ machine_name: n, count: stands.length, stands })) };
 
     // GitHub にアップロード
     bar.textContent = '📡 GitHubへ送信中...';
