@@ -842,26 +842,24 @@ try{
   bar.textContent='dai_hall_id='+daiHallId+' machine_ranking_items type:'+typeof mRankItems+' keys:'+(mRankItems?Object.keys(mRankItems).slice(0,5).join(','):'none');
   await new Promise(r=>setTimeout(r,5000));
 
-  // machine_ranking_itemsからページ内機種リストを抽出（フォールバック用）
-  // 構造: { slot: { kind_code: {machine_name,...}, ... }, pachi: {...} }
+  // machine_ranking_items の slot 中身を詳細デバッグ
   var machinesFromPage=[];
   if(mRankItems&&typeof mRankItems==='object'){
-    // slotカテゴリを優先、なければ全カテゴリ結合
-    var categories=mRankItems.slot?[mRankItems.slot]:Object.values(mRankItems);
-    var rawItems=[];
-    for(var cat of categories){
-      if(!cat||typeof cat!=='object')continue;
-      var items=Array.isArray(cat)?cat:Object.values(cat);
-      rawItems=rawItems.concat(items);
-    }
-    bar.textContent='machine_ranking_items.slot展開: '+rawItems.length+'件 先頭:'+JSON.stringify(rawItems[0]||{}).slice(0,150);
+    var slotVal=mRankItems.slot;
+    var slotKeys=slotVal&&typeof slotVal==='object'?Object.keys(slotVal):[];
+    bar.textContent='slot type:'+typeof slotVal+' keys('+slotKeys.length+'):'+slotKeys.slice(0,8).join(',');
     await new Promise(r=>setTimeout(r,6000));
-    machinesFromPage=rawItems.filter(v=>v&&(v.machine_name||v.name)).map(v=>({
-      machine_name:v.machine_name||v.name||'不明',
-      kind_code:v.kind_code||21,
-      cnt:v.cnt||v.count||0,
-      machine_name_enc:v.machine_name_enc||encodeURIComponent(v.machine_name||v.name||'')
-    }));
+    // slot中身の先頭要素を表示
+    if(slotKeys.length>0){
+      var firstSlotVal=slotVal[slotKeys[0]];
+      bar.textContent='slot['+slotKeys[0]+']:'+JSON.stringify(firstSlotVal).slice(0,250);
+      await new Promise(r=>setTimeout(r,8000));
+    } else {
+      // slotが空 → pachi側も確認
+      var pachiVal=mRankItems.pachi;
+      bar.textContent='slot空。pachi type:'+typeof pachiVal+' raw:'+JSON.stringify(pachiVal).slice(0,200);
+      await new Promise(r=>setTimeout(r,8000));
+    }
   }
 
   // n-APIをdai_hall_idで試す
