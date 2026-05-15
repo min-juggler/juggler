@@ -826,8 +826,11 @@ function buildBookmarklet() {
   bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:14px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3)';
   bar.textContent='🎰 機種リスト取得中...';document.body.appendChild(bar);
   try{
-    var mr=await fetch('/n-api/rack_info/search_kind?hall_id='+hid+'&kind_code=21');
-    var machines=await mr.json();
+    var mr=await fetch('/n-api/rack_info/search_kind?hall_id='+hid+'&kind_code=21',{headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}});
+    var mtext=await mr.text();
+    alert('API応答(status='+mr.status+'):\\n'+mtext.slice(0,300));
+    var machines=[];try{machines=JSON.parse(mtext);}catch(e){machines=[];}
+    if(!Array.isArray(machines))machines=[];
     if(!machines.length){bar.textContent='📭 データなし（開店後に再試行）';setTimeout(()=>bar.remove(),4000);return;}
     var result={name:sname,machines:[]};
     for(var m of machines){
