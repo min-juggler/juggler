@@ -835,40 +835,39 @@ try{
   var listH=await listR.text();
   var dpM=listH.match(/data-page="([^"]+)"/);
   var daiHallId=hid;
-  var mRankItems=null;
-  if(dpM){try{var dp=JSON.parse(dpM[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\\d+);/g,(_,n)=>String.fromCharCode(n)));var pp=dp.props||{};
-  if(pp.dai_hall_info&&pp.dai_hall_info.dai_hall_id)daiHallId=pp.dai_hall_info.dai_hall_id;
-  mRankItems=pp.machine_ranking_items;}catch(e){}}
-  bar.textContent='dai_hall_id='+daiHallId+' machine_ranking_items type:'+typeof mRankItems+' keys:'+(mRankItems?Object.keys(mRankItems).slice(0,5).join(','):'none');
-  await new Promise(r=>setTimeout(r,5000));
+  var pp={};
+  if(dpM){try{var dp=JSON.parse(dpM[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\\d+);/g,(_,n)=>String.fromCharCode(n)));pp=dp.props||{};
+  if(pp.dai_hall_info&&pp.dai_hall_info.dai_hall_id)daiHallId=pp.dai_hall_info.dai_hall_id;}catch(e){}}
 
-  // machine_ranking_items の slot 中身を詳細デバッグ
-  var machinesFromPage=[];
-  if(mRankItems&&typeof mRankItems==='object'){
-    var slotVal=mRankItems.slot;
-    var slotKeys=slotVal&&typeof slotVal==='object'?Object.keys(slotVal):[];
-    bar.textContent='slot type:'+typeof slotVal+' keys('+slotKeys.length+'):'+slotKeys.slice(0,8).join(',');
-    await new Promise(r=>setTimeout(r,6000));
-    // slot中身の先頭要素を表示
-    if(slotKeys.length>0){
-      var firstSlotVal=slotVal[slotKeys[0]];
-      bar.textContent='slot['+slotKeys[0]+']:'+JSON.stringify(firstSlotVal).slice(0,250);
-      await new Promise(r=>setTimeout(r,8000));
-    } else {
-      // slotが空 → pachi側も確認
-      var pachiVal=mRankItems.pachi;
-      bar.textContent='slot空。pachi type:'+typeof pachiVal+' raw:'+JSON.stringify(pachiVal).slice(0,200);
-      await new Promise(r=>setTimeout(r,8000));
-    }
+  // ① props の全キーを表示して機種リストの在り処を特定
+  bar.textContent='props keys: '+Object.keys(pp).join(', ');
+  await new Promise(r=>setTimeout(r,8000));
+
+  // ② 機種リスト候補キーの中身を確認
+  var machineListKey=['kind_list','machine_list','ps_kind_list','stand_list','machines','rack_list','dai_data_list','dai_kind_list'].find(k=>pp[k]);
+  if(machineListKey){
+    var mlVal=pp[machineListKey];
+    var mlArr=Array.isArray(mlVal)?mlVal:Object.values(mlVal);
+    bar.textContent=machineListKey+'('+mlArr.length+'件) 先頭:'+JSON.stringify(mlArr[0]||{}).slice(0,200);
+    await new Promise(r=>setTimeout(r,8000));
   }
 
-  // n-APIをdai_hall_idで試す
+  // ③ n-APIをdai_hall_idとmachine_ranking_filter_idで試す
+  var mRankFilterId=null;
+  var mri=pp.machine_ranking_items;
+  if(mri&&mri.slot){var sv=Object.values(mri.slot);if(sv[0])mRankFilterId=sv[0].machine_ranking_filter_id;}
   var machines=[];
-  for(var tryHid of [daiHallId,hid]){
-    var nr=await fetch('/n-api/rack_info/search_kind?hall_id='+tryHid+'&kind_code=21',{credentials:'omit'});
+  var apiTries=[
+    '/n-api/rack_info/search_kind?hall_id='+daiHallId+'&kind_code=21',
+    '/n-api/rack_info/search_kind?hall_id='+hid+'&kind_code=21',
+    ...(mRankFilterId?['/n-api/rack_info/search_kind?hall_id='+daiHallId+'&kind_code='+mRankFilterId]:[]),
+    '/n-api/rack_info/search_kind?hall_id='+daiHallId,
+  ];
+  for(var apiUrl of apiTries){
+    var nr=await fetch(apiUrl,{credentials:'omit'});
     var nt=await nr.text();
-    bar.textContent='n-API hall_id='+tryHid+' status:'+nr.status+' :'+nt.slice(0,150);
-    await new Promise(r=>setTimeout(r,6000));
+    bar.textContent='n-API '+apiUrl.split('?')[1]+' status:'+nr.status+' :'+nt.slice(0,120);
+    await new Promise(r=>setTimeout(r,5000));
     try{
       var parsed=JSON.parse(nt);
       if(Array.isArray(parsed)&&parsed.length){machines=parsed;break;}
@@ -878,13 +877,23 @@ try{
       }
     }catch(e){}
   }
-  // n-API失敗時はページ内machine_ranking_itemsをフォールバック
-  if(!machines.length&&machinesFromPage.length){
-    bar.textContent='⚠️ n-API失敗→ページ内データ使用: '+machinesFromPage.length+'機種';
-    await new Promise(r=>setTimeout(r,5000));
-    machines=machinesFromPage;
+  // n-API失敗時はkind_listフォールバック
+  if(!machines.length&&machineListKey){
+    var mlVal2=pp[machineListKey];
+    var mlArr2=Array.isArray(mlVal2)?mlVal2:Object.values(mlVal2);
+    var machinesFromPage=mlArr2.filter(v=>v&&(v.machine_name||v.name||v.ps_kind_name)).map(v=>({
+      machine_name:v.machine_name||v.name||v.ps_kind_name||'不明',
+      kind_code:v.kind_code||v.ps_kind_code||21,
+      cnt:v.cnt||v.count||0,
+      machine_name_enc:v.machine_name_enc||encodeURIComponent(v.machine_name||v.name||v.ps_kind_name||'')
+    }));
+    if(machinesFromPage.length){
+      bar.textContent='⚠️ n-API失敗→'+machineListKey+'使用: '+machinesFromPage.length+'機種';
+      await new Promise(r=>setTimeout(r,5000));
+      machines=machinesFromPage;
+    }
   }
-  if(!machines.length){bar.textContent='❌ 機種0件。n-API・ページ内データともに取得できず';setTimeout(()=>bar.remove(),6000);return;}
+  if(!machines.length){bar.textContent='❌ 機種0件。全API失敗。propsキー:'+Object.keys(pp).join(',');setTimeout(()=>bar.remove(),8000);return;}
   bar.textContent='✅ 機種'+machines.length+'件! 先頭:'+JSON.stringify(machines[0]).slice(0,100);
   await new Promise(r=>setTimeout(r,8000));
   var result={name:sname,machines:[]};
