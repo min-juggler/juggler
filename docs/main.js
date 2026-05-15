@@ -832,7 +832,8 @@ function buildBookmarklet() {
     var result={name:sname,machines:[]};
     for(var m of machines){
       bar.textContent='🎰 '+m.machine_name+' 取得中...';
-      var r=await fetch('/'+sid+'/standlist_slot?kind_code=21&machine_name='+m.machine_name_enc);
+      var kc=m.kind_code||m.kc||21;
+      var r=await fetch('/'+sid+'/standlist_slot?kind_code='+kc+'&machine_name='+m.machine_name_enc);
       var html=await r.text();
       var match=html.match(/data-page="([^"]+)"/);
       var stands=[];
@@ -844,7 +845,7 @@ function buildBookmarklet() {
           stands=list.map(s=>({rack_no:String(s.rack_no||s.dai_no||s.no||'?'),machine_name:m.machine_name,games:parseInt(s.total_games||s.games||s.gk||0),bb:parseInt(s.bb_count||s.bb||s.big||0),rb:parseInt(s.rb_count||s.rb||s.reg||0),diff:parseInt(s.diff||s.sa_mai||0)}));
         }catch(e){}
       }
-      result.machines.push({machine_name:m.machine_name,count:m.cnt,stands:stands});
+      result.machines.push({machine_name:m.machine_name,count:m.cnt,kind_code:kc,stands:stands});
       await new Promise(r=>setTimeout(r,600));
     }
     bar.textContent='📡 GitHubへ送信中...';
