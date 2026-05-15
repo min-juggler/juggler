@@ -13,7 +13,54 @@
   document.body.appendChild(bar);
 
   try {
-    // ジャグラー一覧ページをfetchしてHTMLをDOMパース
+    // n-APIをクッキーなしで呼ぶ（Pythonと同じ状態）
+    var hid = { yonezawa: 292, kaminoyama: 1303 }[sid];
+    var nResp = await fetch('/n-api/rack_info/search_kind?hall_id=' + hid + '&kind_code=21',
+      { credentials: 'omit' });
+    var nText = await nResp.text();
+    bar.textContent = 'n-API(no-cookie) status:' + nResp.status + ' ' + nText.slice(0, 200);
+    await new Promise(r => setTimeout(r, 12000));
+
+    var nMachines = [];
+    try { nMachines = JSON.parse(nText); if (!Array.isArray(nMachines)) nMachines = []; } catch(e) {}
+
+    if (nMachines.length) {
+      bar.textContent = '✅ 機種取得! ' + nMachines.length + '件 先頭:' + JSON.stringify(nMachines[0]).slice(0,100);
+      await new Promise(r => setTimeout(r, 8000));
+      // 機種URLを作成
+      var result = { name: sname, machines: [] };
+      for (var m of nMachines) {
+        var mname = m.machine_name || m.name || '不明';
+        var menc  = m.machine_name_enc || encodeURIComponent(mname);
+        var mkc   = m.kind_code || 21;
+        bar.textContent = '🎰 ' + mname + ' 取得中...';
+        var mresp = await fetch('/' + sid + '/standlist_slot?kind_code=' + mkc + '&machine_name=' + menc);
+        var mhtml = await mresp.text();
+        var mm = mhtml.match(/data-page="([^"]+)"/);
+        var stands = [];
+        if (mm) {
+          try {
+            var mp = JSON.parse(mm[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n))).props || {};
+            var rl = mp.stand_list || mp.stands || mp.rack_list || mp.dai_data_list || [];
+            if (Array.isArray(rl)) stands = rl.map(s => ({
+              rack_no: String(s.rack_no||s.dai_no||s.no||'?'), machine_name: mname,
+              games: parseInt(s.total_games||s.games||s.gk||0), bb: parseInt(s.bb_count||s.bb||s.big||0),
+              rb: parseInt(s.rb_count||s.rb||s.reg||0), diff: parseInt(s.diff||s.sa_mai||0)
+            }));
+          } catch(e) {}
+        }
+        result.machines.push({ machine_name: mname, count: m.cnt || stands.length, stands });
+        await new Promise(r => setTimeout(r, 500));
+      }
+      // GitHub送信へ
+      await pushToGitHub(result, sid, sname, token, repo, bar);
+      setTimeout(() => bar.remove(), 8000);
+      return;
+    }
+
+    // n-APIが失敗した場合、standlist_slotページをfetchしてHTMLをDOMパース
+    bar.textContent = 'n-API失敗、HTMLパースに切り替え...';
+    await new Promise(r => setTimeout(r, 2000));
     var listResp = await fetch('/' + sid + '/standlist_slot?kind_code=21');
     var listHtml = await listResp.text();
     var parser   = new DOMParser();
@@ -109,34 +156,35 @@
     }
 
     // GitHub にアップロード
-    var total = result.machines.reduce((a, m) => a + m.stands.length, 0);
-    bar.textContent = '📡 GitHubへ送信中... (' + total + '台)';
-    var sha = null, cur = {};
-    try {
-      var er = await fetch('https://api.github.com/repos/' + repo + '/contents/data/stores.json',
-        { headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' } });
-      if (er.ok) { var ej = await er.json(); sha = ej.sha; cur = JSON.parse(atob(ej.content.replace(/\n/g, ''))); }
-    } catch(e) {}
-
-    if (!cur.stores) cur = { fetched_at: null, stores: {} };
-    cur.fetched_at = new Date().toISOString();
-    cur.stores[sid] = result;
-
-    var js   = JSON.stringify(cur, null, 2);
-    var body = { message: 'データ更新 ' + new Date().toLocaleString('ja'), content: btoa(unescape(encodeURIComponent(js))), branch: 'main' };
-    if (sha) body.sha = sha;
-
-    var pr = await fetch('https://api.github.com/repos/' + repo + '/contents/data/stores.json',
-      { method: 'PUT', headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-
-    if (pr.ok) { bar.style.background = '#2d6a4f'; bar.textContent = '✅ ' + sname + ' ' + total + '台 送信完了！'; }
-    else        { bar.style.background = '#888';    bar.textContent = '⚠️ GitHub送信失敗: ' + (await pr.text()).slice(0, 100); }
+    await pushToGitHub(result, sid, sname, token, repo, bar);
 
   } catch(e) {
     bar.style.background = '#888';
     bar.textContent = '❌ ' + e.message;
   }
   setTimeout(() => bar.remove(), 8000);
+
+  // ===== GitHubへ送信 =====
+  async function pushToGitHub(result, sid, sname, token, repo, bar) {
+    var total = result.machines.reduce((a, m) => a + m.stands.length, 0);
+    bar.textContent = '📡 GitHubへ送信中... (' + total + '台)';
+    var sha = null, cur = {};
+    try {
+      var er = await fetch('https://api.github.com/repos/' + repo + '/contents/data/stores.json',
+        { headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' } });
+      if (er.ok) { var ej = await er.json(); sha = ej.sha; cur = JSON.parse(atob(ej.content.replace(/\n/g,''))); }
+    } catch(e) {}
+    if (!cur.stores) cur = { fetched_at: null, stores: {} };
+    cur.fetched_at = new Date().toISOString();
+    cur.stores[sid] = result;
+    var js = JSON.stringify(cur, null, 2);
+    var body = { message: 'データ更新 ' + new Date().toLocaleString('ja'), content: btoa(unescape(encodeURIComponent(js))), branch: 'main' };
+    if (sha) body.sha = sha;
+    var pr = await fetch('https://api.github.com/repos/' + repo + '/contents/data/stores.json',
+      { method: 'PUT', headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (pr.ok) { bar.style.background = '#2d6a4f'; bar.textContent = '✅ ' + sname + ' ' + total + '台 送信完了！'; }
+    else        { bar.style.background = '#888';    bar.textContent = '⚠️ GitHub送信失敗: ' + (await pr.text()).slice(0, 100); }
+  }
 
   // ===== DOMからスタンドデータをパース =====
   function parseStandsFromDom(doc, machineName) {
