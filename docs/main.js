@@ -843,12 +843,20 @@ try{
   await new Promise(r=>setTimeout(r,5000));
 
   // machine_ranking_itemsからページ内機種リストを抽出（フォールバック用）
+  // 構造: { slot: { kind_code: {machine_name,...}, ... }, pachi: {...} }
   var machinesFromPage=[];
   if(mRankItems&&typeof mRankItems==='object'){
-    var mvals=Array.isArray(mRankItems)?mRankItems:Object.values(mRankItems);
-    bar.textContent='machine_ranking_items: '+mvals.length+'件 先頭:'+JSON.stringify(mvals[0]||{}).slice(0,150);
-    await new Promise(r=>setTimeout(r,5000));
-    machinesFromPage=mvals.filter(v=>v&&(v.machine_name||v.name)).map(v=>({
+    // slotカテゴリを優先、なければ全カテゴリ結合
+    var categories=mRankItems.slot?[mRankItems.slot]:Object.values(mRankItems);
+    var rawItems=[];
+    for(var cat of categories){
+      if(!cat||typeof cat!=='object')continue;
+      var items=Array.isArray(cat)?cat:Object.values(cat);
+      rawItems=rawItems.concat(items);
+    }
+    bar.textContent='machine_ranking_items.slot展開: '+rawItems.length+'件 先頭:'+JSON.stringify(rawItems[0]||{}).slice(0,150);
+    await new Promise(r=>setTimeout(r,6000));
+    machinesFromPage=rawItems.filter(v=>v&&(v.machine_name||v.name)).map(v=>({
       machine_name:v.machine_name||v.name||'不明',
       kind_code:v.kind_code||21,
       cnt:v.cnt||v.count||0,
