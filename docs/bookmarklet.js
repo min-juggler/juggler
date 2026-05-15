@@ -35,35 +35,36 @@
       }
     }
 
-    bar.textContent = '機種リンク数: ' + machineUrls.length + ' | 先頭:' + (machineUrls[0] || 'なし').slice(-60);
-    await new Promise(r => setTimeout(r, 10000));
+    // data-pageからpropsを取得してmachine_ranking_itemsとdai_hall_infoを確認
+    var dpMatch = listHtml.match(/data-page="([^"]+)"/);
+    var props = {};
+    if (dpMatch) {
+      try {
+        props = JSON.parse(dpMatch[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n))).props || {};
+      } catch(e) {}
+    }
+    var items   = props.machine_ranking_items || [];
+    var daiInfo = props.dai_hall_info;
+    bar.style.fontSize = '11px';
+    bar.textContent = 'machine_ranking_items件数:' + (Array.isArray(items)?items.length:typeof items)
+      + ' | dai_hall_info型:' + typeof daiInfo
+      + ' | 先頭item:' + JSON.stringify(items[0]||{}).slice(0,150);
+    await new Promise(r => setTimeout(r, 15000));
 
-    if (!machineUrls.length) {
-      // リンクがない場合、data-pageのpropsから機種一覧を探す
-      var dpMatch = listHtml.match(/data-page="([^"]+)"/);
-      if (dpMatch) {
-        try {
-          var dp = JSON.parse(dpMatch[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n)));
-          var props = dp.props || {};
-          // machine_ranking_itemsから機種ごとのURLを構築
-          var items = props.machine_ranking_items || [];
-          bar.textContent = 'machine_ranking_items: ' + items.length + ' 先頭:' + JSON.stringify(items[0]||{}).slice(0,150);
-          await new Promise(r => setTimeout(r, 12000));
-          if (items.length) {
-            for (var item of items) {
-              var mn  = item.machine_name || item.kind_name || '';
-              var mne = item.machine_name_enc || item.kind_name_enc || encodeURIComponent(mn);
-              var mkc = item.kind_code || 21;
-              if (mn && !seen.has(mn)) { seen.add(mn); machineUrls.push('/' + sid + '/standlist_slot?kind_code=' + mkc + '&machine_name=' + mne); }
-            }
-          }
-        } catch(e) { bar.textContent = 'parse err: ' + e.message; await new Promise(r=>setTimeout(r,8000)); }
-      }
+    // machine_ranking_itemsから機種URLを構築
+    for (var item of (Array.isArray(items) ? items : [])) {
+      var mn  = item.machine_name || item.kind_name || '';
+      var mne = item.machine_name_enc || item.kind_name_enc || encodeURIComponent(mn);
+      var mkc = item.kind_code || 21;
+      if (mn && !seen.has(mn)) { seen.add(mn); machineUrls.push('/' + sid + '/standlist_slot?kind_code=' + mkc + '&machine_name=' + mne); }
     }
 
+    bar.textContent = '機種URL数:' + machineUrls.length + ' | dai_hall_info:' + JSON.stringify(daiInfo).slice(0,150);
+    await new Promise(r => setTimeout(r, 12000));
+
     if (!machineUrls.length) {
-      bar.textContent = '❌ 機種URLなし';
-      await new Promise(r => setTimeout(r, 6000)); bar.remove(); return;
+      bar.textContent = '❌ 機種URLなし。items=' + JSON.stringify(items).slice(0,200);
+      await new Promise(r => setTimeout(r, 12000)); bar.remove(); return;
     }
 
     var result = { name: sname, machines: [] };
