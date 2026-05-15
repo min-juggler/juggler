@@ -819,7 +819,7 @@ function buildBookmarklet() {
 
   // ローダー方式：最新コードをGitHub Pagesから取得して実行
   // トークンだけ埋め込み、ロジックは毎回最新を取得するので登録し直し不要
-  const loader = `(function(){var t=${JSON.stringify(token)};fetch('https://min-juggler.github.io/juggler/bookmarklet.js?_='+Date.now()).then(function(r){return r.text()}).then(function(c){new Function('token',c)(t)}).catch(function(e){alert('読み込み失敗: '+e)})})()`;
+  const loader = `(function(){var t=${JSON.stringify(token)};fetch('https://raw.githubusercontent.com/min-juggler/juggler/main/docs/bookmarklet.js?_='+Date.now()).then(function(r){return r.text()}).then(function(c){new Function('token',c)(t)}).catch(function(e){alert('読み込み失敗: '+e)})})()`;
   const code = loader;
 
   const el = document.getElementById('bookmarklet-link');
