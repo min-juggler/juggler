@@ -830,20 +830,55 @@ async function push(result){
 }
 try{
   // n-APIをno-cookieで試行（Pythonと同じ状態）
-  var nr=await fetch('/n-api/rack_info/search_kind?hall_id='+hid+'&kind_code=21',{credentials:'omit'});
-  var nt=await nr.text();
-  bar.textContent='n-API status:'+nr.status+' body:'+nt.slice(0,200);
-  await new Promise(r=>setTimeout(r,12000));
-  var machines=[];try{machines=JSON.parse(nt);if(!Array.isArray(machines))machines=[];}catch(e){}
-  if(!machines.length){
-    // kind_code無しでも試す
-    var nr2=await fetch('/n-api/rack_info/search_kind?hall_id='+hid,{credentials:'omit'});
-    var nt2=await nr2.text();
-    bar.textContent='n-API(no kc) status:'+nr2.status+' body:'+nt2.slice(0,200);
-    await new Promise(r=>setTimeout(r,10000));
-    try{machines=JSON.parse(nt2);if(!Array.isArray(machines))machines=[];}catch(e){}
+  // まずstandlist_slotからdai_hall_infoを取得してdai_hall_idを確認
+  var listR=await fetch('/'+sid+'/standlist_slot?kind_code=21');
+  var listH=await listR.text();
+  var dpM=listH.match(/data-page="([^"]+)"/);
+  var daiHallId=hid;
+  var mRankItems=null;
+  if(dpM){try{var dp=JSON.parse(dpM[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\\d+);/g,(_,n)=>String.fromCharCode(n)));var pp=dp.props||{};
+  if(pp.dai_hall_info&&pp.dai_hall_info.dai_hall_id)daiHallId=pp.dai_hall_info.dai_hall_id;
+  mRankItems=pp.machine_ranking_items;}catch(e){}}
+  bar.textContent='dai_hall_id='+daiHallId+' machine_ranking_items type:'+typeof mRankItems+' keys:'+(mRankItems?Object.keys(mRankItems).slice(0,5).join(','):'none');
+  await new Promise(r=>setTimeout(r,5000));
+
+  // machine_ranking_itemsからページ内機種リストを抽出（フォールバック用）
+  var machinesFromPage=[];
+  if(mRankItems&&typeof mRankItems==='object'){
+    var mvals=Array.isArray(mRankItems)?mRankItems:Object.values(mRankItems);
+    bar.textContent='machine_ranking_items: '+mvals.length+'件 先頭:'+JSON.stringify(mvals[0]||{}).slice(0,150);
+    await new Promise(r=>setTimeout(r,5000));
+    machinesFromPage=mvals.filter(v=>v&&(v.machine_name||v.name)).map(v=>({
+      machine_name:v.machine_name||v.name||'不明',
+      kind_code:v.kind_code||21,
+      cnt:v.cnt||v.count||0,
+      machine_name_enc:v.machine_name_enc||encodeURIComponent(v.machine_name||v.name||'')
+    }));
   }
-  if(!machines.length){bar.textContent='❌ n-API失敗。機種0件';setTimeout(()=>bar.remove(),6000);return;}
+
+  // n-APIをdai_hall_idで試す
+  var machines=[];
+  for(var tryHid of [daiHallId,hid]){
+    var nr=await fetch('/n-api/rack_info/search_kind?hall_id='+tryHid+'&kind_code=21',{credentials:'omit'});
+    var nt=await nr.text();
+    bar.textContent='n-API hall_id='+tryHid+' status:'+nr.status+' :'+nt.slice(0,150);
+    await new Promise(r=>setTimeout(r,6000));
+    try{
+      var parsed=JSON.parse(nt);
+      if(Array.isArray(parsed)&&parsed.length){machines=parsed;break;}
+      else if(parsed&&typeof parsed==='object'&&!Array.isArray(parsed)){
+        var arr=parsed.items||parsed.rack_list||parsed.machines||parsed.machine_list||parsed.data||Object.values(parsed);
+        if(Array.isArray(arr)&&arr.length){machines=arr;break;}
+      }
+    }catch(e){}
+  }
+  // n-API失敗時はページ内machine_ranking_itemsをフォールバック
+  if(!machines.length&&machinesFromPage.length){
+    bar.textContent='⚠️ n-API失敗→ページ内データ使用: '+machinesFromPage.length+'機種';
+    await new Promise(r=>setTimeout(r,5000));
+    machines=machinesFromPage;
+  }
+  if(!machines.length){bar.textContent='❌ 機種0件。n-API・ページ内データともに取得できず';setTimeout(()=>bar.remove(),6000);return;}
   bar.textContent='✅ 機種'+machines.length+'件! 先頭:'+JSON.stringify(machines[0]).slice(0,100);
   await new Promise(r=>setTimeout(r,8000));
   var result={name:sname,machines:[]};
