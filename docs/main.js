@@ -843,35 +843,55 @@ try{
   bar.textContent='props keys: '+Object.keys(pp).join(', ');
   await new Promise(r=>setTimeout(r,8000));
 
-  // ② pp.data の全フィールドを確認（暗号化データの構造把握）
-  try{
-    var dkeys=pp.data?Object.keys(pp.data):[];
-    var dvals=dkeys.map(k=>k+'='+JSON.stringify(pp.data[k]).slice(0,80)).join('\n');
-    alert('pp.data keys('+dkeys.length+'):\n'+dvals);
-  }catch(e){alert('data debug err:'+e.message);}
-
-  // ③ 暗号化データを WebCrypto で復号試行
+  // ② 暗号文をlocalStorageから取得して復号試行
   var decryptedData=null;
   if(pp.data&&pp.data.key&&pp.data.iv){
-    try{
-      var keyHex=pp.data.key;
-      var ivHex=pp.data.iv;
-      // 暗号文フィールドを探す（key,iv,is_cache_updated以外）
-      var cipherKey=Object.keys(pp.data).find(k=>!['key','iv','is_cache_updated'].includes(k));
-      bar.textContent='暗号化キー確認: keyLen='+keyHex.length+' ivLen='+ivHex.length+' cipherKey='+cipherKey;
-      await new Promise(r=>setTimeout(r,6000));
-      if(cipherKey){
-        var cipherHex=pp.data[cipherKey];
+    var keyHex=pp.data.key;
+    var ivHex=pp.data.iv;
+    // localStorageからkeyで暗号文を検索
+    var cipherText=null;
+    var lsVal=localStorage.getItem(keyHex);
+    if(!lsVal){
+      // localStorage全件をスキャン
+      for(var i=0;i<localStorage.length;i++){
+        var lk2=localStorage.key(i);
+        var lv=localStorage.getItem(lk2);
+        if(lv&&lv.length>100&&!lv.startsWith('{')){cipherText=lv;bar.textContent='localStorage発見 key:'+lk2.slice(0,30)+' len:'+lv.length;break;}
+      }
+    } else {
+      cipherText=lsVal;
+    }
+    bar.textContent='localStorage: keyHex存在='+(lsVal?'yes':'no')+' 全件scan='+(cipherText?'hit':'miss')+' len='+(cipherText?cipherText.length:0);
+    await new Promise(r=>setTimeout(r,6000));
+    if(cipherText){
+      try{
         function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
         var ck=await crypto.subtle.importKey('raw',h2b(keyHex),{name:'AES-CBC'},false,['decrypt']);
-        var plain=await crypto.subtle.decrypt({name:'AES-CBC',iv:h2b(ivHex)},ck,h2b(cipherHex));
+        var plain=await crypto.subtle.decrypt({name:'AES-CBC',iv:h2b(ivHex)},ck,h2b(cipherText));
         decryptedData=JSON.parse(new TextDecoder().decode(plain));
-        bar.textContent='✅ 復号成功! type:'+typeof decryptedData+' isArray:'+Array.isArray(decryptedData)+' len:'+(Array.isArray(decryptedData)?decryptedData.length:Object.keys(decryptedData).length);
-        await new Promise(r=>setTimeout(r,6000));
+        bar.textContent='✅ 復号成功! isArray:'+Array.isArray(decryptedData)+' len:'+(Array.isArray(decryptedData)?decryptedData.length:Object.keys(decryptedData).length)+' 先頭:'+JSON.stringify(Array.isArray(decryptedData)?decryptedData[0]:Object.values(decryptedData)[0]).slice(0,100);
+        await new Promise(r=>setTimeout(r,8000));
+      }catch(e){
+        bar.textContent='復号失敗: '+e.message;
+        await new Promise(r=>setTimeout(r,5000));
       }
-    }catch(e){
-      bar.textContent='復号失敗: '+e.message;
-      await new Promise(r=>setTimeout(r,6000));
+    } else {
+      // localStorageになければAPIで試す
+      var cacheEndpoints=['/n-api/cache/'+keyHex,'/api/cache/'+keyHex,'/'+sid+'/cache?key='+keyHex];
+      for(var ep of cacheEndpoints){
+        try{
+          var cr=await fetch(ep,{credentials:'include'});
+          if(cr.ok){var ct2=await cr.text();if(ct2.length>50){cipherText=ct2;bar.textContent='cache API hit: '+ep+' len:'+ct2.length;await new Promise(r=>setTimeout(r,4000));break;}}
+        }catch(e){}
+      }
+      if(cipherText){
+        try{
+          function h2b2(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
+          var ck2=await crypto.subtle.importKey('raw',h2b2(keyHex),{name:'AES-CBC'},false,['decrypt']);
+          var plain2=await crypto.subtle.decrypt({name:'AES-CBC',iv:h2b2(ivHex)},ck2,h2b2(cipherText));
+          decryptedData=JSON.parse(new TextDecoder().decode(plain2));
+        }catch(e){bar.textContent='API復号失敗:'+e.message;await new Promise(r=>setTimeout(r,4000));}
+      }
     }
   }
 
