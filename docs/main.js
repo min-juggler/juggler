@@ -828,7 +828,8 @@ function buildBookmarklet() {
   try{
     var mr=await fetch('/n-api/rack_info/search_kind?hall_id='+hid+'&kind_code=21',{headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}});
     var mtext=await mr.text();
-    alert('API応答(status='+mr.status+'):\\n'+mtext.slice(0,300));
+    bar.textContent='status:'+mr.status+' '+mtext.slice(0,120);
+    await new Promise(r=>setTimeout(r,8000));
     var machines=[];try{machines=JSON.parse(mtext);}catch(e){machines=[];}
     if(!Array.isArray(machines))machines=[];
     if(!machines.length){bar.textContent='📭 データなし（開店後に再試行）';setTimeout(()=>bar.remove(),4000);return;}
