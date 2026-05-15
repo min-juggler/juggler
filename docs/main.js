@@ -803,6 +803,71 @@ function saveToken() {
   buildBookmarklet();
 }
 
+// ===== ブックマークレット本体（直接埋め込み） =====
+function buildInlineBookmarklet(token, repo) {
+  return `(async function(){
+var sid=location.href.includes('yonezawa')?'yonezawa':location.href.includes('kaminoyama')?'kaminoyama':null;
+if(!sid){alert('店舗サイトで実行してください');return;}
+var sname={yonezawa:'アイランド米沢店',kaminoyama:'1円劇場上山店'}[sid];
+var hid={yonezawa:292,kaminoyama:1303}[sid];
+var bar=document.createElement('div');
+bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
+bar.textContent='🎰 n-API取得中(no-cookie)...';document.body.appendChild(bar);
+async function push(result){
+  var total=result.machines.reduce((a,m)=>a+m.stands.length,0);
+  bar.textContent='📡 GitHubへ送信中...('+total+'台)';
+  var sha=null,cur={};
+  try{var er=await fetch('https://api.github.com/repos/${repo}/contents/data/stores.json',{headers:{'Authorization':'token ${token}','Accept':'application/vnd.github.v3+json'}});
+  if(er.ok){var ej=await er.json();sha=ej.sha;cur=JSON.parse(atob(ej.content.replace(/\\n/g,'')));}}catch(e){}
+  if(!cur.stores)cur={fetched_at:null,stores:{}};
+  cur.fetched_at=new Date().toISOString();cur.stores[sid]=result;
+  var js=JSON.stringify(cur,null,2);
+  var body={message:'データ更新 '+new Date().toLocaleString('ja'),content:btoa(unescape(encodeURIComponent(js))),branch:'main'};
+  if(sha)body.sha=sha;
+  var pr=await fetch('https://api.github.com/repos/${repo}/contents/data/stores.json',{method:'PUT',headers:{'Authorization':'token ${token}','Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(pr.ok){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+total+'台 送信完了！';}
+  else{bar.style.background='#888';bar.textContent='⚠️ 送信失敗: '+(await pr.text()).slice(0,80);}
+}
+try{
+  // n-APIをno-cookieで試行（Pythonと同じ状態）
+  var nr=await fetch('/n-api/rack_info/search_kind?hall_id='+hid+'&kind_code=21',{credentials:'omit'});
+  var nt=await nr.text();
+  bar.textContent='n-API status:'+nr.status+' body:'+nt.slice(0,200);
+  await new Promise(r=>setTimeout(r,12000));
+  var machines=[];try{machines=JSON.parse(nt);if(!Array.isArray(machines))machines=[];}catch(e){}
+  if(!machines.length){
+    // kind_code無しでも試す
+    var nr2=await fetch('/n-api/rack_info/search_kind?hall_id='+hid,{credentials:'omit'});
+    var nt2=await nr2.text();
+    bar.textContent='n-API(no kc) status:'+nr2.status+' body:'+nt2.slice(0,200);
+    await new Promise(r=>setTimeout(r,10000));
+    try{machines=JSON.parse(nt2);if(!Array.isArray(machines))machines=[];}catch(e){}
+  }
+  if(!machines.length){bar.textContent='❌ n-API失敗。機種0件';setTimeout(()=>bar.remove(),6000);return;}
+  bar.textContent='✅ 機種'+machines.length+'件! 先頭:'+JSON.stringify(machines[0]).slice(0,100);
+  await new Promise(r=>setTimeout(r,8000));
+  var result={name:sname,machines:[]};
+  for(var m of machines){
+    var mname=m.machine_name||m.name||'不明';
+    var menc=m.machine_name_enc||encodeURIComponent(mname);
+    var mkc=m.kind_code||21;
+    bar.textContent='🎰 '+mname+' 取得中...';
+    var mr=await fetch('/'+sid+'/standlist_slot?kind_code='+mkc+'&machine_name='+menc);
+    var mh=await mr.text();
+    var mm=mh.match(/data-page="([^"]+)"/);
+    var stands=[];
+    if(mm){try{var mp=JSON.parse(mm[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\\d+);/g,(_,n)=>String.fromCharCode(n))).props||{};
+    var rl=mp.stand_list||mp.stands||mp.rack_list||mp.dai_data_list||[];
+    if(Array.isArray(rl))stands=rl.map(s=>({rack_no:String(s.rack_no||s.dai_no||s.no||'?'),machine_name:mname,games:parseInt(s.total_games||s.games||s.gk||0),bb:parseInt(s.bb_count||s.bb||s.big||0),rb:parseInt(s.rb_count||s.rb||s.reg||0),diff:parseInt(s.diff||s.sa_mai||0)}));}catch(e){}}
+    result.machines.push({machine_name:mname,count:m.cnt||stands.length,stands});
+    await new Promise(r=>setTimeout(r,500));
+  }
+  await push(result);
+}catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
+setTimeout(()=>bar.remove(),8000);
+})();`;
+}
+
 // ===== ブックマークレット =====
 function buildBookmarklet() {
   const token = Storage.get('github_token', '');
@@ -817,10 +882,7 @@ function buildBookmarklet() {
     return;
   }
 
-  // ローダー方式：最新コードをGitHub Pagesから取得して実行
-  // トークンだけ埋め込み、ロジックは毎回最新を取得するので登録し直し不要
-  // GitHub APIでファイル取得（CDNキャッシュなし）
-  const loader = `(function(){var t=${JSON.stringify(token)};fetch('https://api.github.com/repos/min-juggler/juggler/contents/docs/bookmarklet.js',{headers:{'Authorization':'token '+t,'Accept':'application/vnd.github.v3+json','Cache-Control':'no-cache'}}).then(function(r){return r.json()}).then(function(j){var c=atob(j.content.replace(/\\n/g,''));new Function('token',c)(t)}).catch(function(e){alert('読み込み失敗: '+e)})})()`;
+  const loader = buildInlineBookmarklet(token, repo);
   const code = loader;
 
   const el = document.getElementById('bookmarklet-link');
