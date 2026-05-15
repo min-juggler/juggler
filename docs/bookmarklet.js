@@ -33,25 +33,55 @@
     bar.textContent = '一覧props: ' + Object.keys(listProps).join(', ');
     await new Promise(r => setTimeout(r, 8000));
 
-    // list_kind と data の構造確認
-    var listKind = listProps.list_kind;
-    var rawData  = listProps.data;
-    var lkLen = Array.isArray(listKind) ? listKind.length : typeof listKind;
-    var dataInfo = Array.isArray(rawData) ? 'array(' + rawData.length + ')先頭:' + JSON.stringify(rawData[0] || {}).slice(0, 100)
-                 : typeof rawData === 'object' && rawData ? 'obj keys:' + Object.keys(rawData).join(',')
-                 : String(rawData).slice(0, 80);
+    // データが暗号化されているため、VueインスタンスからInertiaの復号済みpropsを取得
+    bar.textContent = '🔓 Vueインスタンスから復号データ取得中...';
+    await new Promise(r => setTimeout(r, 1000));
+
+    // 現在のページのVue/Inertiaインスタンスからpropsを取得
+    var appEl = document.getElementById('app') || document.querySelector('[id]');
+    var vueProps = null;
+    try {
+      // Vue3 Inertia
+      var vApp = appEl && appEl.__vue_app__;
+      if (vApp) {
+        var gp = vApp.config && vApp.config.globalProperties;
+        vueProps = gp && gp.$page && gp.$page.props;
+      }
+    } catch(e) {}
+    if (!vueProps) {
+      try { vueProps = window.__inertia && window.__inertia.page && window.__inertia.page.props; } catch(e) {}
+    }
+    if (!vueProps) {
+      try {
+        // Vue2 fallback
+        var v2 = appEl && appEl.__vue__;
+        vueProps = v2 && v2.$page && v2.$page.props;
+      } catch(e) {}
+    }
+
     bar.style.fontSize = '11px';
-    bar.textContent = 'list_kind:' + lkLen + ' | data:' + dataInfo;
+    if (!vueProps) {
+      bar.textContent = '❌ Vueインスタンス取得失敗 / appEl:' + (appEl ? appEl.id : 'null');
+      await new Promise(r => setTimeout(r, 10000)); bar.remove(); return;
+    }
+
+    var decData = vueProps.data;
+    var decListKind = vueProps.list_kind;
+    bar.textContent = '✅ Vue props取得! data型:' + typeof decData
+      + ' isArr:' + Array.isArray(decData)
+      + ' list_kind型:' + typeof decListKind
+      + ' | data先頭:' + JSON.stringify(decData).slice(0, 120);
     await new Promise(r => setTimeout(r, 15000));
 
-    // list_kind から機種リストを取得して個別ページをfetch
-    var machines = Array.isArray(listKind) ? listKind : [];
-    if (!machines.length) {
-      bar.textContent = '❌ list_kindなし / data=' + JSON.stringify(rawData).slice(0,200);
-      await new Promise(r => setTimeout(r, 12000)); bar.remove(); return;
-    }
-    bar.textContent = '機種数: ' + machines.length + ' / 先頭:' + JSON.stringify(machines[0]).slice(0, 150);
+    // 復号済みdataが配列ならそのまま使用
+    var machines = Array.isArray(decListKind) ? decListKind
+                 : (typeof decListKind === 'object' && decListKind) ? Object.values(decListKind)
+                 : [];
+    bar.textContent = '機種数:' + machines.length + ' data:' + JSON.stringify(decData).slice(0, 150);
     await new Promise(r => setTimeout(r, 12000));
+    if (!machines.length && !Array.isArray(decData)) {
+      bar.textContent = '❌ 機種リスト取得失敗'; await new Promise(r=>setTimeout(r,5000)); bar.remove(); return;
+    }
 
     // 各機種のページをfetchしてstand_listを取得
     var result = { name: sname, machines: [] };
