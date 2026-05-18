@@ -6,7 +6,7 @@ var sname={yonezawa:'アイランド米沢店',kaminoyama:'1円劇場上山店'}
 var hid={yonezawa:292,kaminoyama:1303}[sid];
 var bar=document.createElement('div');
 bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
-bar.textContent='🎰 v8 データ取得中...';document.body.appendChild(bar);
+bar.textContent='🎰 v9 起動中...';document.body.appendChild(bar);
 async function push(result){
   var total=result.machines.reduce((a,m)=>a+m.stands.length,0);
   bar.textContent='📡 GitHubへ送信中...('+total+'台)';
@@ -30,136 +30,121 @@ try{
   function decodeDP(raw){return raw.replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n));}
 
   var machineNames=[];
-  var encKey=null,encIv=null,rawDP='';
+  var encKey=null,encIv=null;
   var addMn=function(mn){if(mn&&String(mn).trim()&&!machineNames.includes(String(mn)))machineNames.push(String(mn));};
 
-  // --- 現在のページのdata-page属性を直接読む ---
-  function parseCurrentPageProps(){
-    var dpEl=document.querySelector('[data-page]');
-    if(!dpEl)return null;
-    try{return JSON.parse(decodeDP(dpEl.getAttribute('data-page'))).props||null;}catch(e){return null;}
+  // ===== STEP1: 現在ページのprops構造をデバッグ表示 =====
+  bar.textContent='現在ページ解析中...';
+  var dpEl=document.querySelector('[data-page]');
+  var currentProps=null;
+  if(dpEl){
+    try{currentProps=JSON.parse(decodeDP(dpEl.getAttribute('data-page'))).props||null;}catch(e){}
   }
 
-  // --- propsからあらゆる機種名フィールドを探す ---
-  function extractMachineNamesFromProps(props){
-    if(!props)return;
-    var data=props.data||{};
-    // dataの全フィールドをスキャン：配列でオブジェクトを含むものは機種リスト候補
-    for(var k of Object.keys(data)){
-      var v=data[k];
-      if(Array.isArray(v)&&v.length>0&&typeof v[0]==='object'){
-        v.forEach(function(item){
-          var mn=item.machine_name||item.ki_name||item.ki_mei||item.name||item.kaki_name||item.kind_name;
-          if(mn)addMn(mn);
-        });
+  if(currentProps){
+    // propsのトップレベルキー表示
+    var pkeys=Object.keys(currentProps);
+    bar.textContent='props: '+pkeys.join(', ');
+    await new Promise(r=>setTimeout(r,4000));
+
+    var data=currentProps.data||{};
+    var dkeys=Object.keys(data);
+    bar.textContent='data keys: '+dkeys.join(', ');
+    await new Promise(r=>setTimeout(r,4000));
+
+    // hall_id取得
+    var propsHid=currentProps.hall_id||currentProps.hallId||(data.hall_id);
+    if(propsHid)hid=parseInt(propsHid);
+
+    // dataの全配列フィールドをスキャン → 機種名候補を表示
+    var foundArrays=[];
+    for(var dk of dkeys){
+      var dv=data[dk];
+      if(Array.isArray(dv)&&dv.length>0){
+        foundArrays.push(dk+'['+dv.length+']');
+        if(typeof dv[0]==='object'&&dv[0]!==null){
+          var itemKeys=Object.keys(dv[0]).join(',');
+          bar.textContent='data.'+dk+'[0] keys: '+itemKeys;
+          await new Promise(r=>setTimeout(r,3000));
+          dv.forEach(function(item){
+            var mn=item.machine_name||item.ki_name||item.ki_mei||item.name||item.kind_name||item.kaki_name||item.ki_code;
+            if(mn&&/[ｦ-ﾟA-Za-z0-9]/.test(String(mn)))addMn(String(mn));
+          });
+        }
       }
     }
-    // props直下も確認
-    for(var k2 of ['kind_list','machine_list','machines','rank','ranking']){
-      var v2=props[k2];
-      if(Array.isArray(v2))v2.forEach(function(item){
-        var mn=item.machine_name||item.ki_name||item.ki_mei||item.name;
-        if(mn)addMn(mn);
-      });
+    if(foundArrays.length===0){
+      bar.textContent='data内に配列なし。他のpropsキー確認中...';
+      await new Promise(r=>setTimeout(r,3000));
+      // propsの直下配列も確認
+      for(var pk of pkeys){
+        var pv=currentProps[pk];
+        if(Array.isArray(pv)&&pv.length>0&&typeof pv[0]==='object'){
+          foundArrays.push('props.'+pk+'['+pv.length+']');
+          var ik2=Object.keys(pv[0]).join(',');
+          bar.textContent='props.'+pk+'[0] keys: '+ik2;
+          await new Promise(r=>setTimeout(r,3000));
+          pv.forEach(function(item){
+            var mn=item.machine_name||item.ki_name||item.ki_mei||item.name||item.kind_name;
+            if(mn)addMn(String(mn));
+          });
+        }
+      }
     }
+    bar.textContent='配列: '+(foundArrays.join(', ')||'なし')+' 機種候補:'+machineNames.length;
+    await new Promise(r=>setTimeout(r,3000));
   }
 
-  // STEP1: 現在のページのpropsを読む（最速、既にDOMにある）
-  bar.textContent='現在ページ解析中...';
-  var currentProps=parseCurrentPageProps();
-  if(currentProps){
-    var ch=document.querySelector('[data-page]').getAttribute('data-page');
-    rawDP=decodeDP(ch);
-    var propsHid=currentProps.hall_id||currentProps.hallId||(currentProps.data&&currentProps.data.hall_id);
-    if(propsHid)hid=parseInt(propsHid);
-    if(currentProps.data&&currentProps.data.key){encKey=currentProps.data.key;encIv=currentProps.data.iv;}
-    extractMachineNamesFromProps(currentProps);
-    // rawDP全体からmachine_nameを正規表現で抽出
-    [...rawDP.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
-    [...rawDP.matchAll(/"ki_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
-    [...rawDP.matchAll(/"ki_mei"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
-    // デバッグ: dataのキー一覧を表示
-    if(currentProps.data){
-      var dkeys=Object.keys(currentProps.data);
-      bar.textContent='data keys: '+dkeys.join(', ');
-      await new Promise(r=>setTimeout(r,4000));
-    }
+  // rawDP全体からmachine_name/ki_nameをregex抽出
+  if(dpEl){
+    var rawDPstr=decodeDP(dpEl.getAttribute('data-page'));
+    [...rawDPstr.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
+    [...rawDPstr.matchAll(/"ki_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
+    [...rawDPstr.matchAll(/"ki_mei"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
   }
 
-  // STEP2: 種別一覧ページをfetchしても試みる
-  if(machineNames.length===0||!encKey){
-    bar.textContent='種別ページfetch中...';
-    var kindHtml='';
+  // ===== STEP2: 機種別ページからAES鍵取得（machine_list用の鍵は必ずここから） =====
+  // 種別一覧ページの鍵はkind_list用で、machine_listには使えない可能性があるため
+  var seedNames=['ﾏｲｼﾞｬｸﾞﾗｰV','ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3','ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX','ｱｲﾑｼﾞｬｸﾞﾗｰEX','ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰEX','ﾏｲｼﾞｬｸﾞﾗｰIII'];
+  var keyFoundFrom='';
+  var tryForKey=machineNames.length>0?machineNames.slice(0,8):seedNames;
+  // 機種名が見つかっていない場合はseedNamesを追加
+  seedNames.forEach(function(s){if(!tryForKey.includes(s))tryForKey.push(s);});
+
+  bar.textContent='鍵取得中(機種別ページ)...';
+  for(var si=0;si<tryForKey.length;si++){
     try{
-      var kr=await fetch('/'+sid+'/standlist_slot?kind_code='+urlKindCode,{credentials:'include'});
-      kindHtml=await kr.text();
+      var sr=await fetch('/'+sid+'/standlist_slot?kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(tryForKey[si]),{credentials:'include'});
+      var sh=await sr.text();
+      var sm2=sh.match(/data-page="([^"]+)"/);
+      if(sm2){
+        var sp=JSON.parse(decodeDP(sm2[1])).props||{};
+        if(sp.data&&sp.data.key){
+          encKey=sp.data.key;encIv=sp.data.iv;
+          keyFoundFrom=tryForKey[si];
+          // この機種名は確実に有効 → 先頭に
+          if(!machineNames.includes(tryForKey[si]))machineNames.unshift(tryForKey[si]);
+          // このページのreasJSON from machine names
+          var fh3=decodeDP(sm2[1]);
+          [...fh3.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
+          break;
+        }
+      }
     }catch(e){}
-    var dpM=kindHtml.match(/data-page="([^"]+)"/);
-    if(dpM){
-      try{
-        var klProps=JSON.parse(decodeDP(dpM[1])).props||{};
-        var fh=decodeDP(dpM[1]);
-        var propsHid2=klProps.hall_id||klProps.hallId||(klProps.data&&klProps.data.hall_id);
-        if(propsHid2)hid=parseInt(propsHid2);
-        if(klProps.data&&klProps.data.key&&!encKey){encKey=klProps.data.key;encIv=klProps.data.iv;rawDP=fh;}
-        extractMachineNamesFromProps(klProps);
-        [...fh.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
-        [...fh.matchAll(/"ki_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
-        [...fh.matchAll(/"ki_mei"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
-        // dataキー表示
-        if(klProps.data){
-          bar.textContent='fetch data keys: '+Object.keys(klProps.data).join(', ');
-          await new Promise(r=>setTimeout(r,4000));
-        }
-      }catch(e){}
-    }
-    // HTMLリンクからも
-    var linkRe=/[?&]machine_name=([^"&\s<>#]+)/g,lm2;
-    while((lm2=linkRe.exec(kindHtml))!==null)addMn(decodeURIComponent(lm2[1]));
   }
 
-  // STEP3: 鍵がまだなければ既知機種名でfetch
-  var seedNames=['ﾏｲｼﾞｬｸﾞﾗｰV','ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3','ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX'];
-  if(!encKey){
-    var tryList=machineNames.length>0?machineNames.slice(0,5):seedNames;
-    for(var si=0;si<tryList.length;si++){
-      try{
-        var sr=await fetch('/'+sid+'/standlist_slot?kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(tryList[si]),{credentials:'include'});
-        var sh=await sr.text();
-        var sm2=sh.match(/data-page="([^"]+)"/);
-        if(sm2){
-          var sp=JSON.parse(decodeDP(sm2[1])).props||{};
-          if(sp.data&&sp.data.key){
-            encKey=sp.data.key;encIv=sp.data.iv;
-            var fh2=decodeDP(sm2[1]);
-            [...fh2.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
-            break;
-          }
-        }
-      }catch(e){}
-    }
-  }
-
-  // STEP4: 機種名がまだ0件ならseed名を直接使う
-  if(machineNames.length===0){
-    seedNames.forEach(addMn);
-  }
-
-  // performance APIとDOMリンクからも補完
-  performance.getEntriesByType('resource').map(e=>e.name).filter(u=>u.includes('machine_list')).forEach(u=>{
-    try{addMn(new URL(u).searchParams.get('machine_name'));}catch(e){}
-  });
-  document.querySelectorAll('a[href*="machine_name"]').forEach(a=>{
-    try{addMn(new URL(a.href).searchParams.get('machine_name'));}catch(e){}
-  });
-
-  bar.textContent='key='+(encKey?encKey.slice(0,12)+'...':'none')+' hid='+hid+' 機種:'+machineNames.length+'件';
+  bar.textContent='key='+(encKey?encKey.slice(0,12)+'...':'none')+' from:'+keyFoundFrom+' 機種:'+machineNames.length;
   await new Promise(r=>setTimeout(r,4000));
 
   if(!encKey){bar.textContent='❌ AES鍵取得失敗';setTimeout(()=>bar.remove(),8000);return;}
-  if(machineNames.length===0){bar.textContent='❌ 機種名0件';setTimeout(()=>bar.remove(),8000);return;}
 
-  // 復号ヘルパー
+  // 機種名が少なすぎる場合はseed全追加
+  if(machineNames.length<4)seedNames.forEach(addMn);
+
+  bar.textContent='機種: '+machineNames.join(' ').slice(0,60);
+  await new Promise(r=>setTimeout(r,3000));
+
+  // ===== 復号ヘルパー =====
   async function decryptMl(txt){
     var cb;try{cb=JSON.parse(txt);}catch(e){cb=txt;}
     if(typeof cb==='object'&&cb!==null)cb=cb.data||cb.cipher||cb.content||JSON.stringify(cb);
@@ -183,20 +168,27 @@ try{
     return null;
   }
 
-  // 機種ごとにループして全台取得
+  // ===== 機種ごとにループして全台取得 =====
   var allStands=[];
+  var firstStatus='';
   for(var i=0;i<machineNames.length;i++){
     var mname=machineNames[i];
     bar.textContent='['+(i+1)+'/'+machineNames.length+'] '+mname.slice(0,14)+'...';
     try{
       var mlR=await fetch('/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(mname)+'&target_date='+today+'&disp=2&place=&history_day=3',{credentials:'include'});
+      if(i===0)firstStatus=mlR.status+'';
       if(!mlR.ok)continue;
-      var dec=await decryptMl(await mlR.text());
+      var mlTxt=await mlR.text();
+      if(i===0){bar.textContent='[1/'+machineNames.length+'] status:'+firstStatus+' res:'+mlTxt.slice(0,40);await new Promise(r=>setTimeout(r,5000));}
+      var dec=await decryptMl(mlTxt);
       if(dec){var ss=Array.isArray(dec)?dec:(dec.data||dec.items||Object.values(dec));if(Array.isArray(ss))ss.forEach(s=>allStands.push(s));}
-    }catch(e){}
+    }catch(e){if(i===0){bar.textContent='[1] err:'+e.message;await new Promise(r=>setTimeout(r,4000));}}
   }
 
-  if(allStands.length===0){bar.textContent='❌ 全台データ取得失敗';setTimeout(()=>bar.remove(),8000);return;}
+  if(allStands.length===0){
+    bar.textContent='❌ 全台データ取得失敗 status:'+firstStatus;
+    setTimeout(()=>bar.remove(),10000);return;
+  }
   var mmap={};
   allStands.forEach(s=>{
     var mn=s.machine_name||s.ki_name||'不明';
@@ -215,5 +207,5 @@ try{
   bar.textContent='✅ '+allStands.length+'台 機種:'+result.machines.length+' GitHub送信中...';
   await push(result);
 }catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
-setTimeout(()=>bar.remove(),8000);
+setTimeout(()=>bar.remove(),12000);
 })();
