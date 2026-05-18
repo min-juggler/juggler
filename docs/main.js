@@ -855,15 +855,18 @@ try{
 
   function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
 
-  // 機種名収集: ①performance URL ②props ③現ページのリンク
+  // 機種名収集: ①performance URL ②props ③現ページのリンク ④standlist HTML内のmachine_name
   var machineNames=[];
+  var addMn=function(mn){if(mn&&!machineNames.includes(mn))machineNames.push(mn);};
   performance.getEntriesByType('resource').map(e=>e.name).filter(u=>u.includes('machine_list')).forEach(u=>{
-    try{var mn=new URL(u).searchParams.get('machine_name');if(mn&&!machineNames.includes(mn))machineNames.push(mn);}catch(e){}
+    try{addMn(new URL(u).searchParams.get('machine_name'));}catch(e){}
   });
-  propsKindList.forEach(mn=>{if(mn&&!machineNames.includes(mn))machineNames.push(mn);});
+  propsKindList.forEach(addMn);
   document.querySelectorAll('a[href*="machine_name"]').forEach(a=>{
-    try{var mn=new URL(a.href).searchParams.get('machine_name');if(mn&&!machineNames.includes(mn))machineNames.push(mn);}catch(e){}
+    try{addMn(new URL(a.href).searchParams.get('machine_name'));}catch(e){}
   });
+  // standlist HTMLからmachine_nameを正規表現で全抽出（最も確実）
+  [...listH.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
   bar.textContent='機種 '+machineNames.length+'件: '+(machineNames.slice(0,3).map(n=>decodeURIComponent(n).slice(0,6)).join(' ')+(machineNames.length>3?'...':''));
   await new Promise(r=>setTimeout(r,3000));
   if(machineNames.length===0){bar.textContent='❌ 機種名取得失敗。機種一覧ページで実行してください。';setTimeout(()=>bar.remove(),8000);return;}
