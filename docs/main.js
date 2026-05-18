@@ -832,44 +832,44 @@ try{
   var today=new Date().toISOString().slice(0,10);
   var urlKindCode=new URLSearchParams(location.search).get('kind_code')||'Z';
 
-  // standlist_slotページからAES鍵・IV・機種リストを取得
-  var listR=await fetch('/'+sid+'/standlist_slot?kind_code='+urlKindCode,{credentials:'include'});
-  var listH=await listR.text();
-  var dpM=listH.match(/data-page="([^"]+)"/);
-  var encKey=null,encIv=null,propsKindList=[];
-  if(dpM){try{
-    var rawDP=dpM[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n));
-    var dpP=JSON.parse(rawDP).props||{};
-    if(dpP.data){encKey=dpP.data.key;encIv=dpP.data.iv;}
+  // AES鍵・IVの取得: 複数URLを試みる
+  var encKey=null,encIv=null,propsKindList=[],rawDP='';
+  async function tryGetKey(url){
+    try{
+      var r=await fetch(url,{credentials:'include'});
+      var h=await r.text();
+      var m=h.match(/data-page="([^"]+)"/);
+      if(!m)return null;
+      var rd=m[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n));
+      var p=JSON.parse(rd).props||{};
+      if(p.data&&p.data.key){rawDP=rd;return p;}
+    }catch(e){}
+    return null;
+  }
+  // ①kind_codeのみ ②マイジャグラーV指定 ③ゴーゴージャグラー指定
+  var seedMachines=['%EF%BE%8F%EF%BD%B2%EF%BD%BC%EF%BE%9E%EF%BD%AC%EF%BD%B8%EF%BE%9E%EF%BE%97%EF%BD%B0V','%A5%B4%A1%BC%A5%B4%A1%BC%A5%B8%A5%E3%A5%B0%A5%E9%A1%BC3'];
+  var dpP=await tryGetKey('/'+sid+'/standlist_slot?kind_code='+urlKindCode);
+  if(!dpP){
+    for(var sm of seedMachines){
+      dpP=await tryGetKey('/'+sid+'/standlist_slot?kind_code='+urlKindCode+'&machine_name='+sm);
+      if(dpP)break;
+    }
+  }
+  if(dpP){
+    encKey=dpP.data.key;encIv=dpP.data.iv;
     var propsHid=dpP.hall_id||dpP.hallId||(dpP.data&&dpP.data.hall_id);
     if(propsHid)hid=parseInt(propsHid);
-    // machine_ranking_items.slot または machines[] から機種名を抽出
     var mr=dpP.machine_ranking_items||dpP.machines||dpP.kind_list;
     if(mr){
       var src=Array.isArray(mr)?mr:(mr.slot||mr[urlKindCode]||Object.values(mr)[0]||[]);
       if(Array.isArray(src))propsKindList=src.map(m=>m.machine_name||m.ki_name||m.name||m.ki_mei).filter(Boolean);
     }
-    // デコード済みJSONからmachine_name/ki_nameを全抽出（最も確実）
     [...rawDP.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>{if(!propsKindList.includes(m[1]))propsKindList.push(m[1]);});
     [...rawDP.matchAll(/"ki_name"\s*:\s*"([^"]+)"/g)].forEach(m=>{if(!propsKindList.includes(m[1]))propsKindList.push(m[1]);});
-  }catch(e){}}
+  }
   bar.textContent='key='+(encKey?encKey.slice(0,16)+'...':'none')+' iv='+(encIv!=null?String(encIv).slice(0,24):'null')+' hid='+hid;
   await new Promise(r=>setTimeout(r,3000));
   if(!encKey){bar.textContent='❌ AES鍵なし';setTimeout(()=>bar.remove(),5000);return;}
-  // デバッグ: hall_informationsの構造を表示
-  try{
-    var dpP2=JSON.parse(dpM[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n))).props||{};
-    var hi=dpP2.hall_informations;
-    var hiKeys=hi?Object.keys(hi).join(','):'null';
-    bar.textContent='hall_informations keys:'+hiKeys.slice(0,80);
-    await new Promise(r=>setTimeout(r,8000));
-    // hall_informationsのキーが多い場合、各値の型と先頭を表示
-    if(hi){
-      var sample=Object.entries(hi).slice(0,5).map(([k,v])=>k+'='+(Array.isArray(v)?'['+v.length+']':typeof v==='object'&&v?'{'+Object.keys(v).slice(0,3).join(',')+'}':String(v).slice(0,15))).join(' ');
-      bar.textContent='hi detail: '+sample;
-      await new Promise(r=>setTimeout(r,8000));
-    }
-  }catch(e){bar.textContent='dbg err:'+e.message;await new Promise(r=>setTimeout(r,5000));}
 
   function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
 
