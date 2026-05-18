@@ -812,7 +812,7 @@ var sname={yonezawa:'アイランド米沢店',kaminoyama:'1円劇場上山店'}
 var hid={yonezawa:292,kaminoyama:1303}[sid];
 var bar=document.createElement('div');
 bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
-bar.textContent='🎰 データ取得中...';document.body.appendChild(bar);
+bar.textContent='🎰 v4 データ取得中...';document.body.appendChild(bar);
 async function push(result){
   var total=result.machines.reduce((a,m)=>a+m.stands.length,0);
   bar.textContent='📡 GitHubへ送信中...('+total+'台)';
@@ -845,10 +845,17 @@ try{
   bar.textContent='key='+(encKey?encKey.slice(0,16)+'...':'none')+' iv='+(encIv!==null&&encIv!==undefined?String(encIv).slice(0,24):'null')+' hid='+hid;
   await new Promise(r=>setTimeout(r,4000));
 
-  // rack_info/machine_list から暗号文取得
-  var mlUrl='/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&target_date='+today+'&disp=2&place=&history_day=3';
-  bar.textContent='URL: '+mlUrl.slice(0,80);
-  await new Promise(r=>setTimeout(r,3000));
+  // performanceエントリから実際のmachine_list URLを探す
+  var perfMlUrl=performance.getEntriesByType('resource').map(e=>e.name).find(u=>u.includes('machine_list'));
+  var mlUrl;
+  if(perfMlUrl){
+    mlUrl=perfMlUrl.replace(/target_date=[^&]+/,'target_date='+today);
+    bar.textContent='perf URL発見: '+mlUrl.slice(mlUrl.indexOf('/rack_info'));
+  } else {
+    mlUrl='/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&target_date='+today+'&disp=2&place=&history_day=3';
+    bar.textContent='手動URL: '+mlUrl;
+  }
+  await new Promise(r=>setTimeout(r,4000));
   var mlR=await fetch(mlUrl,{credentials:'include'});
   var mlText=await mlR.text();
   bar.textContent='machine_list status:'+mlR.status+' len:'+mlText.length+' 先頭:'+mlText.slice(0,60);
