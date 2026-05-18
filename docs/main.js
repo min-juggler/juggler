@@ -845,12 +845,14 @@ try{
   bar.textContent='key='+(encKey?encKey.slice(0,16)+'...':'none')+' iv='+(encIv!==null&&encIv!==undefined?String(encIv).slice(0,24):'null')+' hid='+hid;
   await new Promise(r=>setTimeout(r,4000));
 
-  // performanceエントリから実際のmachine_list URLを探す
+  // performanceエントリから実際のmachine_list URLを探し、machine_name=を除いた全機種URLを構築
   var perfMlUrl=performance.getEntriesByType('resource').map(e=>e.name).find(u=>u.includes('machine_list'));
   var mlUrl;
   if(perfMlUrl){
-    mlUrl=perfMlUrl.replace(/target_date=[^&]+/,'target_date='+today);
-    bar.textContent='perf URL発見: '+mlUrl.slice(mlUrl.indexOf('/rack_info'));
+    // machine_name=XXX&を削除して全機種取得URLにする
+    var baseUrl=perfMlUrl.replace(/machine_name=[^&]*&?/,'').replace(/target_date=[^&]+/,'target_date='+today);
+    mlUrl=baseUrl;
+    bar.textContent='全機種URL試行: '+mlUrl.slice(mlUrl.indexOf('/rack_info'));
   } else {
     mlUrl='/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&target_date='+today+'&disp=2&place=&history_day=3';
     bar.textContent='手動URL: '+mlUrl;
@@ -861,17 +863,17 @@ try{
   bar.textContent='machine_list status:'+mlR.status+' len:'+mlText.length+' 先頭:'+mlText.slice(0,60);
   await new Promise(r=>setTimeout(r,5000));
 
-  // 404ならkind_code=21でリトライ
-  if(mlR.status===404&&urlKindCode!=='21'){
-    bar.textContent='404→kind_code=21でリトライ中...';
+  // 404なら machine_name 付き(perf URL元)でリトライ
+  if(mlR.status===404&&perfMlUrl){
+    bar.textContent='404→機種指定URLでリトライ中...';
     await new Promise(r=>setTimeout(r,2000));
-    mlUrl='/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code=21&target_date='+today+'&disp=2&place=&history_day=3';
+    mlUrl=perfMlUrl.replace(/target_date=[^&]+/,'target_date='+today);
     mlR=await fetch(mlUrl,{credentials:'include'});
     mlText=await mlR.text();
-    bar.textContent='retry status:'+mlR.status+' len:'+mlText.length+' 先頭:'+mlText.slice(0,60);
+    bar.textContent='retry status:'+mlR.status+' len:'+mlText.length+' 先頭:'+mlText.slice(0,40);
     await new Promise(r=>setTimeout(r,4000));
   }
-  if(!mlR.ok){bar.textContent='❌ machine_list '+mlR.status+' URL='+mlUrl.slice(0,60);setTimeout(()=>bar.remove(),8000);return;}
+  if(!mlR.ok){bar.textContent='❌ machine_list '+mlR.status;setTimeout(()=>bar.remove(),8000);return;}
   if(!encKey){bar.textContent='❌ AES鍵なし';setTimeout(()=>bar.remove(),5000);return;}
 
   function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
@@ -929,15 +931,8 @@ try{
 
   // 台データを機種別にグループ化
   var stands=Array.isArray(decrypted)?decrypted:(decrypted.data||decrypted.items||Object.values(decrypted));
-  // フィールド名デバッグ: 最初の台のキーと値を表示
-  if(stands.length>0){
-    var s0=stands[0];
-    var dbg=Object.entries(s0).map(([k,v])=>k+'='+String(v).slice(0,10)).join(' ');
-    bar.textContent='[1]'+dbg;
-    await new Promise(r=>setTimeout(r,12000));
-  }
   var mmap={};
-  stands.forEach(s=>{var mn=s.machine_name||s.ki_name||'不明';if(!mmap[mn])mmap[mn]=[];mmap[mn].push({rack_no:String(s.rack_no||s.dai_no||'?'),machine_name:mn,games:parseInt(s.total_games||s.games||0),bb:parseInt(s.bb_count||s.bb||0),rb:parseInt(s.rb_count||s.rb||0),diff:parseInt(s.diff||s.sa_mai||0)});});
+  stands.forEach(s=>{var mn=s.machine_name||s.ki_name||'不明';if(!mmap[mn])mmap[mn]=[];mmap[mn].push({rack_no:String(s.rack_no||s.dai_no||'?'),machine_name:mn,games:parseInt(s.all_game_count||s.total_games||s.games||0),bb:parseInt(s.bonus_1||s.bb_count||s.bb||0),rb:parseInt(s.bonus_2||s.rb_count||s.rb||0),diff:parseInt(s.substraction||s.diff||s.sa_mai||0)});});
   var result={name:sname,machines:[]};
   for(var[mn2,sts2]of Object.entries(mmap))result.machines.push({machine_name:mn2,count:sts2.length,stands:sts2});
   var totalStands=stands.length;
