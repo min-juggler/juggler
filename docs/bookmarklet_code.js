@@ -161,13 +161,38 @@ try{
     return null;
   }
 
+  // ===== URLパターンを探索（最初の1機種で試す） =====
+  var testMn=machineNames[0]||'ﾏｲｼﾞｬｸﾞﾗｰV';
+  var urlPatterns=[
+    '/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today+'&disp=2&place=&history_day=3',
+    '/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today,
+    '/'+sid+'/rack_info/machine_list?hall_id='+hid+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today,
+    '/'+sid+'/rack_info_kt/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today,
+  ];
+  var workingUrlBase=null;
+  for(var pi=0;pi<urlPatterns.length;pi++){
+    bar.textContent='URL試行['+(pi+1)+'/'+urlPatterns.length+']: '+urlPatterns[pi].slice(30,90);
+    await new Promise(r=>setTimeout(r,2000));
+    try{
+      var pr2=await fetch(urlPatterns[pi],{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json, text/plain, */*'}});
+      var pt=await pr2.text();
+      bar.textContent='→ status:'+pr2.status+' resp:'+pt.slice(0,60);
+      await new Promise(r=>setTimeout(r,4000));
+      if(pr2.ok){workingUrlBase=urlPatterns[pi].replace(encodeURIComponent(testMn),'__MN__').replace(today,'__DATE__');break;}
+    }catch(e){bar.textContent='→ err:'+e.message;await new Promise(r=>setTimeout(r,2000));}
+  }
+  if(!workingUrlBase){bar.textContent='❌ 全URLパターン失敗';setTimeout(()=>bar.remove(),10000);return;}
+  bar.textContent='✅ URLパターン確定: '+workingUrlBase.slice(0,80);
+  await new Promise(r=>setTimeout(r,3000));
+
   // ===== 機種ごとにループして全台取得（404はスキップ＝その機種なし） =====
   var allStands=[];
   for(var i=0;i<machineNames.length;i++){
     var mname=machineNames[i];
     bar.textContent='['+(i+1)+'/'+machineNames.length+'] '+mname.slice(0,14)+'...';
     try{
-      var mlR=await fetch('/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(mname)+'&target_date='+today+'&disp=2&place=&history_day=3',{credentials:'include'});
+      var mlUrl=workingUrlBase.replace('__MN__',encodeURIComponent(mname)).replace('__DATE__',today);
+      var mlR=await fetch(mlUrl,{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json, text/plain, */*'}});
       if(!mlR.ok)continue;
       var dec=await decryptMl(await mlR.text());
       if(dec){var ss=Array.isArray(dec)?dec:(dec.data||dec.items||Object.values(dec));if(Array.isArray(ss))ss.forEach(s=>allStands.push(s));}
