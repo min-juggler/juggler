@@ -803,8 +803,21 @@ function saveToken() {
   buildBookmarklet();
 }
 
-// ===== ブックマークレット本体（直接埋め込み） =====
+// ===== ブックマークレット（自動更新ローダー） =====
+// bookmarklet_code.js を毎回GitHubから取得するため、再ドラッグ不要
 function buildInlineBookmarklet(token, repo) {
+  return `(async function(){
+var T='${token}',R='${repo}';
+try{
+  var r=await fetch('https://raw.githubusercontent.com/'+R+'/main/docs/bookmarklet_code.js?_='+Date.now(),{cache:'no-store'});
+  if(!r.ok){alert('コード取得失敗 '+r.status);return;}
+  eval((await r.text()).replace(/__TOKEN__/g,T).replace(/__REPO__/g,R));
+}catch(e){alert('ローダーエラー: '+e.message);}
+})();`;
+}
+
+// ===== （旧）直接埋め込み版（参考のため残す） =====
+function _buildInlineBookmarkletOld(token, repo) {
   return `(async function(){
 var sid=location.href.includes('yonezawa')?'yonezawa':location.href.includes('kaminoyama')?'kaminoyama':null;
 if(!sid){alert('店舗サイトで実行してください');return;}
