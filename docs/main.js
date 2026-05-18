@@ -839,7 +839,7 @@ try{
   var encKey=null,encIv=null;
   if(dpM){try{var dpP=JSON.parse(dpM[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n))).props||{};
   if(dpP.data){encKey=dpP.data.key;encIv=dpP.data.iv;}}catch(e){}}
-  bar.textContent='key='+(encKey?encKey.slice(0,16)+'...':'none')+' iv='+(encIv?String(encIv).slice(0,16)+'...':'none');
+  bar.textContent='key='+(encKey?encKey.slice(0,16)+'...':'none')+' iv='+(encIv!==null&&encIv!==undefined?String(encIv).slice(0,24):'null');
   await new Promise(r=>setTimeout(r,4000));
 
   // rack_info/machine_list から暗号文取得
@@ -850,9 +850,8 @@ try{
   await new Promise(r=>setTimeout(r,5000));
 
   if(!mlR.ok){bar.textContent='❌ machine_list '+mlR.status;setTimeout(()=>bar.remove(),5000);return;}
+  if(!encKey){bar.textContent='❌ AES鍵なし';setTimeout(()=>bar.remove(),5000);return;}
 
-  // base64デコードして復号
-  if(!encKey||!encIv){bar.textContent='❌ AES鍵なし';setTimeout(()=>bar.remove(),5000);return;}
   function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
 
   // レスポンスはJSON文字列 "base64..." なのでparse
@@ -861,24 +860,38 @@ try{
   if(typeof cipherB64==='object'&&cipherB64!==null){
     cipherB64=cipherB64.data||cipherB64.cipher||cipherB64.content||JSON.stringify(cipherB64);
   }
+  cipherB64=String(cipherB64);
 
-  var cipherBytes;
-  try{cipherBytes=Uint8Array.from(atob(String(cipherB64)),c=>c.charCodeAt(0));}
-  catch(e){bar.textContent='base64失敗:'+e.message+' 先頭:'+String(cipherB64).slice(0,50);await new Promise(r=>setTimeout(r,6000));return;}
+  // Laravel形式チェック: atob(cipherB64) が JSON({iv,value,mac}) かどうか
+  var laravelIv=null,laravelValue=null;
+  try{var inner=JSON.parse(atob(cipherB64));if(inner&&inner.iv&&inner.value){laravelIv=inner.iv;laravelValue=inner.value;}}catch(e){}
 
-  bar.textContent='復号中... cipherBytes:'+cipherBytes.length+' keyLen:'+encKey.length+' ivLen:'+String(encIv).length;
-  await new Promise(r=>setTimeout(r,3000));
+  var cipherBytes,finalIvBytes;
+  if(laravelIv){
+    // Laravel形式: ivとvalueをそれぞれbase64デコード
+    finalIvBytes=Uint8Array.from(atob(laravelIv),c=>c.charCodeAt(0));
+    try{cipherBytes=Uint8Array.from(atob(laravelValue),c=>c.charCodeAt(0));}
+    catch(e){bar.textContent='Laravel value base64失敗:'+e.message;await new Promise(r=>setTimeout(r,5000));return;}
+    bar.textContent='Laravel形式! iv='+laravelIv.slice(0,20)+' ivBytes:'+finalIvBytes.length+' cipher:'+cipherBytes.length;
+    await new Promise(r=>setTimeout(r,4000));
+  } else {
+    // 生形式: page props の IV を使用
+    if(!encIv){bar.textContent='❌ IV なし(props:null, Laravel形式でもない)';setTimeout(()=>bar.remove(),5000);return;}
+    try{cipherBytes=Uint8Array.from(atob(cipherB64),c=>c.charCodeAt(0));}
+    catch(e){bar.textContent='base64失敗:'+e.message+' 先頭:'+cipherB64.slice(0,50);await new Promise(r=>setTimeout(r,6000));return;}
+    var ivStr=String(encIv);
+    finalIvBytes=/^[0-9a-fA-F]+$/.test(ivStr)&&ivStr.length%2===0?h2b(ivStr):Uint8Array.from(atob(ivStr),c=>c.charCodeAt(0));
+    bar.textContent='生形式 cipherBytes:'+cipherBytes.length+' ivBytes:'+finalIvBytes.length;
+    await new Promise(r=>setTimeout(r,3000));
+  }
 
   var decrypted=null;
   var keyBytes=h2b(encKey);
-  var ivStr=String(encIv);
-  // IVがhexなら変換、base64ならbase64デコード
-  var ivBytes=/^[0-9a-fA-F]+$/.test(ivStr)&&ivStr.length%2===0?h2b(ivStr):Uint8Array.from(atob(ivStr),c=>c.charCodeAt(0));
 
   for(var [modeName,ivLen] of [['AES-CBC',16],['AES-GCM',12]]){
     try{
       var ck=await crypto.subtle.importKey('raw',keyBytes,{name:modeName},false,['decrypt']);
-      var usedIv=ivBytes.slice(0,ivLen);
+      var usedIv=finalIvBytes.slice(0,ivLen);
       var plain=await crypto.subtle.decrypt({name:modeName,iv:usedIv},ck,cipherBytes);
       decrypted=JSON.parse(new TextDecoder().decode(plain));
       bar.textContent='✅ 復号成功('+modeName+')! isArray:'+Array.isArray(decrypted)+' len:'+(Array.isArray(decrypted)?decrypted.length:Object.keys(decrypted).length);
