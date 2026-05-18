@@ -838,7 +838,8 @@ try{
   var dpM=listH.match(/data-page="([^"]+)"/);
   var encKey=null,encIv=null,propsKindList=[];
   if(dpM){try{
-    var dpP=JSON.parse(dpM[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n))).props||{};
+    var rawDP=dpM[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n));
+    var dpP=JSON.parse(rawDP).props||{};
     if(dpP.data){encKey=dpP.data.key;encIv=dpP.data.iv;}
     var propsHid=dpP.hall_id||dpP.hallId||(dpP.data&&dpP.data.hall_id);
     if(propsHid)hid=parseInt(propsHid);
@@ -846,8 +847,11 @@ try{
     var mr=dpP.machine_ranking_items||dpP.machines||dpP.kind_list;
     if(mr){
       var src=Array.isArray(mr)?mr:(mr.slot||mr[urlKindCode]||Object.values(mr)[0]||[]);
-      if(Array.isArray(src))propsKindList=src.map(m=>m.machine_name||m.ki_name||m.name).filter(Boolean);
+      if(Array.isArray(src))propsKindList=src.map(m=>m.machine_name||m.ki_name||m.name||m.ki_mei).filter(Boolean);
     }
+    // デコード済みJSONからmachine_name/ki_nameを全抽出（最も確実）
+    [...rawDP.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>{if(!propsKindList.includes(m[1]))propsKindList.push(m[1]);});
+    [...rawDP.matchAll(/"ki_name"\s*:\s*"([^"]+)"/g)].forEach(m=>{if(!propsKindList.includes(m[1]))propsKindList.push(m[1]);});
   }catch(e){}}
   bar.textContent='key='+(encKey?encKey.slice(0,16)+'...':'none')+' iv='+(encIv!=null?String(encIv).slice(0,24):'null')+' hid='+hid;
   await new Promise(r=>setTimeout(r,3000));
