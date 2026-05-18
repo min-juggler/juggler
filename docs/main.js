@@ -843,98 +843,92 @@ try{
   bar.textContent='props keys: '+Object.keys(pp).join(', ');
   await new Promise(r=>setTimeout(r,8000));
 
-  // ② ページが既に復号済みデータを持っていないか確認
+  // ② rack_info/machine_list API を使ってデータ取得
   var decryptedData=null;
+  var today=new Date().toISOString().slice(0,10);
 
-  // Inertia/React の window グローバルを探す
-  var pageProps=null;
-  try{
-    var inertiaKeys=['__inertia','__page','Inertia','inertia'];
-    for(var ik of inertiaKeys){if(window[ik]&&window[ik].props){pageProps=window[ik].props;break;}}
-    // data-page要素から再取得（アプリが書き換えた可能性）
-    if(!pageProps){var dpEl=document.querySelector('[data-page]');if(dpEl){var dpJ=JSON.parse(dpEl.getAttribute('data-page'));if(dpJ&&dpJ.props)pageProps=dpJ.props;}}
-    if(pageProps&&pageProps.data&&!pageProps.data.key){
-      // 復号済みのdataが直接入っている
-      decryptedData=pageProps.data;
-      bar.textContent='✅ Inertiaから復号済みデータ取得! type:'+typeof decryptedData+' len:'+(Array.isArray(decryptedData)?decryptedData.length:Object.keys(decryptedData).length);
-      await new Promise(r=>setTimeout(r,5000));
-    }
-  }catch(e){}
-
-  // ページが実際に叩いたAPIを調べる
-  if(!decryptedData){
-    var perf=performance.getEntriesByType('resource');
-    var apiCalls=perf.filter(r=>(r.initiatorType==='fetch'||r.initiatorType==='xmlhttprequest')&&r.name.includes('/'));
-    bar.textContent='ページAPIコール数:'+apiCalls.length+' 例:'+apiCalls.slice(0,3).map(r=>r.name.split('/').slice(-2).join('/')).join(' | ');
-    await new Promise(r=>setTimeout(r,6000));
+  // performanceから実際のAPIコールURLを取得
+  var perf=performance.getEntriesByType('resource');
+  var mlCall=perf.find(r=>r.name.includes('machine_list'));
+  var mlBaseUrl=null;
+  if(mlCall){
+    // URLからベースパス（machine_name以降を除く）を取得
+    mlBaseUrl=mlCall.name.replace(/machine_name=[^&]*/,'machine_name=').replace(/target_date=[^&]*/,'target_date='+today);
+    bar.textContent='API発見: '+mlCall.name.split('?')[0].split('/').slice(-3).join('/');
+    await new Promise(r=>setTimeout(r,4000));
+  } else {
+    bar.textContent='performance内にmachine_list未発見。候補URL試行...';
+    await new Promise(r=>setTimeout(r,3000));
   }
 
-  // 暗号文をlocalStorageから取得して復号試行
-  if(!decryptedData&&pp.data&&pp.data.key&&pp.data.iv){
-    var keyHex=pp.data.key;
-    var ivHex=pp.data.iv;
-    // localStorageからkeyで暗号文を検索
-    var cipherText=null;
-    var lsVal=localStorage.getItem(keyHex);
-    if(!lsVal){
-      // localStorage全件をスキャン
-      for(var i=0;i<localStorage.length;i++){
-        var lk2=localStorage.key(i);
-        var lv=localStorage.getItem(lk2);
-        if(lv&&lv.length>100&&!lv.startsWith('{')){cipherText=lv;bar.textContent='localStorage発見 key:'+lk2.slice(0,30)+' len:'+lv.length;break;}
-      }
-    } else {
-      cipherText=lsVal;
-    }
-    bar.textContent='localStorage: keyHex存在='+(lsVal?'yes':'no')+' 全件scan='+(cipherText?'hit':'miss')+' len='+(cipherText?cipherText.length:0);
-    await new Promise(r=>setTimeout(r,6000));
-    if(cipherText){
-      // まず中身を表示
-      bar.textContent='暗号文候補: len='+cipherText.length+' 先頭='+cipherText.slice(0,80);
+  // machine_list APIを使って全機種の台データを取得
+  var result={name:sname,machines:[]};
+  var gotData=false;
+
+  // ページのDOMから機種名リストを取得
+  var machineLinks=[...document.querySelectorAll('a[href*="machine_name"],button[data-machine],option[value]')];
+  var machineNamesFromDom=[...new Set(machineLinks.map(el=>{
+    var mn=el.getAttribute('data-machine')||new URL(el.href||'http://x').searchParams.get('machine_name')||el.value||'';
+    return mn?decodeURIComponent(mn):'';
+  }).filter(Boolean))];
+  bar.textContent='DOM機種数:'+machineNamesFromDom.length+' | performance API:'+(mlBaseUrl?'あり':'なし');
+  await new Promise(r=>setTimeout(r,4000));
+
+  // machine_list APIで全機種一括取得を試みる（machine_name省略）
+  if(mlCall){
+    var allUrl=mlCall.name.replace(/&?machine_name=[^&]*/,'').replace(/target_date=[^&]*/,'target_date='+today);
+    try{
+      var ar=await fetch(allUrl,{credentials:'include'});
+      var at=await ar.text();
+      bar.textContent='全機種取得試行: status='+ar.status+' len='+at.length+' 先頭='+at.slice(0,100);
       await new Promise(r=>setTimeout(r,6000));
-      function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
-      function b642b(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0));}
-      // hex か base64 か判定
-      var isHex=/^[0-9a-fA-F]+$/.test(cipherText)&&cipherText.length%2===0;
-      var cipherBytes=isHex?h2b(cipherText):b642b(cipherText);
-      bar.textContent='暗号文 format:'+(isHex?'hex':'base64')+' bytes:'+cipherBytes.length+' key:'+keyHex.slice(0,16)+'... iv:'+ivHex.slice(0,16)+'...';
-      await new Promise(r=>setTimeout(r,6000));
-      // AES-CBC → AES-GCM の順で試す
-      var modes=['AES-CBC','AES-GCM'];
-      for(var mode of modes){
-        try{
-          var ck=await crypto.subtle.importKey('raw',h2b(keyHex),{name:mode},false,['decrypt']);
-          var ivBytes=h2b(ivHex);
-          var plain;
-          if(mode==='AES-CBC')plain=await crypto.subtle.decrypt({name:mode,iv:ivBytes},ck,cipherBytes);
-          else plain=await crypto.subtle.decrypt({name:mode,iv:ivBytes.slice(0,12)},ck,cipherBytes);
-          decryptedData=JSON.parse(new TextDecoder().decode(plain));
-          bar.textContent='✅ 復号成功('+mode+')! isArray:'+Array.isArray(decryptedData)+' len:'+(Array.isArray(decryptedData)?decryptedData.length:Object.keys(decryptedData).length)+' 先頭:'+JSON.stringify(Array.isArray(decryptedData)?decryptedData[0]:Object.values(decryptedData)[0]).slice(0,100);
-          await new Promise(r=>setTimeout(r,8000));
-          break;
-        }catch(e){
-          bar.textContent='復号失敗('+mode+'): '+e.message;
-          await new Promise(r=>setTimeout(r,4000));
+      var parsed=JSON.parse(at);
+      var items=Array.isArray(parsed)?parsed:(parsed.data||parsed.items||parsed.machines||Object.values(parsed));
+      if(Array.isArray(items)&&items.length){
+        // 機種名でグループ化
+        var mmap={};
+        for(var s of items){
+          var dmn=s.machine_name||s.ki_name||s.name||'不明';
+          if(!mmap[dmn])mmap[dmn]=[];
+          mmap[dmn].push({rack_no:String(s.rack_no||s.dai_no||s.no||'?'),machine_name:dmn,games:parseInt(s.total_games||s.games||s.gk||0),bb:parseInt(s.bb_count||s.bb||s.big||0),rb:parseInt(s.rb_count||s.rb||s.reg||0),diff:parseInt(s.diff||s.sa_mai||0)});
         }
+        for(var[mn2,sts2]of Object.entries(mmap))result.machines.push({machine_name:mn2,count:sts2.length,stands:sts2});
+        gotData=true;
+        bar.textContent='✅ 全機種データ取得! '+items.length+'台 機種:'+Object.keys(mmap).length;
+        await new Promise(r=>setTimeout(r,5000));
       }
-    } else {
-      // localStorageになければAPIで試す
-      var cacheEndpoints=['/n-api/cache/'+keyHex,'/api/cache/'+keyHex,'/'+sid+'/cache?key='+keyHex];
-      for(var ep of cacheEndpoints){
+    }catch(e){bar.textContent='全機種取得失敗:'+e.message;await new Promise(r=>setTimeout(r,4000));}
+  }
+
+  if(!gotData&&mlCall){
+    // 機種別に個別取得
+    // まず機種リストAPIを試す
+    var kindUrl=mlCall.name.split('machine_list')[0]+'search_kind?'+mlCall.name.split('?')[1].replace(/machine_name=[^&]*/,'').replace(/disp=[^&]*/,'').replace(/history_day=[^&]*/,'');
+    try{
+      var kr=await fetch(kindUrl,{credentials:'include'});
+      var kt=await kr.text();
+      bar.textContent='機種リストAPI: '+kr.status+' '+kt.slice(0,150);
+      await new Promise(r=>setTimeout(r,6000));
+      var kp=JSON.parse(kt);
+      var kindItems=Array.isArray(kp)?kp:Object.values(kp);
+      for(var ki of kindItems.slice(0,20)){
+        var kname=ki.machine_name||ki.name||ki.ki_name||'';
+        if(!kname)continue;
+        var kenc=encodeURIComponent(kname);
+        var murl=mlCall.name.replace(/machine_name=[^&]*/,'machine_name='+kenc).replace(/target_date=[^&]*/,'target_date='+today);
+        var mr2=await fetch(murl,{credentials:'include'});
+        var mt2=await mr2.text();
         try{
-          var cr=await fetch(ep,{credentials:'include'});
-          if(cr.ok){var ct2=await cr.text();if(ct2.length>50){cipherText=ct2;bar.textContent='cache API hit: '+ep+' len:'+ct2.length;await new Promise(r=>setTimeout(r,4000));break;}}
-        }catch(e){}
+          var mp2=JSON.parse(mt2);
+          var stands2=(Array.isArray(mp2)?mp2:(mp2.data||mp2.items||[]));
+          var sts3=stands2.map(s=>({rack_no:String(s.rack_no||s.dai_no||'?'),machine_name:kname,games:parseInt(s.total_games||s.games||0),bb:parseInt(s.bb_count||s.bb||0),rb:parseInt(s.rb_count||s.rb||0),diff:parseInt(s.diff||s.sa_mai||0)}));
+          result.machines.push({machine_name:kname,count:sts3.length,stands:sts3});
+          gotData=true;
+        }catch(e2){}
+        bar.textContent='🎰 '+kname+' 取得中...';
+        await new Promise(r=>setTimeout(r,300));
       }
-      if(cipherText){
-        try{
-          function h2b2(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
-          var ck2=await crypto.subtle.importKey('raw',h2b2(keyHex),{name:'AES-CBC'},false,['decrypt']);
-          var plain2=await crypto.subtle.decrypt({name:'AES-CBC',iv:h2b2(ivHex)},ck2,h2b2(cipherText));
-          decryptedData=JSON.parse(new TextDecoder().decode(plain2));
-        }catch(e){bar.textContent='API復号失敗:'+e.message;await new Promise(r=>setTimeout(r,4000));}
-      }
-    }
+    }catch(e){bar.textContent='機種リスト取得失敗:'+e.message;await new Promise(r=>setTimeout(r,4000));}
   }
 
   // ③ n-APIをdai_hall_idとmachine_ranking_filter_idで試す
@@ -962,32 +956,14 @@ try{
       }
     }catch(e){}
   }
-  // n-API失敗かつ暗号解読成功の場合はdecryptedDataを使用
-  if(!machines.length&&decryptedData){
-    var ddArr=Array.isArray(decryptedData)?decryptedData:Object.values(decryptedData);
-    // 機種リストとして使えるか確認
-    var ddMachines=ddArr.filter(v=>v&&(v.machine_name||v.name));
-    if(ddMachines.length){machines=ddMachines;}
-    else{
-      // 台データとして直接使う
-      bar.textContent='復号データを台データとして使用: '+ddArr.length+'台';
-      await new Promise(r=>setTimeout(r,4000));
-      // 機種別にグループ化
-      var mmap={};
-      for(var ds of ddArr){
-        var dmn=ds.machine_name||ds.ki_name||'不明';
-        if(!mmap[dmn])mmap[dmn]=[];
-        mmap[dmn].push({rack_no:String(ds.rack_no||ds.dai_no||ds.no||'?'),machine_name:dmn,games:parseInt(ds.total_games||ds.games||ds.gk||0),bb:parseInt(ds.bb_count||ds.bb||ds.big||0),rb:parseInt(ds.rb_count||ds.rb||ds.reg||0),diff:parseInt(ds.diff||ds.sa_mai||0)});
-      }
-      var result2={name:sname,machines:[]};
-      for(var[mn,sts]of Object.entries(mmap))result2.machines.push({machine_name:mn,count:sts.length,stands:sts});
-      await push(result2);return;
-    }
+  // rack_info/machine_list APIで取得済みなら送信
+  if(gotData){
+    await push(result);return;
   }
   if(!machines.length){bar.textContent='❌ 機種0件。全API失敗。propsキー:'+Object.keys(pp).join(',');setTimeout(()=>bar.remove(),8000);return;}
   bar.textContent='✅ 機種'+machines.length+'件! 先頭:'+JSON.stringify(machines[0]).slice(0,100);
   await new Promise(r=>setTimeout(r,8000));
-  var result={name:sname,machines:[]};
+  var result3={name:sname,machines:[]};
   for(var m of machines){
     var mname=m.machine_name||m.name||'不明';
     var menc=m.machine_name_enc||encodeURIComponent(mname);
@@ -1000,7 +976,7 @@ try{
     if(mm){try{var mp=JSON.parse(mm[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\\d+);/g,(_,n)=>String.fromCharCode(n))).props||{};
     var rl=mp.stand_list||mp.stands||mp.rack_list||mp.dai_data_list||[];
     if(Array.isArray(rl))stands=rl.map(s=>({rack_no:String(s.rack_no||s.dai_no||s.no||'?'),machine_name:mname,games:parseInt(s.total_games||s.games||s.gk||0),bb:parseInt(s.bb_count||s.bb||s.big||0),rb:parseInt(s.rb_count||s.rb||s.reg||0),diff:parseInt(s.diff||s.sa_mai||0)}));}catch(e){}}
-    result.machines.push({machine_name:mname,count:m.cnt||stands.length,stands});
+    result3.machines.push({machine_name:mname,count:m.cnt||stands.length,stands});
     await new Promise(r=>setTimeout(r,500));
   }
   await push(result);
