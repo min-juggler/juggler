@@ -6,7 +6,28 @@ var sname={yonezawa:'アイランド米沢店',kaminoyama:'1円劇場上山店'}
 var hid={yonezawa:292,kaminoyama:1303}[sid];
 var bar=document.createElement('div');
 bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
-bar.textContent='🎰 v9 起動中...';document.body.appendChild(bar);
+bar.textContent='🎰 v10 起動中...';document.body.appendChild(bar);
+
+// 全角カタカナ→半角カタカナ変換（APIが半角を要求するため必須）
+function fw2hw(s){
+  var m={'ア':'ｱ','イ':'ｲ','ウ':'ｳ','エ':'ｴ','オ':'ｵ','カ':'ｶ','キ':'ｷ','ク':'ｸ','ケ':'ｹ','コ':'ｺ',
+    'サ':'ｻ','シ':'ｼ','ス':'ｽ','セ':'ｾ','ソ':'ｿ','タ':'ﾀ','チ':'ﾁ','ツ':'ﾂ','テ':'ﾃ','ト':'ﾄ',
+    'ナ':'ﾅ','ニ':'ﾆ','ヌ':'ﾇ','ネ':'ﾈ','ノ':'ﾉ','ハ':'ﾊ','ヒ':'ﾋ','フ':'ﾌ','ヘ':'ﾍ','ホ':'ﾎ',
+    'マ':'ﾏ','ミ':'ﾐ','ム':'ﾑ','メ':'ﾒ','モ':'ﾓ','ヤ':'ﾔ','ユ':'ﾕ','ヨ':'ﾖ',
+    'ラ':'ﾗ','リ':'ﾘ','ル':'ﾙ','レ':'ﾚ','ロ':'ﾛ','ワ':'ﾜ','ヲ':'ｦ','ン':'ﾝ',
+    'ァ':'ｧ','ィ':'ｨ','ゥ':'ｩ','ェ':'ｪ','ォ':'ｫ','ッ':'ｯ','ャ':'ｬ','ュ':'ｭ','ョ':'ｮ','ー':'ｰ',
+    'ガ':'ｶﾞ','ギ':'ｷﾞ','グ':'ｸﾞ','ゲ':'ｹﾞ','ゴ':'ｺﾞ','ザ':'ｻﾞ','ジ':'ｼﾞ','ズ':'ｽﾞ','ゼ':'ｾﾞ','ゾ':'ｿﾞ',
+    'ダ':'ﾀﾞ','ヂ':'ﾁﾞ','ヅ':'ﾂﾞ','デ':'ﾃﾞ','ド':'ﾄﾞ','バ':'ﾊﾞ','ビ':'ﾋﾞ','ブ':'ﾌﾞ','ベ':'ﾍﾞ','ボ':'ﾎﾞ',
+    'パ':'ﾊﾟ','ピ':'ﾋﾟ','プ':'ﾌﾟ','ペ':'ﾍﾟ','ポ':'ﾎﾟ','ヴ':'ｳﾞ','　':' '};
+  return s.split('').map(c=>m[c]||c).join('');
+}
+
+// JSON unicode escapeをデコード（ﾏ→ﾏ）
+function jsonUnescape(s){
+  if(!s.includes('\\u'))return s;
+  try{return JSON.parse('"'+s.replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\\\\u/g,'\\u')+'"');}catch(e){return s;}
+}
+
 async function push(result){
   var total=result.machines.reduce((a,m)=>a+m.stands.length,0);
   bar.textContent='📡 GitHubへ送信中...('+total+'台)';
@@ -22,6 +43,7 @@ async function push(result){
   if(pr.ok){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+total+'台 送信完了！';}
   else{bar.style.background='#888';bar.textContent='⚠️ 送信失敗: '+(await pr.text()).slice(0,80);}
 }
+
 try{
   var today=new Date().toISOString().slice(0,10);
   var urlKindCode=new URLSearchParams(location.search).get('kind_code')||'Z';
@@ -29,120 +51,91 @@ try{
   function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
   function decodeDP(raw){return raw.replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n));}
 
+  // 機種名リスト（半角カタカナ正規化済みのみ保持）
   var machineNames=[];
+  function addMn(mn){
+    if(!mn)return;
+    mn=String(mn).trim();
+    if(!mn)return;
+    // JSON unicodeエスケープを解除
+    mn=jsonUnescape(mn);
+    // 全角→半角変換
+    mn=fw2hw(mn);
+    // 半角カタカナか英数字を含むもののみ（ゴミ除外）
+    if(!/[ｦ-ﾟA-Za-z0-9]/.test(mn))return;
+    if(!machineNames.includes(mn))machineNames.push(mn);
+  }
+
   var encKey=null,encIv=null;
-  var addMn=function(mn){if(mn&&String(mn).trim()&&!machineNames.includes(String(mn)))machineNames.push(String(mn));};
 
-  // ===== STEP1: 現在ページのprops構造をデバッグ表示 =====
-  bar.textContent='現在ページ解析中...';
+  // ===== STEP1: 現在ページのpropsから機種名取得 =====
+  bar.textContent='機種名取得中...';
   var dpEl=document.querySelector('[data-page]');
-  var currentProps=null;
   if(dpEl){
-    try{currentProps=JSON.parse(decodeDP(dpEl.getAttribute('data-page'))).props||null;}catch(e){}
-  }
-
-  if(currentProps){
-    // propsのトップレベルキー表示
-    var pkeys=Object.keys(currentProps);
-    bar.textContent='props: '+pkeys.join(', ');
-    await new Promise(r=>setTimeout(r,4000));
-
-    var data=currentProps.data||{};
-    var dkeys=Object.keys(data);
-    bar.textContent='data keys: '+dkeys.join(', ');
-    await new Promise(r=>setTimeout(r,4000));
-
-    // hall_id取得
-    var propsHid=currentProps.hall_id||currentProps.hallId||(data.hall_id);
-    if(propsHid)hid=parseInt(propsHid);
-
-    // dataの全配列フィールドをスキャン → 機種名候補を表示
-    var foundArrays=[];
-    for(var dk of dkeys){
-      var dv=data[dk];
-      if(Array.isArray(dv)&&dv.length>0){
-        foundArrays.push(dk+'['+dv.length+']');
-        if(typeof dv[0]==='object'&&dv[0]!==null){
-          var itemKeys=Object.keys(dv[0]).join(',');
-          bar.textContent='data.'+dk+'[0] keys: '+itemKeys;
-          await new Promise(r=>setTimeout(r,3000));
-          dv.forEach(function(item){
-            var mn=item.machine_name||item.ki_name||item.ki_mei||item.name||item.kind_name||item.kaki_name||item.ki_code;
-            if(mn&&/[ｦ-ﾟA-Za-z0-9]/.test(String(mn)))addMn(String(mn));
-          });
-        }
+    try{
+      var decoded=decodeDP(dpEl.getAttribute('data-page'));
+      var props=JSON.parse(decoded).props||{};
+      var data=props.data||{};
+      var propsHid=props.hall_id||props.hallId||data.hall_id;
+      if(propsHid)hid=parseInt(propsHid);
+      // dataの全配列フィールドをスキャン
+      for(var dk of Object.keys(data)){
+        var dv=data[dk];
+        if(Array.isArray(dv))dv.forEach(function(item){
+          if(typeof item==='object'&&item)addMn(item.machine_name||item.ki_name||item.ki_mei||item.name||item.kind_name||item.kaki_name);
+        });
       }
-    }
-    if(foundArrays.length===0){
-      bar.textContent='data内に配列なし。他のpropsキー確認中...';
-      await new Promise(r=>setTimeout(r,3000));
-      // propsの直下配列も確認
-      for(var pk of pkeys){
-        var pv=currentProps[pk];
-        if(Array.isArray(pv)&&pv.length>0&&typeof pv[0]==='object'){
-          foundArrays.push('props.'+pk+'['+pv.length+']');
-          var ik2=Object.keys(pv[0]).join(',');
-          bar.textContent='props.'+pk+'[0] keys: '+ik2;
-          await new Promise(r=>setTimeout(r,3000));
-          pv.forEach(function(item){
-            var mn=item.machine_name||item.ki_name||item.ki_mei||item.name||item.kind_name;
-            if(mn)addMn(String(mn));
-          });
-        }
+      // props直下の配列もスキャン
+      for(var pk of Object.keys(props)){
+        var pv=props[pk];
+        if(Array.isArray(pv))pv.forEach(function(item){
+          if(typeof item==='object'&&item)addMn(item.machine_name||item.ki_name||item.ki_mei||item.name);
+        });
       }
+    }catch(e){}
+  }
+
+  // DOMのテーブルセルからも（テーブル内の全角機種名を変換して取得）
+  document.querySelectorAll('td,th').forEach(function(el){
+    var t=el.textContent.trim();
+    // 機種名らしい文字列（カタカナ含む、4〜30文字）
+    if(t.length>=3&&t.length<=30&&/[ァ-ヶｦ-ﾟ]/.test(t)&&!t.includes('台')&&!t.includes('昇')&&!t.includes('降')){
+      addMn(t);
     }
-    bar.textContent='配列: '+(foundArrays.join(', ')||'なし')+' 機種候補:'+machineNames.length;
-    await new Promise(r=>setTimeout(r,3000));
-  }
+  });
+  // DOMリンクのmachine_nameパラメータ
+  document.querySelectorAll('a[href*="machine_name"]').forEach(function(a){
+    try{addMn(decodeURIComponent(new URL(a.href).searchParams.get('machine_name')));}catch(e){}
+  });
 
-  // rawDP全体からmachine_name/ki_nameをregex抽出
-  if(dpEl){
-    var rawDPstr=decodeDP(dpEl.getAttribute('data-page'));
-    [...rawDPstr.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
-    [...rawDPstr.matchAll(/"ki_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
-    [...rawDPstr.matchAll(/"ki_mei"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
-  }
+  // ===== STEP2: 機種別ページからAES鍵取得（半角機種名を使用） =====
+  var seeds=['ﾏｲｼﾞｬｸﾞﾗｰV','ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3','ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX','ｱｲﾑｼﾞｬｸﾞﾗｰEX','ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰEX','ﾏｲｼﾞｬｸﾞﾗｰIII','ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰ3','ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ2'];
+  // seedsを必ず追加（見つかった機種名+seedsで網羅）
+  seeds.forEach(function(s){if(!machineNames.includes(s))machineNames.push(s);});
 
-  // ===== STEP2: 機種別ページからAES鍵取得（machine_list用の鍵は必ずここから） =====
-  // 種別一覧ページの鍵はkind_list用で、machine_listには使えない可能性があるため
-  var seedNames=['ﾏｲｼﾞｬｸﾞﾗｰV','ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3','ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX','ｱｲﾑｼﾞｬｸﾞﾗｰEX','ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰEX','ﾏｲｼﾞｬｸﾞﾗｰIII'];
-  var keyFoundFrom='';
-  var tryForKey=machineNames.length>0?machineNames.slice(0,8):seedNames;
-  // 機種名が見つかっていない場合はseedNamesを追加
-  seedNames.forEach(function(s){if(!tryForKey.includes(s))tryForKey.push(s);});
-
-  bar.textContent='鍵取得中(機種別ページ)...';
+  var tryForKey=machineNames.slice();
+  bar.textContent='鍵取得中... ('+tryForKey.length+'機種試行)';
   for(var si=0;si<tryForKey.length;si++){
     try{
       var sr=await fetch('/'+sid+'/standlist_slot?kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(tryForKey[si]),{credentials:'include'});
+      if(!sr.ok)continue;
       var sh=await sr.text();
       var sm2=sh.match(/data-page="([^"]+)"/);
       if(sm2){
         var sp=JSON.parse(decodeDP(sm2[1])).props||{};
         if(sp.data&&sp.data.key){
           encKey=sp.data.key;encIv=sp.data.iv;
-          keyFoundFrom=tryForKey[si];
-          // この機種名は確実に有効 → 先頭に
-          if(!machineNames.includes(tryForKey[si]))machineNames.unshift(tryForKey[si]);
-          // このページのreasJSON from machine names
-          var fh3=decodeDP(sm2[1]);
-          [...fh3.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
+          var propsHid2=sp.hall_id||sp.hallId||(sp.data&&sp.data.hall_id);
+          if(propsHid2)hid=parseInt(propsHid2);
           break;
         }
       }
     }catch(e){}
   }
 
-  bar.textContent='key='+(encKey?encKey.slice(0,12)+'...':'none')+' from:'+keyFoundFrom+' 機種:'+machineNames.length;
-  await new Promise(r=>setTimeout(r,4000));
-
-  if(!encKey){bar.textContent='❌ AES鍵取得失敗';setTimeout(()=>bar.remove(),8000);return;}
-
-  // 機種名が少なすぎる場合はseed全追加
-  if(machineNames.length<4)seedNames.forEach(addMn);
-
-  bar.textContent='機種: '+machineNames.join(' ').slice(0,60);
+  bar.textContent='key='+(encKey?encKey.slice(0,12)+'...':'none')+' hid='+hid+' 機種:'+machineNames.length;
   await new Promise(r=>setTimeout(r,3000));
+  if(!encKey){bar.textContent='❌ AES鍵取得失敗';setTimeout(()=>bar.remove(),8000);return;}
 
   // ===== 復号ヘルパー =====
   async function decryptMl(txt){
@@ -168,27 +161,20 @@ try{
     return null;
   }
 
-  // ===== 機種ごとにループして全台取得 =====
+  // ===== 機種ごとにループして全台取得（404はスキップ＝その機種なし） =====
   var allStands=[];
-  var firstStatus='';
   for(var i=0;i<machineNames.length;i++){
     var mname=machineNames[i];
     bar.textContent='['+(i+1)+'/'+machineNames.length+'] '+mname.slice(0,14)+'...';
     try{
       var mlR=await fetch('/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(mname)+'&target_date='+today+'&disp=2&place=&history_day=3',{credentials:'include'});
-      if(i===0)firstStatus=mlR.status+'';
       if(!mlR.ok)continue;
-      var mlTxt=await mlR.text();
-      if(i===0){bar.textContent='[1/'+machineNames.length+'] status:'+firstStatus+' res:'+mlTxt.slice(0,40);await new Promise(r=>setTimeout(r,5000));}
-      var dec=await decryptMl(mlTxt);
+      var dec=await decryptMl(await mlR.text());
       if(dec){var ss=Array.isArray(dec)?dec:(dec.data||dec.items||Object.values(dec));if(Array.isArray(ss))ss.forEach(s=>allStands.push(s));}
-    }catch(e){if(i===0){bar.textContent='[1] err:'+e.message;await new Promise(r=>setTimeout(r,4000));}}
+    }catch(e){}
   }
 
-  if(allStands.length===0){
-    bar.textContent='❌ 全台データ取得失敗 status:'+firstStatus;
-    setTimeout(()=>bar.remove(),10000);return;
-  }
+  if(allStands.length===0){bar.textContent='❌ 全台データ取得失敗';setTimeout(()=>bar.remove(),10000);return;}
   var mmap={};
   allStands.forEach(s=>{
     var mn=s.machine_name||s.ki_name||'不明';
@@ -207,5 +193,5 @@ try{
   bar.textContent='✅ '+allStands.length+'台 機種:'+result.machines.length+' GitHub送信中...';
   await push(result);
 }catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
-setTimeout(()=>bar.remove(),12000);
+setTimeout(()=>bar.remove(),10000);
 })();
