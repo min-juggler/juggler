@@ -883,8 +883,8 @@ try{
   document.querySelectorAll('a[href*="machine_name"]').forEach(a=>{
     try{addMn(new URL(a.href).searchParams.get('machine_name'));}catch(e){}
   });
-  // standlist HTMLからmachine_nameを正規表現で全抽出（最も確実）
-  [...listH.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
+  // rawDP(decodedJSON)からmachine_nameを正規表現で全抽出（最も確実）
+  [...rawDP.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
   bar.textContent='機種 '+machineNames.length+'件: '+(machineNames.slice(0,3).map(n=>decodeURIComponent(n).slice(0,6)).join(' ')+(machineNames.length>3?'...':''));
   await new Promise(r=>setTimeout(r,3000));
   if(machineNames.length===0){bar.textContent='❌ 機種名取得失敗。機種一覧ページで実行してください。';setTimeout(()=>bar.remove(),8000);return;}
