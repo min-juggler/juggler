@@ -856,6 +856,12 @@ try{
   bar.textContent='key='+(encKey?encKey.slice(0,16)+'...':'none')+' iv='+(encIv!=null?String(encIv).slice(0,24):'null')+' hid='+hid;
   await new Promise(r=>setTimeout(r,3000));
   if(!encKey){bar.textContent='❌ AES鍵なし';setTimeout(()=>bar.remove(),5000);return;}
+  // デバッグ: propsのキーとslot[0]の構造を表示
+  try{
+    var dpKeys2=dpM?Object.keys(JSON.parse(dpM[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n))).props||{}).join(','):'';
+    bar.textContent='props keys:'+dpKeys2.slice(0,80)+' kindList:'+propsKindList.length;
+    await new Promise(r=>setTimeout(r,8000));
+  }catch(e){}
 
   function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
 
