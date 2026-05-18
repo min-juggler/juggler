@@ -6,7 +6,7 @@ var sname={yonezawa:'アイランド米沢店',kaminoyama:'1円劇場上山店'}
 var hid={yonezawa:292,kaminoyama:1303}[sid];
 var bar=document.createElement('div');
 bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
-bar.textContent='🎰 v7 データ取得中...';document.body.appendChild(bar);
+bar.textContent='🎰 v8 データ取得中...';document.body.appendChild(bar);
 async function push(result){
   var total=result.machines.reduce((a,m)=>a+m.stands.length,0);
   bar.textContent='📡 GitHubへ送信中...('+total+'台)';
@@ -29,75 +29,135 @@ try{
   function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
   function decodeDP(raw){return raw.replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n));}
 
-  // STEP1: 種別一覧ページを取得して機種名をリンクから全抽出
-  bar.textContent='機種一覧取得中...';
   var machineNames=[];
   var encKey=null,encIv=null,rawDP='';
+  var addMn=function(mn){if(mn&&String(mn).trim()&&!machineNames.includes(String(mn)))machineNames.push(String(mn));};
 
-  var kindHtml='';
-  try{
-    var kr=await fetch('/'+sid+'/standlist_slot?kind_code='+urlKindCode,{credentials:'include'});
-    kindHtml=await kr.text();
-  }catch(e){}
-
-  // リンク href から machine_name= を全抽出
-  var addMn=function(mn){if(mn&&mn.trim()&&!machineNames.includes(mn))machineNames.push(mn);};
-  var linkRe=/[?&]machine_name=([^"&\s<>#]+)/g,lm;
-  while((lm=linkRe.exec(kindHtml))!==null)addMn(decodeURIComponent(lm[1]));
-
-  // data-page propsからも試みる
-  var dpM=kindHtml.match(/data-page="([^"]+)"/);
-  if(dpM){
-    try{
-      var klProps=JSON.parse(decodeDP(dpM[1])).props||{};
-      var propsHid=klProps.hall_id||klProps.hallId||(klProps.data&&klProps.data.hall_id);
-      if(propsHid)hid=parseInt(propsHid);
-      // propsのdata.keyがあれば鍵も取得
-      if(klProps.data&&klProps.data.key){encKey=klProps.data.key;encIv=klProps.data.iv;rawDP=decodeDP(dpM[1]);}
-      // 機種名リスト候補
-      var klList=klProps.kind_list||klProps.machine_list||(klProps.data&&(klProps.data.kind_list||klProps.data.machines||klProps.data.machine_list))||[];
-      if(Array.isArray(klList))klList.forEach(m=>{addMn(m.machine_name||m.ki_name||m.name||m.ki_mei);});
-    }catch(e){}
+  // --- 現在のページのdata-page属性を直接読む ---
+  function parseCurrentPageProps(){
+    var dpEl=document.querySelector('[data-page]');
+    if(!dpEl)return null;
+    try{return JSON.parse(decodeDP(dpEl.getAttribute('data-page'))).props||null;}catch(e){return null;}
   }
 
-  bar.textContent='機種名候補: '+machineNames.length+'件 | 鍵取得中...';
-  await new Promise(r=>setTimeout(r,1500));
+  // --- propsからあらゆる機種名フィールドを探す ---
+  function extractMachineNamesFromProps(props){
+    if(!props)return;
+    var data=props.data||{};
+    // dataの全フィールドをスキャン：配列でオブジェクトを含むものは機種リスト候補
+    for(var k of Object.keys(data)){
+      var v=data[k];
+      if(Array.isArray(v)&&v.length>0&&typeof v[0]==='object'){
+        v.forEach(function(item){
+          var mn=item.machine_name||item.ki_name||item.ki_mei||item.name||item.kaki_name||item.kind_name;
+          if(mn)addMn(mn);
+        });
+      }
+    }
+    // props直下も確認
+    for(var k2 of ['kind_list','machine_list','machines','rank','ranking']){
+      var v2=props[k2];
+      if(Array.isArray(v2))v2.forEach(function(item){
+        var mn=item.machine_name||item.ki_name||item.ki_mei||item.name;
+        if(mn)addMn(mn);
+      });
+    }
+  }
 
-  // STEP2: 鍵がまだなければ最初の機種のページから取得
-  if(!encKey&&machineNames.length>0){
-    for(var si=0;si<Math.min(machineNames.length,5);si++){
+  // STEP1: 現在のページのpropsを読む（最速、既にDOMにある）
+  bar.textContent='現在ページ解析中...';
+  var currentProps=parseCurrentPageProps();
+  if(currentProps){
+    var ch=document.querySelector('[data-page]').getAttribute('data-page');
+    rawDP=decodeDP(ch);
+    var propsHid=currentProps.hall_id||currentProps.hallId||(currentProps.data&&currentProps.data.hall_id);
+    if(propsHid)hid=parseInt(propsHid);
+    if(currentProps.data&&currentProps.data.key){encKey=currentProps.data.key;encIv=currentProps.data.iv;}
+    extractMachineNamesFromProps(currentProps);
+    // rawDP全体からmachine_nameを正規表現で抽出
+    [...rawDP.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
+    [...rawDP.matchAll(/"ki_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
+    [...rawDP.matchAll(/"ki_mei"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
+    // デバッグ: dataのキー一覧を表示
+    if(currentProps.data){
+      var dkeys=Object.keys(currentProps.data);
+      bar.textContent='data keys: '+dkeys.join(', ');
+      await new Promise(r=>setTimeout(r,4000));
+    }
+  }
+
+  // STEP2: 種別一覧ページをfetchしても試みる
+  if(machineNames.length===0||!encKey){
+    bar.textContent='種別ページfetch中...';
+    var kindHtml='';
+    try{
+      var kr=await fetch('/'+sid+'/standlist_slot?kind_code='+urlKindCode,{credentials:'include'});
+      kindHtml=await kr.text();
+    }catch(e){}
+    var dpM=kindHtml.match(/data-page="([^"]+)"/);
+    if(dpM){
       try{
-        var sr=await fetch('/'+sid+'/standlist_slot?kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(machineNames[si]),{credentials:'include'});
+        var klProps=JSON.parse(decodeDP(dpM[1])).props||{};
+        var fh=decodeDP(dpM[1]);
+        var propsHid2=klProps.hall_id||klProps.hallId||(klProps.data&&klProps.data.hall_id);
+        if(propsHid2)hid=parseInt(propsHid2);
+        if(klProps.data&&klProps.data.key&&!encKey){encKey=klProps.data.key;encIv=klProps.data.iv;rawDP=fh;}
+        extractMachineNamesFromProps(klProps);
+        [...fh.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
+        [...fh.matchAll(/"ki_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
+        [...fh.matchAll(/"ki_mei"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
+        // dataキー表示
+        if(klProps.data){
+          bar.textContent='fetch data keys: '+Object.keys(klProps.data).join(', ');
+          await new Promise(r=>setTimeout(r,4000));
+        }
+      }catch(e){}
+    }
+    // HTMLリンクからも
+    var linkRe=/[?&]machine_name=([^"&\s<>#]+)/g,lm2;
+    while((lm2=linkRe.exec(kindHtml))!==null)addMn(decodeURIComponent(lm2[1]));
+  }
+
+  // STEP3: 鍵がまだなければ既知機種名でfetch
+  var seedNames=['ﾏｲｼﾞｬｸﾞﾗｰV','ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3','ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX'];
+  if(!encKey){
+    var tryList=machineNames.length>0?machineNames.slice(0,5):seedNames;
+    for(var si=0;si<tryList.length;si++){
+      try{
+        var sr=await fetch('/'+sid+'/standlist_slot?kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(tryList[si]),{credentials:'include'});
         var sh=await sr.text();
         var sm2=sh.match(/data-page="([^"]+)"/);
         if(sm2){
           var sp=JSON.parse(decodeDP(sm2[1])).props||{};
-          if(sp.data&&sp.data.key){encKey=sp.data.key;encIv=sp.data.iv;rawDP=decodeDP(sm2[1]);break;}
+          if(sp.data&&sp.data.key){
+            encKey=sp.data.key;encIv=sp.data.iv;
+            var fh2=decodeDP(sm2[1]);
+            [...fh2.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
+            break;
+          }
         }
       }catch(e){}
     }
   }
 
-  // rawDPから追加の機種名抽出
-  if(rawDP){
-    [...rawDP.matchAll(/"machine_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
-    [...rawDP.matchAll(/"ki_name"\s*:\s*"([^"]+)"/g)].forEach(m=>addMn(m[1]));
+  // STEP4: 機種名がまだ0件ならseed名を直接使う
+  if(machineNames.length===0){
+    seedNames.forEach(addMn);
   }
 
-  // performance API からも取得
+  // performance APIとDOMリンクからも補完
   performance.getEntriesByType('resource').map(e=>e.name).filter(u=>u.includes('machine_list')).forEach(u=>{
     try{addMn(new URL(u).searchParams.get('machine_name'));}catch(e){}
   });
-  // 現ページのリンクからも
   document.querySelectorAll('a[href*="machine_name"]').forEach(a=>{
     try{addMn(new URL(a.href).searchParams.get('machine_name'));}catch(e){}
   });
 
-  bar.textContent='key='+(encKey?encKey.slice(0,16)+'...':'none')+' iv='+(encIv!=null?String(encIv).slice(0,24):'null')+' hid='+hid+' 機種:'+machineNames.length;
-  await new Promise(r=>setTimeout(r,3000));
+  bar.textContent='key='+(encKey?encKey.slice(0,12)+'...':'none')+' hid='+hid+' 機種:'+machineNames.length+'件';
+  await new Promise(r=>setTimeout(r,4000));
 
   if(!encKey){bar.textContent='❌ AES鍵取得失敗';setTimeout(()=>bar.remove(),8000);return;}
-  if(machineNames.length===0){bar.textContent='❌ 機種名取得失敗';setTimeout(()=>bar.remove(),8000);return;}
+  if(machineNames.length===0){bar.textContent='❌ 機種名0件';setTimeout(()=>bar.remove(),8000);return;}
 
   // 復号ヘルパー
   async function decryptMl(txt){
