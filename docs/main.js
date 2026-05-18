@@ -838,18 +838,33 @@ try{
   var dpM=listH.match(/data-page="([^"]+)"/);
   var encKey=null,encIv=null;
   if(dpM){try{var dpP=JSON.parse(dpM[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n))).props||{};
-  if(dpP.data){encKey=dpP.data.key;encIv=dpP.data.iv;}}catch(e){}}
-  bar.textContent='key='+(encKey?encKey.slice(0,16)+'...':'none')+' iv='+(encIv!==null&&encIv!==undefined?String(encIv).slice(0,24):'null');
+  if(dpP.data){encKey=dpP.data.key;encIv=dpP.data.iv;}
+  // propsからhall_idを取得できれば上書き
+  var propsHid=dpP.hall_id||dpP.hallId||(dpP.data&&dpP.data.hall_id)||(dpP.hall&&dpP.hall.id);
+  if(propsHid)hid=parseInt(propsHid);}catch(e){}}
+  bar.textContent='key='+(encKey?encKey.slice(0,16)+'...':'none')+' iv='+(encIv!==null&&encIv!==undefined?String(encIv).slice(0,24):'null')+' hid='+hid;
   await new Promise(r=>setTimeout(r,4000));
 
   // rack_info/machine_list から暗号文取得
   var mlUrl='/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&target_date='+today+'&disp=2&place=&history_day=3';
+  bar.textContent='URL: '+mlUrl.slice(0,80);
+  await new Promise(r=>setTimeout(r,3000));
   var mlR=await fetch(mlUrl,{credentials:'include'});
   var mlText=await mlR.text();
   bar.textContent='machine_list status:'+mlR.status+' len:'+mlText.length+' 先頭:'+mlText.slice(0,60);
   await new Promise(r=>setTimeout(r,5000));
 
-  if(!mlR.ok){bar.textContent='❌ machine_list '+mlR.status;setTimeout(()=>bar.remove(),5000);return;}
+  // 404ならkind_code=21でリトライ
+  if(mlR.status===404&&urlKindCode!=='21'){
+    bar.textContent='404→kind_code=21でリトライ中...';
+    await new Promise(r=>setTimeout(r,2000));
+    mlUrl='/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code=21&target_date='+today+'&disp=2&place=&history_day=3';
+    mlR=await fetch(mlUrl,{credentials:'include'});
+    mlText=await mlR.text();
+    bar.textContent='retry status:'+mlR.status+' len:'+mlText.length+' 先頭:'+mlText.slice(0,60);
+    await new Promise(r=>setTimeout(r,4000));
+  }
+  if(!mlR.ok){bar.textContent='❌ machine_list '+mlR.status+' URL='+mlUrl.slice(0,60);setTimeout(()=>bar.remove(),8000);return;}
   if(!encKey){bar.textContent='❌ AES鍵なし';setTimeout(()=>bar.remove(),5000);return;}
 
   function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
