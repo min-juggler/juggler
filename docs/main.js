@@ -856,12 +856,20 @@ try{
   bar.textContent='key='+(encKey?encKey.slice(0,16)+'...':'none')+' iv='+(encIv!=null?String(encIv).slice(0,24):'null')+' hid='+hid;
   await new Promise(r=>setTimeout(r,3000));
   if(!encKey){bar.textContent='❌ AES鍵なし';setTimeout(()=>bar.remove(),5000);return;}
-  // デバッグ: propsのキーとslot[0]の構造を表示
+  // デバッグ: hall_informationsの構造を表示
   try{
-    var dpKeys2=dpM?Object.keys(JSON.parse(dpM[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n))).props||{}).join(','):'';
-    bar.textContent='props keys:'+dpKeys2.slice(0,80)+' kindList:'+propsKindList.length;
+    var dpP2=JSON.parse(dpM[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n))).props||{};
+    var hi=dpP2.hall_informations;
+    var hiKeys=hi?Object.keys(hi).join(','):'null';
+    bar.textContent='hall_informations keys:'+hiKeys.slice(0,80);
     await new Promise(r=>setTimeout(r,8000));
-  }catch(e){}
+    // hall_informationsのキーが多い場合、各値の型と先頭を表示
+    if(hi){
+      var sample=Object.entries(hi).slice(0,5).map(([k,v])=>k+'='+(Array.isArray(v)?'['+v.length+']':typeof v==='object'&&v?'{'+Object.keys(v).slice(0,3).join(',')+'}':String(v).slice(0,15))).join(' ');
+      bar.textContent='hi detail: '+sample;
+      await new Promise(r=>setTimeout(r,8000));
+    }
+  }catch(e){bar.textContent='dbg err:'+e.message;await new Promise(r=>setTimeout(r,5000));}
 
   function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}
 
