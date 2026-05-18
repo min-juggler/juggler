@@ -787,8 +787,8 @@ function loadDemoData() {
 
 // ===== 店舗認証カード =====
 const STORE_AUTH_URLS = [
-  { name: 'アイランド米沢店',  url: 'https://island.pt.teramoba2.com/yonezawa/' },
-  { name: '1円劇場上山店', url: 'https://island.pt.teramoba2.com/kaminoyama/' },
+  { name: 'アイランド米沢店',  url: 'https://island.pt.teramoba2.com/yonezawa/standlist_slot?kind_code=Z' },
+  { name: '1円劇場上山店', url: 'https://island.pt.teramoba2.com/kaminoyama/standlist_slot?kind_code=Z' },
 ];
 
 // ===== GitHubトークン保存 =====
