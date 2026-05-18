@@ -929,6 +929,8 @@ try{
 
   // 台データを機種別にグループ化
   var stands=Array.isArray(decrypted)?decrypted:(decrypted.data||decrypted.items||Object.values(decrypted));
+  // フィールド名デバッグ: 最初の台のキーと値を表示
+  if(stands.length>0){var s0=stands[0];bar.textContent='keys:'+Object.keys(s0).join(',');await new Promise(r=>setTimeout(r,8000));}
   var mmap={};
   stands.forEach(s=>{var mn=s.machine_name||s.ki_name||'不明';if(!mmap[mn])mmap[mn]=[];mmap[mn].push({rack_no:String(s.rack_no||s.dai_no||'?'),machine_name:mn,games:parseInt(s.total_games||s.games||0),bb:parseInt(s.bb_count||s.bb||0),rb:parseInt(s.rb_count||s.rb||0),diff:parseInt(s.diff||s.sa_mai||0)});});
   var result={name:sname,machines:[]};
