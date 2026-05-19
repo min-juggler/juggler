@@ -95,22 +95,9 @@ try{
     }catch(e){}
   }
 
-  // DOMのテーブルセルからも（テーブル内の全角機種名を変換して取得）
-  document.querySelectorAll('td,th').forEach(function(el){
-    var t=el.textContent.trim();
-    // 機種名らしい文字列（カタカナ含む、4〜30文字）
-    if(t.length>=3&&t.length<=30&&/[ァ-ヶｦ-ﾟ]/.test(t)&&!t.includes('台')&&!t.includes('昇')&&!t.includes('降')){
-      addMn(t);
-    }
-  });
-  // DOMリンクのmachine_nameパラメータ
-  document.querySelectorAll('a[href*="machine_name"]').forEach(function(a){
-    try{addMn(decodeURIComponent(new URL(a.href).searchParams.get('machine_name')));}catch(e){}
-  });
-
   // ===== STEP2: 機種別ページからAES鍵取得（半角機種名を使用） =====
-  var seeds=['ﾏｲｼﾞｬｸﾞﾗｰV','ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3','ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX','ｱｲﾑｼﾞｬｸﾞﾗｰEX','ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰEX','ﾏｲｼﾞｬｸﾞﾗｰIII','ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰ3','ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ2'];
-  // seedsを必ず追加（見つかった機種名+seedsで網羅）
+  // DOM抽出は不正な機種名を混入させるため廃止。seedsのみ使用。
+  var seeds=['ﾏｲｼﾞｬｸﾞﾗｰV','ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3','ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX','ｱｲﾑｼﾞｬｸﾞﾗｰEX','ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰEX','ﾏｲｼﾞｬｸﾞﾗｰIII','ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰ3','ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ2','ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰV'];
   seeds.forEach(function(s){if(!machineNames.includes(s))machineNames.push(s);});
 
   var tryForKey=machineNames.slice();
@@ -161,8 +148,8 @@ try{
     return null;
   }
 
-  // ===== URLパターンを探索（最初の1機種で試す） =====
-  var testMn=machineNames[0]||'ﾏｲｼﾞｬｸﾞﾗｰV';
+  // ===== URLパターンを探索（ﾏｲｼﾞｬｸﾞﾗｰV固定で試す） =====
+  var testMn=seeds[0]; // 必ず存在する機種で試す
   var urlPatterns=[
     '/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today+'&disp=2&place=&history_day=3',
     '/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today,
