@@ -148,29 +148,54 @@ try{
     return null;
   }
 
-  // ===== URLパターンを探索（ﾏｲｼﾞｬｸﾞﾗｰV固定で試す） =====
-  var testMn=seeds[0]; // 必ず存在する機種で試す
-  var urlPatterns=[
-    '/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today+'&disp=2&place=&history_day=3',
-    '/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today,
-    '/'+sid+'/rack_info/machine_list?hall_id='+hid+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today,
-    '/'+sid+'/rack_info_kt/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today,
-  ];
-  var workingUrlBase=null;
-  for(var pi=0;pi<urlPatterns.length;pi++){
-    bar.textContent='URL試行['+(pi+1)+'/'+urlPatterns.length+']: '+urlPatterns[pi].slice(30,90);
-    await new Promise(r=>setTimeout(r,2000));
-    try{
-      var pr2=await fetch(urlPatterns[pi],{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json, text/plain, */*'}});
-      var pt=await pr2.text();
-      bar.textContent='→ status:'+pr2.status+' resp:'+pt.slice(0,60);
-      await new Promise(r=>setTimeout(r,4000));
-      if(pr2.ok){workingUrlBase=urlPatterns[pi].replace(encodeURIComponent(testMn),'__MN__').replace(today,'__DATE__');break;}
-    }catch(e){bar.textContent='→ err:'+e.message;await new Promise(r=>setTimeout(r,2000));}
+  // ===== performanceエントリから実際のAPIのURLを取得 =====
+  bar.textContent='perfエントリ確認中...';
+  var perfUrls=performance.getEntriesByType('resource').map(function(e){return e.name;});
+  var mlPerfUrls=perfUrls.filter(function(u){return u.includes('machine_list')||u.includes('rack_info');});
+  bar.textContent='perf rack_info URLs: '+mlPerfUrls.length+'件';
+  await new Promise(r=>setTimeout(r,2000));
+  for(var pu=0;pu<Math.min(mlPerfUrls.length,5);pu++){
+    bar.textContent='perf['+pu+']: '+mlPerfUrls[pu].replace(location.origin,'').slice(0,80);
+    await new Promise(r=>setTimeout(r,3000));
   }
-  if(!workingUrlBase){bar.textContent='❌ 全URLパターン失敗';setTimeout(()=>bar.remove(),10000);return;}
-  bar.textContent='✅ URLパターン確定: '+workingUrlBase.slice(0,80);
-  await new Promise(r=>setTimeout(r,3000));
+
+  // performanceから machine_listのURL構造を抽出
+  var workingUrlBase=null;
+  var mlPerfEntry=perfUrls.find(function(u){return u.includes('machine_list');});
+  if(mlPerfEntry){
+    try{
+      var mlU=new URL(mlPerfEntry);
+      // パス + 必須パラメータだけ残し、machine_nameとtarget_dateをプレースホルダー化
+      var baseParams=new URLSearchParams(mlU.search);
+      baseParams.set('machine_name','__MN__');
+      baseParams.set('target_date','__DATE__');
+      workingUrlBase=mlU.pathname+'?'+baseParams.toString();
+      bar.textContent='✅ perfからURL取得: '+workingUrlBase.slice(0,80);
+      await new Promise(r=>setTimeout(r,4000));
+    }catch(e){}
+  }
+
+  // performanceで見つからない場合はURLパターン探索
+  if(!workingUrlBase){
+    var testMn=seeds[0];
+    var urlPatterns=[
+      '/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today+'&disp=2&place=&history_day=3',
+      '/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today,
+      '/'+sid+'/rack_info_kt/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today,
+    ];
+    for(var pi=0;pi<urlPatterns.length;pi++){
+      bar.textContent='URL試行['+(pi+1)+']: '+urlPatterns[pi].slice(30,80);
+      await new Promise(r=>setTimeout(r,2000));
+      try{
+        var pr2=await fetch(urlPatterns[pi],{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json, */*'}});
+        var pt=await pr2.text();
+        bar.textContent='→ '+pr2.status+' resp:'+pt.slice(0,60);
+        await new Promise(r=>setTimeout(r,4000));
+        if(pr2.ok){workingUrlBase=urlPatterns[pi].replace(encodeURIComponent(testMn),'__MN__').replace(today,'__DATE__');break;}
+      }catch(e){}
+    }
+  }
+  if(!workingUrlBase){bar.textContent='❌ URLパターン特定失敗';setTimeout(()=>bar.remove(),10000);return;}
 
   // ===== 機種ごとにループして全台取得（404はスキップ＝その機種なし） =====
   var allStands=[];
