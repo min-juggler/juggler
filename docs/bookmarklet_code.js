@@ -148,54 +148,22 @@ try{
     return null;
   }
 
-  // ===== performanceエントリから実際のAPIのURLを取得 =====
-  bar.textContent='perfエントリ確認中...';
-  var perfUrls=performance.getEntriesByType('resource').map(function(e){return e.name;});
-  var mlPerfUrls=perfUrls.filter(function(u){return u.includes('machine_list')||u.includes('rack_info');});
-  bar.textContent='perf rack_info URLs: '+mlPerfUrls.length+'件';
-  await new Promise(r=>setTimeout(r,2000));
-  for(var pu=0;pu<Math.min(mlPerfUrls.length,5);pu++){
-    bar.textContent='perf['+pu+']: '+mlPerfUrls[pu].replace(location.origin,'').slice(0,80);
-    await new Promise(r=>setTimeout(r,3000));
-  }
-
-  // performanceから machine_listのURL構造を抽出
+  // ===== machine_list API URL（/n-api/rack_info/machine_list と判明） =====
+  // performanceエントリに実際のURLがあれば優先使用
   var workingUrlBase=null;
-  var mlPerfEntry=perfUrls.find(function(u){return u.includes('machine_list');});
+  var mlPerfEntry=performance.getEntriesByType('resource').map(function(e){return e.name;}).find(function(u){return u.includes('machine_list');});
   if(mlPerfEntry){
     try{
       var mlU=new URL(mlPerfEntry);
-      // パス + 必須パラメータだけ残し、machine_nameとtarget_dateをプレースホルダー化
-      var baseParams=new URLSearchParams(mlU.search);
-      baseParams.set('machine_name','__MN__');
-      baseParams.set('target_date','__DATE__');
-      workingUrlBase=mlU.pathname+'?'+baseParams.toString();
-      bar.textContent='✅ perfからURL取得: '+workingUrlBase.slice(0,80);
-      await new Promise(r=>setTimeout(r,4000));
+      var bp=new URLSearchParams(mlU.search);
+      bp.set('machine_name','__MN__');bp.set('target_date','__DATE__');
+      workingUrlBase=mlU.pathname+'?'+bp.toString();
     }catch(e){}
   }
-
-  // performanceで見つからない場合はURLパターン探索
+  // デフォルト: 判明済みのURLパスを使用
   if(!workingUrlBase){
-    var testMn=seeds[0];
-    var urlPatterns=[
-      '/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today+'&disp=2&place=&history_day=3',
-      '/'+sid+'/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today,
-      '/'+sid+'/rack_info_kt/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(testMn)+'&target_date='+today,
-    ];
-    for(var pi=0;pi<urlPatterns.length;pi++){
-      bar.textContent='URL試行['+(pi+1)+']: '+urlPatterns[pi].slice(30,80);
-      await new Promise(r=>setTimeout(r,2000));
-      try{
-        var pr2=await fetch(urlPatterns[pi],{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json, */*'}});
-        var pt=await pr2.text();
-        bar.textContent='→ '+pr2.status+' resp:'+pt.slice(0,60);
-        await new Promise(r=>setTimeout(r,4000));
-        if(pr2.ok){workingUrlBase=urlPatterns[pi].replace(encodeURIComponent(testMn),'__MN__').replace(today,'__DATE__');break;}
-      }catch(e){}
-    }
+    workingUrlBase='/n-api/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name=__MN__&target_date=__DATE__&disp=2&place=&history_day=3';
   }
-  if(!workingUrlBase){bar.textContent='❌ URLパターン特定失敗';setTimeout(()=>bar.remove(),10000);return;}
 
   // ===== 機種ごとにループして全台取得（404はスキップ＝その機種なし） =====
   var allStands=[];
