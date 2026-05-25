@@ -148,7 +148,7 @@ let prevStoreData = null;
 let allStands = [];
 let prevAllStands = [];
 
-const GITHUB_BASE = 'https://raw.githubusercontent.com/min-juggler/juggler/main/data/';
+const GITHUB_BASE = 'https://raw.githubusercontent.com/min-juggler/juggler/main/docs/data/';
 
 async function loadData() {
   const urls = ['data/stores.json', GITHUB_BASE + 'stores.json'];

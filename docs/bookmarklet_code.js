@@ -32,14 +32,16 @@ async function push(result){
   var total=result.machines.reduce((a,m)=>a+m.stands.length,0);
   bar.textContent='📡 GitHubへ送信中...('+total+'台)';
   var sha=null,cur={};
-  try{var er=await fetch('https://api.github.com/repos/'+R+'/contents/data/stores.json',{headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json'}});
+  // docs/data/stores.json に書き込む（GitHub Pagesが配信するパス）
+  var apiPath='https://api.github.com/repos/'+R+'/contents/docs/data/stores.json';
+  try{var er=await fetch(apiPath,{headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json'}});
   if(er.ok){var ej=await er.json();sha=ej.sha;cur=JSON.parse(atob(ej.content.replace(/\n/g,'')));}}catch(e){}
   if(!cur.stores)cur={fetched_at:null,stores:{}};
   cur.fetched_at=new Date().toISOString();cur.stores[sid]=result;
   var js=JSON.stringify(cur,null,2);
   var body={message:'データ更新 '+new Date().toLocaleString('ja'),content:btoa(unescape(encodeURIComponent(js))),branch:'main'};
   if(sha)body.sha=sha;
-  var pr=await fetch('https://api.github.com/repos/'+R+'/contents/data/stores.json',{method:'PUT',headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+  var pr=await fetch(apiPath,{method:'PUT',headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
   if(pr.ok){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+total+'台 送信完了！';}
   else{bar.style.background='#888';bar.textContent='⚠️ 送信失敗: '+(await pr.text()).slice(0,80);}
 }
