@@ -203,7 +203,7 @@ function updateDataStatus() {
     const d = new Date(storeData.fetched_at);
     el.textContent = `最終更新: ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
   } else {
-    el.textContent = 'データ未取得 — scraper.pyを実行してください';
+    el.textContent = 'データ未取得 — 店舗サイトでブックマークを実行してください';
   }
 }
 
@@ -689,9 +689,14 @@ function renderRecords() {
 function initEvents() {
   document.getElementById('btn-analyze').addEventListener('click', analyze);
 
-  document.getElementById('btn-reload').addEventListener('click', async () => {
+  document.getElementById('btn-reload').addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    btn.textContent = '⏳ 読込中...';
+    btn.disabled = true;
     await loadData();
     analyze();
+    btn.textContent = '↻ 再読み込み';
+    btn.disabled = false;
   });
 
   document.getElementById('btn-record-toggle').addEventListener('click', () => {
