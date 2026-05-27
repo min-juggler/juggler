@@ -79,7 +79,7 @@ try{
 
   var encKey=null,encIv=null;
 
-  // ===== STEP1: 現在ページのpropsから機種名取得 =====
+  // ===== STEP1: 現在ページのpropsとDOMから機種名取得 =====
   bar.textContent='機種名取得中...';
   var dpEl=document.querySelector('[data-page]');
   if(dpEl){
@@ -89,22 +89,34 @@ try{
       var data=props.data||{};
       var propsHid=props.hall_id||props.hallId||data.hall_id;
       if(propsHid)hid=parseInt(propsHid);
-      // dataの全配列フィールドをスキャン
-      for(var dk of Object.keys(data)){
-        var dv=data[dk];
-        if(Array.isArray(dv))dv.forEach(function(item){
-          if(typeof item==='object'&&item)addMn(item.machine_name||item.ki_name||item.ki_mei||item.name||item.kind_name||item.kaki_name);
-        });
+      // dataの全配列フィールドをスキャン（ネスト含む）
+      function scanForMachineNames(obj,depth){
+        if(!obj||depth>3)return;
+        if(Array.isArray(obj)){
+          obj.forEach(function(item){
+            if(typeof item==='object'&&item)addMn(item.machine_name||item.ki_name||item.ki_mei||item.name||item.kind_name||item.kaki_name||item.title);
+            if(typeof item==='object'&&item)scanForMachineNames(item,depth+1);
+          });
+        } else if(typeof obj==='object'){
+          Object.values(obj).forEach(function(v){if(Array.isArray(v))scanForMachineNames(v,depth+1);});
+        }
       }
-      // props直下の配列もスキャン
-      for(var pk of Object.keys(props)){
-        var pv=props[pk];
-        if(Array.isArray(pv))pv.forEach(function(item){
-          if(typeof item==='object'&&item)addMn(item.machine_name||item.ki_name||item.ki_mei||item.name);
-        });
-      }
+      scanForMachineNames(data,0);
+      scanForMachineNames(props,0);
     }catch(e){}
   }
+  // DOMから直接「ジャグラー」含む機種名を抽出（機種名検索ページ対応）
+  try{
+    // テーブルセルやリンクから機種名テキストを取得
+    var domTexts=new Set();
+    document.querySelectorAll('td,th,a,li,.kind-name,[class*="kind"],[class*="machine"],[class*="kika"]').forEach(function(el){
+      var t=el.firstChild&&el.firstChild.nodeType===3?el.firstChild.textContent.trim():el.textContent.trim();
+      if(t)domTexts.add(t);
+    });
+    domTexts.forEach(function(t){
+      if(t.includes('ジャグラー')||t.includes('ｼﾞｬｸﾞﾗｰ'))addMn(t);
+    });
+  }catch(e){}
 
   // ===== STEP2: 機種別ページからAES鍵取得（半角機種名を使用） =====
   // DOM抽出は不正な機種名を混入させるため廃止。seedsのみ使用。
@@ -140,8 +152,8 @@ try{
     }catch(e){}
   }
 
-  bar.textContent='key='+(encKey?encKey.slice(0,12)+'...':'none')+' hid='+hid+' 機種:'+machineNames.length;
-  await new Promise(r=>setTimeout(r,3000));
+  bar.textContent='key='+(encKey?encKey.slice(0,12)+'...':'none')+' hid='+hid+' 試行機種:'+machineNames.length;
+  await new Promise(r=>setTimeout(r,2000));
   if(!encKey){bar.textContent='❌ AES鍵取得失敗';setTimeout(()=>bar.remove(),8000);return;}
 
   // ===== 復号ヘルパー =====
