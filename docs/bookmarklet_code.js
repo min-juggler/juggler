@@ -168,52 +168,81 @@ try{
     return null;
   }
 
-  // ===== machine_list API URL（/n-api/rack_info/machine_list と判明） =====
-  // performanceエントリに実際のURLがあれば優先使用
-  var workingUrlBase=null;
+  // ===== machine_list API URL（フォールバック用） =====
+  var mlUrlBases=[
+    '/n-api/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name=__MN__&target_date=__DATE__&disp=1',
+    '/n-api/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name=__MN__&target_date=__DATE__&disp=2&place=&history_day=3',
+  ];
+  // performanceエントリに実際のURLがあれば先頭に追加
   var mlPerfEntry=performance.getEntriesByType('resource').map(function(e){return e.name;}).find(function(u){return u.includes('machine_list');});
-  if(mlPerfEntry){
-    try{
-      var mlU=new URL(mlPerfEntry);
-      var bp=new URLSearchParams(mlU.search);
-      bp.set('machine_name','__MN__');bp.set('target_date','__DATE__');
-      workingUrlBase=mlU.pathname+'?'+bp.toString();
-    }catch(e){}
-  }
-  // デフォルト: 判明済みのURLパスを使用
-  if(!workingUrlBase){
-    workingUrlBase='/n-api/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name=__MN__&target_date=__DATE__&disp=2&place=&history_day=3';
+  if(mlPerfEntry){try{var mlU=new URL(mlPerfEntry);var bp=new URLSearchParams(mlU.search);bp.set('machine_name','__MN__');bp.set('target_date','__DATE__');mlUrlBases.unshift(mlU.pathname+'?'+bp.toString());}catch(e){}}
+
+  // standlistページから直接台データを取る関数
+  async function fetchStandsFromPage(mn){
+    var slUrl='/'+sid+'/standlist_slot?kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(mn);
+    var slR=await fetch(slUrl,{credentials:'include'});
+    if(!slR.ok)return null;
+    var slTxt=await slR.text();
+    var slM=slTxt.match(/data-page="([^"]+)"/);
+    if(!slM)return null;
+    var slPr=JSON.parse(decodeDP(slM[1])).props||{};
+    var slDat=slPr.data||{};
+    // 直接配列フィールド
+    for(var af of ['stand_list','stands','list','items','slot_list','dai_list']){
+      if(Array.isArray(slDat[af])&&slDat[af].length>0)return{src:'page.'+af,data:slDat[af]};
+    }
+    // 暗号化フィールド → 復号
+    for(var cf of ['cipher','content','encrypted','stand_data','list_data']){
+      if(slDat[cf]){var d=await decryptMl(String(slDat[cf]));if(d)return{src:'page.dec.'+cf,data:d};}
+    }
+    // slDat全体を復号試み（key/iv以外のフィールドを暗号文として）
+    var keys2=Object.keys(slDat).filter(k=>k!=='key'&&k!=='iv'&&k!=='hall_id');
+    for(var k2 of keys2){
+      if(typeof slDat[k2]==='string'&&slDat[k2].length>30){
+        var d2=await decryptMl(slDat[k2]);
+        if(d2)return{src:'page.dec.'+k2,data:d2,slKeys:Object.keys(slDat).join(',')};
+      }
+    }
+    return{src:'page.nodata',data:null,slKeys:Object.keys(slDat).join(',')};
   }
 
-  // ===== 機種ごとにループして全台取得（404はスキップ＝その機種なし） =====
+  // ===== 機種ごとにループして全台取得 =====
   var allStands=[];
   var dbgOk=0,dbgDec=0,dbgSample='';
   for(var i=0;i<machineNames.length;i++){
     var mname=machineNames[i];
     bar.textContent='['+(i+1)+'/'+machineNames.length+'] '+mname.slice(0,14)+'...';
     try{
-      var mlUrl=workingUrlBase.replace('__MN__',encodeURIComponent(mname)).replace('__DATE__',today);
-      var mlR=await fetch(mlUrl,{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json, text/plain, */*'}});
-      if(!mlR.ok)continue;
-      dbgOk++;
-      var rawTxt=await mlR.text();
-      var dec=await decryptMl(rawTxt);
+      var dec=null,decSrc='';
+      // まずstandlist_slotページから取得試みる
+      var pgRes=await fetchStandsFromPage(mname);
+      if(pgRes){
+        dbgOk++;
+        if(pgRes.data){dec=pgRes.data;decSrc=pgRes.src;}
+        else if(pgRes.slKeys&&dbgSample==='')dbgSample='slDat.keys='+pgRes.slKeys;
+      }
+      // ページから取れなければ machine_list API を試みる
+      if(!dec){
+        for(var mlBase of mlUrlBases){
+          var mlUrl=mlBase.replace('__MN__',encodeURIComponent(mname)).replace('__DATE__',today);
+          var mlR=await fetch(mlUrl,{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json, text/plain, */*'}});
+          if(!mlR.ok)continue;
+          var rawTxt=await mlR.text();
+          var dTmp=await decryptMl(rawTxt);
+          // {"sum":...}のみ=集計のみ → スキップ
+          if(dTmp&&!Array.isArray(dTmp)&&Object.keys(dTmp).length===1&&dTmp.sum!==undefined)continue;
+          if(dTmp){dec=dTmp;decSrc='api';break;}
+        }
+      }
       if(dec){
         dbgDec++;
         var ss=Array.isArray(dec)?dec:(dec.data||dec.items||null);
-        // Object.values()が[[...stands...]]を返す場合に対応: オブジェクト内の配列を探す
-        if(!ss){
-          for(var _v of Object.values(dec)){
-            if(Array.isArray(_v)&&_v.length>0){ss=_v;break;}
-          }
-        }
-        // デバッグ: 最初の機種のdec構造を記録（キー一覧 + 各値の型/長さ）
+        if(!ss){for(var _v of Object.values(dec)){if(Array.isArray(_v)&&_v.length>0){ss=_v;break;}}}
         if(dbgDec===1){
-          var kinfo=Object.keys(dec).map(k=>{var v=dec[k];return k+':'+(Array.isArray(v)?'arr['+v.length+']':typeof v);}).join(',');
-          dbgSample='keys='+kinfo+' | '+JSON.stringify(dec).slice(0,60);
+          var kinfo=Array.isArray(dec)?'array['+dec.length+']':Object.keys(dec).map(k=>{var v=dec[k];return k+':'+(Array.isArray(v)?'arr['+v.length+']':typeof v);}).join(',');
+          dbgSample='src='+decSrc+' '+kinfo;
         }
         if(Array.isArray(ss))ss.forEach(s=>{
-          // machine_nameフィールドがない場合はAPIリクエストに使った機種名をセット
           if(typeof s==='object'&&s!==null){
             if(!s.machine_name&&!s.ki_name&&!s.ki_mei)s.machine_name=mname;
             allStands.push(s);
