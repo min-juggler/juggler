@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-05-27T10:26:36.301Z",
+  "fetched_at": "2026-05-27T10:39:33.486Z",
   "stores": {
     "yonezawa": {
       "name": "アイランド米沢店",
@@ -482,76 +482,222 @@
       "name": "1円劇場上山店",
       "machines": [
         {
-          "machine_name": "不明",
-          "count": 9,
+          "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
+          "count": 1,
           "stands": [
             {
               "rack_no": "?",
-              "machine_name": "不明",
+              "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
               "games": 0,
               "bb": 0,
               "rb": 0,
               "diff": 0
-            },
+            }
+          ]
+        },
+        {
+          "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰIII",
+          "count": 1,
+          "stands": [
             {
               "rack_no": "?",
-              "machine_name": "不明",
+              "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰIII",
               "games": 0,
               "bb": 0,
               "rb": 0,
               "diff": 0
-            },
+            }
+          ]
+        },
+        {
+          "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰIV",
+          "count": 1,
+          "stands": [
             {
               "rack_no": "?",
-              "machine_name": "不明",
+              "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰIV",
               "games": 0,
               "bb": 0,
               "rb": 0,
               "diff": 0
-            },
+            }
+          ]
+        },
+        {
+          "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+          "count": 1,
+          "stands": [
             {
               "rack_no": "?",
-              "machine_name": "不明",
+              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
               "games": 0,
               "bb": 0,
               "rb": 0,
               "diff": 0
-            },
+            }
+          ]
+        },
+        {
+          "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ2",
+          "count": 1,
+          "stands": [
             {
               "rack_no": "?",
-              "machine_name": "不明",
+              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ2",
               "games": 0,
               "bb": 0,
               "rb": 0,
               "diff": 0
-            },
+            }
+          ]
+        },
+        {
+          "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+          "count": 1,
+          "stands": [
             {
               "rack_no": "?",
-              "machine_name": "不明",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
               "games": 0,
               "bb": 0,
               "rb": 0,
               "diff": 0
-            },
+            }
+          ]
+        },
+        {
+          "machine_name": "ｱｲﾑｼﾞｬｸﾞﾗｰEX",
+          "count": 1,
+          "stands": [
             {
               "rack_no": "?",
-              "machine_name": "不明",
+              "machine_name": "ｱｲﾑｼﾞｬｸﾞﾗｰEX",
               "games": 0,
               "bb": 0,
               "rb": 0,
               "diff": 0
-            },
+            }
+          ]
+        },
+        {
+          "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰEX",
+          "count": 1,
+          "stands": [
             {
               "rack_no": "?",
-              "machine_name": "不明",
+              "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰEX",
               "games": 0,
               "bb": 0,
               "rb": 0,
               "diff": 0
-            },
+            }
+          ]
+        },
+        {
+          "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2",
+          "count": 1,
+          "stands": [
             {
               "rack_no": "?",
-              "machine_name": "不明",
+              "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰ3",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "?",
+              "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰ3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰV",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "?",
+              "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰV",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰII",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "?",
+              "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰII",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰV",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "?",
+              "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰV",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "?",
+              "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "?",
+              "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ2",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "?",
+              "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ2",
               "games": 0,
               "bb": 0,
               "rb": 0,
