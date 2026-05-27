@@ -71,6 +71,10 @@ try{
     // 半角カタカナか英数字を含むもののみ（ゴミ除外）
     if(!/[ｦ-ﾟA-Za-z0-9]/.test(mn))return;
     if(!machineNames.includes(mn))machineNames.push(mn);
+    // 「S ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX KK⑱」→「ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX」のように
+    // 先頭の1文字+スペース と 末尾のKK/KT/KA等サフィックスを除いた短縮名も追加
+    var s=mn.replace(/^[A-Za-z]\s+/,'').replace(/\s+[A-Z]{2,3}\S*$/,'').trim();
+    if(s&&s!==mn&&/[ｦ-ﾟA-Za-z0-9]/.test(s)&&!machineNames.includes(s))machineNames.push(s);
   }
 
   var encKey=null,encIv=null;
@@ -104,7 +108,16 @@ try{
 
   // ===== STEP2: 機種別ページからAES鍵取得（半角機種名を使用） =====
   // DOM抽出は不正な機種名を混入させるため廃止。seedsのみ使用。
-  var seeds=['ﾏｲｼﾞｬｸﾞﾗｰV','ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3','ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX','ｱｲﾑｼﾞｬｸﾞﾗｰEX','ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰEX','ﾏｲｼﾞｬｸﾞﾗｰIII','ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰ3','ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ2','ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰV'];
+  var seeds=[
+    // よく設置される機種（米沢・上山共通）
+    'ﾏｲｼﾞｬｸﾞﾗｰV','ﾏｲｼﾞｬｸﾞﾗｰIII','ﾏｲｼﾞｬｸﾞﾗｰIV',
+    'ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3','ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ2',
+    'ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX','ｱｲﾑｼﾞｬｸﾞﾗｰEX',
+    'ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰEX','ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2',  // ←追加
+    'ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰ3','ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰV','ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰII',
+    'ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰV','ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ',  // ←Vなしも追加
+    'ﾐｽﾀｰｼﾞｬｸﾞﾗｰ','ﾐｽﾀｰｼﾞｬｸﾞﾗｰ2',  // ←追加
+  ];
   seeds.forEach(function(s){if(!machineNames.includes(s))machineNames.push(s);});
 
   var tryForKey=machineNames.slice();
