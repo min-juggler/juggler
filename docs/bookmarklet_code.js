@@ -195,7 +195,14 @@ try{
       var mlR=await fetch(mlUrl,{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json, text/plain, */*'}});
       if(!mlR.ok)continue;
       var dec=await decryptMl(await mlR.text());
-      if(dec){var ss=Array.isArray(dec)?dec:(dec.data||dec.items||Object.values(dec));
+      if(dec){
+        var ss=Array.isArray(dec)?dec:(dec.data||dec.items||null);
+        // Object.values()が[[...stands...]]を返す場合に対応: オブジェクト内の配列を探す
+        if(!ss){
+          for(var _v of Object.values(dec)){
+            if(Array.isArray(_v)&&_v.length>0&&typeof _v[0]==='object'&&_v[0]!==null){ss=_v;break;}
+          }
+        }
         if(Array.isArray(ss))ss.forEach(s=>{
           // machine_nameフィールドがない場合はAPIリクエストに使った機種名をセット
           if(!s.machine_name&&!s.ki_name&&!s.ki_mei)s.machine_name=mname;
