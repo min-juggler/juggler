@@ -187,6 +187,7 @@ try{
 
   // ===== 機種ごとにループして全台取得（404はスキップ＝その機種なし） =====
   var allStands=[];
+  var dbgOk=0,dbgDec=0,dbgSample='';
   for(var i=0;i<machineNames.length;i++){
     var mname=machineNames[i];
     bar.textContent='['+(i+1)+'/'+machineNames.length+'] '+mname.slice(0,14)+'...';
@@ -194,25 +195,36 @@ try{
       var mlUrl=workingUrlBase.replace('__MN__',encodeURIComponent(mname)).replace('__DATE__',today);
       var mlR=await fetch(mlUrl,{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json, text/plain, */*'}});
       if(!mlR.ok)continue;
-      var dec=await decryptMl(await mlR.text());
+      dbgOk++;
+      var rawTxt=await mlR.text();
+      var dec=await decryptMl(rawTxt);
       if(dec){
+        dbgDec++;
         var ss=Array.isArray(dec)?dec:(dec.data||dec.items||null);
         // Object.values()が[[...stands...]]を返す場合に対応: オブジェクト内の配列を探す
         if(!ss){
           for(var _v of Object.values(dec)){
-            if(Array.isArray(_v)&&_v.length>0&&typeof _v[0]==='object'&&_v[0]!==null){ss=_v;break;}
+            if(Array.isArray(_v)&&_v.length>0){ss=_v;break;}
           }
         }
+        // デバッグ: 最初の機種のdec構造を記録
+        if(dbgDec===1)dbgSample=JSON.stringify(dec).slice(0,80);
         if(Array.isArray(ss))ss.forEach(s=>{
           // machine_nameフィールドがない場合はAPIリクエストに使った機種名をセット
-          if(!s.machine_name&&!s.ki_name&&!s.ki_mei)s.machine_name=mname;
-          allStands.push(s);
+          if(typeof s==='object'&&s!==null){
+            if(!s.machine_name&&!s.ki_name&&!s.ki_mei)s.machine_name=mname;
+            allStands.push(s);
+          }
         });
       }
     }catch(e){}
   }
 
-  if(allStands.length===0){bar.textContent='❌ 全台データ取得失敗';setTimeout(()=>bar.remove(),10000);return;}
+  if(allStands.length===0){
+    bar.textContent='❌ 全台データ取得失敗 ok='+dbgOk+' dec='+dbgDec;
+    if(dbgSample)setTimeout(()=>{bar.textContent='🔍 dec例: '+dbgSample;},4000);
+    setTimeout(()=>bar.remove(),15000);return;
+  }
   var mmap={};
   allStands.forEach(s=>{
     var mn=s.machine_name||s.ki_name||s.ki_mei||s.name||s.kind_name||s.kaki_name||'不明';
