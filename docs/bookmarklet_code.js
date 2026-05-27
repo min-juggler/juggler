@@ -274,9 +274,9 @@ try{
     var mn=s.machine_name||s.ki_name||s.ki_mei||s.name||s.kind_name||s.kaki_name||'不明';
     if(!mmap[mn])mmap[mn]=[];
     mmap[mn].push({
-      rack_no:String(s.rack_no||s.dai_no||'?'),
+      rack_no:String(s.rack_no||s.dai_no||s.slot_no||s.stand_no||s.dai_bangou||s.no||s.id||'?'),
       machine_name:mn,
-      games:parseInt(s.all_game_count||s.total_games||s.games||0),
+      games:parseInt(s.all_game_count||s.total_games||s.games||s.game_count||s.play_count||s.game_su||0),
       bb:parseInt(s.bonus_1||s.bb_count||s.bb||0),
       rb:parseInt(s.bonus_2||s.rb_count||s.rb||0),
       diff:parseInt(s.substraction||s.diff||s.sa_mai||0)
@@ -284,7 +284,14 @@ try{
   });
   var result={name:sname,machines:[]};
   for(var[mn2,sts2]of Object.entries(mmap))result.machines.push({machine_name:mn2,count:sts2.length,stands:sts2});
-  bar.textContent='✅ '+allStands.length+'台 機種:'+result.machines.length+' GitHub送信中...';
+  // デバッグ: 最初のstand生データのキーを表示
+  if(allStands.length>0){
+    var fs=allStands[0];
+    var fsKeys=Object.keys(fs).join(',');
+    var fsVals=JSON.stringify(fs).slice(0,100);
+    setTimeout(()=>{bar.textContent='🔍 stand例: '+fsVals;},3000);
+  }
+  bar.textContent='✅ '+allStands.length+'台(試行'+machineNames.length+'機種) GitHub送信中...';
   await push(result);
 }catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
 setTimeout(()=>bar.remove(),10000);
