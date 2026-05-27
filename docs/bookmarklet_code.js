@@ -195,14 +195,20 @@ try{
       var mlR=await fetch(mlUrl,{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json, text/plain, */*'}});
       if(!mlR.ok)continue;
       var dec=await decryptMl(await mlR.text());
-      if(dec){var ss=Array.isArray(dec)?dec:(dec.data||dec.items||Object.values(dec));if(Array.isArray(ss))ss.forEach(s=>allStands.push(s));}
+      if(dec){var ss=Array.isArray(dec)?dec:(dec.data||dec.items||Object.values(dec));
+        if(Array.isArray(ss))ss.forEach(s=>{
+          // machine_nameフィールドがない場合はAPIリクエストに使った機種名をセット
+          if(!s.machine_name&&!s.ki_name&&!s.ki_mei)s.machine_name=mname;
+          allStands.push(s);
+        });
+      }
     }catch(e){}
   }
 
   if(allStands.length===0){bar.textContent='❌ 全台データ取得失敗';setTimeout(()=>bar.remove(),10000);return;}
   var mmap={};
   allStands.forEach(s=>{
-    var mn=s.machine_name||s.ki_name||'不明';
+    var mn=s.machine_name||s.ki_name||s.ki_mei||s.name||s.kind_name||s.kaki_name||'不明';
     if(!mmap[mn])mmap[mn]=[];
     mmap[mn].push({
       rack_no:String(s.rack_no||s.dai_no||'?'),
