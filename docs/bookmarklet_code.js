@@ -35,7 +35,12 @@ async function push(result){
   // docs/data/stores.json に書き込む（GitHub Pagesが配信するパス）
   var apiPath='https://api.github.com/repos/'+R+'/contents/docs/data/stores.json';
   try{var er=await fetch(apiPath,{headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json'}});
-  if(er.ok){var ej=await er.json();sha=ej.sha;cur=JSON.parse(atob(ej.content.replace(/\n/g,'')));}}catch(e){}
+  if(er.ok){var ej=await er.json();sha=ej.sha;
+    // atob→TextDecoderで正しくUTF-8デコード（単純なatob+JSON.parseだと漢字が文字化けする）
+    var b64=ej.content.replace(/\n/g,'');
+    var bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+    cur=JSON.parse(new TextDecoder('utf-8').decode(bytes));
+  }}catch(e){}
   if(!cur.stores)cur={fetched_at:null,stores:{}};
   cur.fetched_at=new Date().toISOString();cur.stores[sid]=result;
   var js=JSON.stringify(cur,null,2);
