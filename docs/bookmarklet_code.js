@@ -207,8 +207,11 @@ try{
             if(Array.isArray(_v)&&_v.length>0){ss=_v;break;}
           }
         }
-        // デバッグ: 最初の機種のdec構造を記録
-        if(dbgDec===1)dbgSample=JSON.stringify(dec).slice(0,80);
+        // デバッグ: 最初の機種のdec構造を記録（キー一覧 + 各値の型/長さ）
+        if(dbgDec===1){
+          var kinfo=Object.keys(dec).map(k=>{var v=dec[k];return k+':'+(Array.isArray(v)?'arr['+v.length+']':typeof v);}).join(',');
+          dbgSample='keys='+kinfo+' | '+JSON.stringify(dec).slice(0,60);
+        }
         if(Array.isArray(ss))ss.forEach(s=>{
           // machine_nameフィールドがない場合はAPIリクエストに使った機種名をセット
           if(typeof s==='object'&&s!==null){
