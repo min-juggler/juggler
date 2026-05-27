@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-05-27T10:39:33.486Z",
+  "fetched_at": "2026-05-27T13:52:34.012Z",
   "stores": {
     "yonezawa": {
       "name": "アイランド米沢店",
@@ -482,12 +482,12 @@
       "name": "1円劇場上山店",
       "machines": [
         {
-          "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
+          "machine_name": "S ゴーゴージャグラー3 KA",
           "count": 1,
           "stands": [
             {
               "rack_no": "?",
-              "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
+              "machine_name": "S ゴーゴージャグラー3 KA",
               "games": 0,
               "bb": 0,
               "rb": 0,
@@ -496,12 +496,20 @@
           ]
         },
         {
-          "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰIII",
-          "count": 1,
+          "machine_name": "S ネオアイムジャグラーEX KK⑱",
+          "count": 2,
           "stands": [
             {
               "rack_no": "?",
-              "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰIII",
+              "machine_name": "S ネオアイムジャグラーEX KK⑱",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "?",
+              "machine_name": "S ネオアイムジャグラーEX KK⑱",
               "games": 0,
               "bb": 0,
               "rb": 0,
@@ -510,12 +518,12 @@
           ]
         },
         {
-          "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰIV",
+          "machine_name": "S ファンキージャグラー2 KT",
           "count": 1,
           "stands": [
             {
               "rack_no": "?",
-              "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰIV",
+              "machine_name": "S ファンキージャグラー2 KT",
               "games": 0,
               "bb": 0,
               "rb": 0,
@@ -524,12 +532,12 @@
           ]
         },
         {
-          "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+          "machine_name": "S ウルトラミラクルジャグラー KT",
           "count": 1,
           "stands": [
             {
               "rack_no": "?",
-              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+              "machine_name": "S ウルトラミラクルジャグラー KT",
               "games": 0,
               "bb": 0,
               "rb": 0,
@@ -538,166 +546,12 @@
           ]
         },
         {
-          "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ2",
+          "machine_name": "S ミスタージャグラー KK⑤",
           "count": 1,
           "stands": [
             {
               "rack_no": "?",
-              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ2",
-              "games": 0,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0
-            }
-          ]
-        },
-        {
-          "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-          "count": 1,
-          "stands": [
-            {
-              "rack_no": "?",
-              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 0,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0
-            }
-          ]
-        },
-        {
-          "machine_name": "ｱｲﾑｼﾞｬｸﾞﾗｰEX",
-          "count": 1,
-          "stands": [
-            {
-              "rack_no": "?",
-              "machine_name": "ｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 0,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0
-            }
-          ]
-        },
-        {
-          "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰEX",
-          "count": 1,
-          "stands": [
-            {
-              "rack_no": "?",
-              "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰEX",
-              "games": 0,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0
-            }
-          ]
-        },
-        {
-          "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2",
-          "count": 1,
-          "stands": [
-            {
-              "rack_no": "?",
-              "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2",
-              "games": 0,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0
-            }
-          ]
-        },
-        {
-          "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰ3",
-          "count": 1,
-          "stands": [
-            {
-              "rack_no": "?",
-              "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰ3",
-              "games": 0,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0
-            }
-          ]
-        },
-        {
-          "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰV",
-          "count": 1,
-          "stands": [
-            {
-              "rack_no": "?",
-              "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰV",
-              "games": 0,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0
-            }
-          ]
-        },
-        {
-          "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰII",
-          "count": 1,
-          "stands": [
-            {
-              "rack_no": "?",
-              "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰII",
-              "games": 0,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0
-            }
-          ]
-        },
-        {
-          "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰV",
-          "count": 1,
-          "stands": [
-            {
-              "rack_no": "?",
-              "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰV",
-              "games": 0,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0
-            }
-          ]
-        },
-        {
-          "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
-          "count": 1,
-          "stands": [
-            {
-              "rack_no": "?",
-              "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
-              "games": 0,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0
-            }
-          ]
-        },
-        {
-          "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ",
-          "count": 1,
-          "stands": [
-            {
-              "rack_no": "?",
-              "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ",
-              "games": 0,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0
-            }
-          ]
-        },
-        {
-          "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ2",
-          "count": 1,
-          "stands": [
-            {
-              "rack_no": "?",
-              "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ2",
+              "machine_name": "S ミスタージャグラー KK⑤",
               "games": 0,
               "bb": 0,
               "rb": 0,
