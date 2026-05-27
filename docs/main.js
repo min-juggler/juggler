@@ -1,5 +1,31 @@
 'use strict';
 
+// ===== 半角カタカナ → 全角カタカナ変換（表示用） =====
+function hw2fw(s) {
+  if (!s) return s;
+  // 濁点・半濁点の組み合わせを先に処理
+  s = s.replace(/ｶﾞ/g,'ガ').replace(/ｷﾞ/g,'ギ').replace(/ｸﾞ/g,'グ').replace(/ｹﾞ/g,'ゲ').replace(/ｺﾞ/g,'ゴ')
+       .replace(/ｻﾞ/g,'ザ').replace(/ｼﾞ/g,'ジ').replace(/ｽﾞ/g,'ズ').replace(/ｾﾞ/g,'ゼ').replace(/ｿﾞ/g,'ゾ')
+       .replace(/ﾀﾞ/g,'ダ').replace(/ﾁﾞ/g,'ヂ').replace(/ﾂﾞ/g,'ヅ').replace(/ﾃﾞ/g,'デ').replace(/ﾄﾞ/g,'ド')
+       .replace(/ﾊﾞ/g,'バ').replace(/ﾋﾞ/g,'ビ').replace(/ﾌﾞ/g,'ブ').replace(/ﾍﾞ/g,'ベ').replace(/ﾎﾞ/g,'ボ')
+       .replace(/ﾊﾟ/g,'パ').replace(/ﾋﾟ/g,'ピ').replace(/ﾌﾟ/g,'プ').replace(/ﾍﾟ/g,'ペ').replace(/ﾎﾟ/g,'ポ')
+       .replace(/ｳﾞ/g,'ヴ');
+  // 単独半角カタカナ
+  const m = {'ｱ':'ア','ｲ':'イ','ｳ':'ウ','ｴ':'エ','ｵ':'オ',
+    'ｶ':'カ','ｷ':'キ','ｸ':'ク','ｹ':'ケ','ｺ':'コ',
+    'ｻ':'サ','ｼ':'シ','ｽ':'ス','ｾ':'セ','ｿ':'ソ',
+    'ﾀ':'タ','ﾁ':'チ','ﾂ':'ツ','ﾃ':'テ','ﾄ':'ト',
+    'ﾅ':'ナ','ﾆ':'ニ','ﾇ':'ヌ','ﾈ':'ネ','ﾉ':'ノ',
+    'ﾊ':'ハ','ﾋ':'ヒ','ﾌ':'フ','ﾍ':'ヘ','ﾎ':'ホ',
+    'ﾏ':'マ','ﾐ':'ミ','ﾑ':'ム','ﾒ':'メ','ﾓ':'モ',
+    'ﾔ':'ヤ','ﾕ':'ユ','ﾖ':'ヨ',
+    'ﾗ':'ラ','ﾘ':'リ','ﾙ':'ル','ﾚ':'レ','ﾛ':'ロ',
+    'ﾜ':'ワ','ｦ':'ヲ','ﾝ':'ン',
+    'ｧ':'ァ','ｨ':'ィ','ｩ':'ゥ','ｪ':'ェ','ｫ':'ォ',
+    'ｯ':'ッ','ｬ':'ャ','ｭ':'ュ','ｮ':'ョ','ｰ':'ー'};
+  return s.split('').map(c => m[c] || c).join('');
+}
+
 // ===== ジャグラー設定値テーブル =====
 const JUGGLER_SETTINGS = {
   "default": {
@@ -177,8 +203,9 @@ async function loadPrevData(url) {
     prevAllStands = [];
     for (const [storeId, store] of Object.entries(prevStoreData.stores)) {
       for (const machine of store.machines) {
+        const displayName = hw2fw(machine.machine_name);
         for (const stand of machine.stands) {
-          prevAllStands.push({ ...stand, store_id: storeId, store_name: store.name, machine_name: machine.machine_name });
+          prevAllStands.push({ ...stand, store_id: storeId, store_name: store.name, machine_name: displayName });
         }
       }
     }
@@ -190,8 +217,10 @@ function buildAllStands() {
   if (!storeData) return;
   for (const [storeId, store] of Object.entries(storeData.stores)) {
     for (const machine of store.machines) {
+      // 半角カタカナ → 全角カタカナに変換して表示用に正規化
+      const displayName = hw2fw(machine.machine_name);
       for (const stand of machine.stands) {
-        allStands.push({ ...stand, store_id: storeId, store_name: store.name, machine_name: machine.machine_name });
+        allStands.push({ ...stand, store_id: storeId, store_name: store.name, machine_name: displayName });
       }
     }
   }
