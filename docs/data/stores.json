@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-05-27T09:51:30.462Z",
+  "fetched_at": "2026-05-27T10:26:36.301Z",
   "stores": {
     "yonezawa": {
       "name": "アイランド米沢店",
@@ -473,6 +473,89 @@
               "bb": 4,
               "rb": 2,
               "diff": -185
+            }
+          ]
+        }
+      ]
+    },
+    "kaminoyama": {
+      "name": "1円劇場上山店",
+      "machines": [
+        {
+          "machine_name": "不明",
+          "count": 9,
+          "stands": [
+            {
+              "rack_no": "?",
+              "machine_name": "不明",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "?",
+              "machine_name": "不明",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "?",
+              "machine_name": "不明",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "?",
+              "machine_name": "不明",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "?",
+              "machine_name": "不明",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "?",
+              "machine_name": "不明",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "?",
+              "machine_name": "不明",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "?",
+              "machine_name": "不明",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "?",
+              "machine_name": "不明",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
             }
           ]
         }
