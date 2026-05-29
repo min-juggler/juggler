@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-05-27T13:52:34.012Z",
+  "fetched_at": "2026-05-29T05:51:53.656Z",
   "stores": {
     "yonezawa": {
       "name": "アイランド米沢店",
@@ -482,23 +482,17 @@
       "name": "1円劇場上山店",
       "machines": [
         {
-          "machine_name": "S ゴーゴージャグラー3 KA",
-          "count": 1,
+          "machine_name": "S ネオアイムジャグラーEX KK⑱",
+          "count": 3,
           "stands": [
             {
               "rack_no": "?",
-              "machine_name": "S ゴーゴージャグラー3 KA",
+              "machine_name": "S ネオアイムジャグラーEX KK⑱",
               "games": 0,
               "bb": 0,
               "rb": 0,
               "diff": 0
-            }
-          ]
-        },
-        {
-          "machine_name": "S ネオアイムジャグラーEX KK⑱",
-          "count": 2,
-          "stands": [
+            },
             {
               "rack_no": "?",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
@@ -518,12 +512,20 @@
           ]
         },
         {
-          "machine_name": "S ファンキージャグラー2 KT",
-          "count": 1,
+          "machine_name": "S ミスタージャグラー KK⑤",
+          "count": 2,
           "stands": [
             {
               "rack_no": "?",
-              "machine_name": "S ファンキージャグラー2 KT",
+              "machine_name": "S ミスタージャグラー KK⑤",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "?",
+              "machine_name": "S ミスタージャグラー KK⑤",
               "games": 0,
               "bb": 0,
               "rb": 0,
@@ -533,8 +535,16 @@
         },
         {
           "machine_name": "S ウルトラミラクルジャグラー KT",
-          "count": 1,
+          "count": 2,
           "stands": [
+            {
+              "rack_no": "?",
+              "machine_name": "S ウルトラミラクルジャグラー KT",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
             {
               "rack_no": "?",
               "machine_name": "S ウルトラミラクルジャグラー KT",
@@ -546,12 +556,42 @@
           ]
         },
         {
-          "machine_name": "S ミスタージャグラー KK⑤",
-          "count": 1,
+          "machine_name": "S ゴーゴージャグラー3 KA",
+          "count": 2,
           "stands": [
             {
               "rack_no": "?",
-              "machine_name": "S ミスタージャグラー KK⑤",
+              "machine_name": "S ゴーゴージャグラー3 KA",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "?",
+              "machine_name": "S ゴーゴージャグラー3 KA",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "S ファンキージャグラー2 KT",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "?",
+              "machine_name": "S ファンキージャグラー2 KT",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "?",
+              "machine_name": "S ファンキージャグラー2 KT",
               "games": 0,
               "bb": 0,
               "rb": 0,
