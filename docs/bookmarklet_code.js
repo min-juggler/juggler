@@ -199,9 +199,14 @@ try{
     if(!slM)return null;
     var slPr=JSON.parse(decodeDP(slM[1])).props||{};
     var slDat=slPr.data||{};
-    // 直接配列フィールド
+    // 直接配列フィールド（machine_name_encを持つ機種リストは除外）
     for(var af of ['stand_list','stands','list','items','slot_list','dai_list']){
-      if(Array.isArray(slDat[af])&&slDat[af].length>0)return{src:'page.'+af,data:slDat[af]};
+      if(Array.isArray(slDat[af])&&slDat[af].length>0){
+        var f0=slDat[af][0];
+        // machine_name_encがある = 機種リスト → スキップ
+        if(typeof f0==='object'&&f0!==null&&f0.machine_name_enc)continue;
+        return{src:'page.'+af,data:slDat[af]};
+      }
     }
     // 暗号化フィールド → 復号
     for(var cf of ['cipher','content','encrypted','stand_data','list_data']){
@@ -213,6 +218,16 @@ try{
       if(typeof slDat[k2]==='string'&&slDat[k2].length>30){
         var d2=await decryptMl(slDat[k2]);
         if(d2)return{src:'page.dec.'+k2,data:d2,slKeys:Object.keys(slDat).join(',')};
+      }
+    }
+    // 機種リスト配列（machine_name_enc持つ）から機種名を補充してmachineNamesに追加
+    for(var xk of Object.keys(slDat)){
+      if(Array.isArray(slDat[xk])&&slDat[xk].length>0&&slDat[xk][0]&&slDat[xk][0].machine_name_enc){
+        slDat[xk].forEach(function(item){
+          // machine_name_enc からURLデコードして機種名取得
+          try{addMn(decodeURIComponent(item.machine_name_enc.replace(/\+/g,' ')));}catch(e){}
+          if(item.machine_name)addMn(item.machine_name);
+        });
       }
     }
     return{src:'page.nodata',data:null,slKeys:Object.keys(slDat).join(',')};
