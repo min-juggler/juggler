@@ -233,6 +233,18 @@ try{
     return{src:'page.nodata',data:null,slKeys:Object.keys(slDat).join(',')};
   }
 
+  // machine_name_encを含む配列（機種リスト）かどうか判定 + 機種名補充
+  function extractMachineList(arr){
+    if(!Array.isArray(arr)||arr.length===0)return false;
+    var f=arr[0];
+    if(typeof f!=='object'||f===null||!f.machine_name_enc)return false;
+    arr.forEach(function(item){
+      try{addMn(decodeURIComponent((item.machine_name_enc||'').replace(/\+/g,' ')));}catch(e){}
+      if(item.machine_name)addMn(item.machine_name);
+    });
+    return true;
+  }
+
   // ===== 機種ごとにループして全台取得 =====
   var allStands=[];
   var dbgOk=0,dbgDec=0,dbgSample='';
@@ -241,36 +253,48 @@ try{
     bar.textContent='['+(i+1)+'/'+machineNames.length+'] '+mname.slice(0,14)+'...';
     try{
       var dec=null,decSrc='';
-      // まずstandlist_slotページから取得試みる
-      var pgRes=await fetchStandsFromPage(mname);
-      if(pgRes){
+      // ① machine_list API を優先（米沢で実績あり）
+      for(var mlBase of mlUrlBases){
+        var mlUrl=mlBase.replace('__MN__',encodeURIComponent(mname)).replace('__DATE__',today);
+        var mlR=await fetch(mlUrl,{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json, text/plain, */*'}});
+        if(!mlR.ok)continue;
         dbgOk++;
-        if(pgRes.data){dec=pgRes.data;decSrc=pgRes.src;}
-        else if(pgRes.slKeys&&dbgSample==='')dbgSample='slDat.keys='+pgRes.slKeys;
-      }
-      // ページから取れなければ machine_list API を試みる
-      if(!dec){
-        for(var mlBase of mlUrlBases){
-          var mlUrl=mlBase.replace('__MN__',encodeURIComponent(mname)).replace('__DATE__',today);
-          var mlR=await fetch(mlUrl,{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json, text/plain, */*'}});
-          if(!mlR.ok)continue;
-          var rawTxt=await mlR.text();
-          var dTmp=await decryptMl(rawTxt);
-          // {"sum":...}のみ=集計のみ → スキップ
-          if(dTmp&&!Array.isArray(dTmp)&&Object.keys(dTmp).length===1&&dTmp.sum!==undefined)continue;
-          if(dTmp){dec=dTmp;decSrc='api';break;}
+        var rawTxt=await mlR.text();
+        var dTmp=await decryptMl(rawTxt);
+        if(!dTmp)continue;
+        // 配列 or オブジェクト内の配列が機種リストなら補充してスキップ
+        var isMl=extractMachineList(Array.isArray(dTmp)?dTmp:null);
+        if(!isMl&&!Array.isArray(dTmp)){
+          for(var _vv of Object.values(dTmp)){isMl=extractMachineList(_vv);if(isMl)break;}
         }
+        if(isMl)continue;
+        // {"sum":...}のみ → スキップ
+        if(!Array.isArray(dTmp)&&Object.keys(dTmp).length===1&&dTmp.sum!==undefined)continue;
+        dec=dTmp;decSrc='api';break;
+      }
+      // ② APIで取れなければ standlist_slot ページから試みる
+      if(!dec){
+        var pgRes=await fetchStandsFromPage(mname);
+        if(pgRes&&pgRes.data){dec=pgRes.data;decSrc=pgRes.src;}
+        else if(pgRes&&pgRes.slKeys&&dbgSample==='')dbgSample='slDat.keys='+pgRes.slKeys;
       }
       if(dec){
         dbgDec++;
         var ss=Array.isArray(dec)?dec:(dec.data||dec.items||null);
-        if(!ss){for(var _v of Object.values(dec)){if(Array.isArray(_v)&&_v.length>0){ss=_v;break;}}}
+        if(!ss){
+          for(var _v of Object.values(dec)){
+            if(extractMachineList(_v))continue; // 機種リストはスキップ(補充済み)
+            if(Array.isArray(_v)&&_v.length>0){ss=_v;break;}
+          }
+        }
+        // ssが機種リストなら除外
+        if(ss&&extractMachineList(ss)){ss=null;}
         if(dbgDec===1){
           var kinfo=Array.isArray(dec)?'array['+dec.length+']':Object.keys(dec).map(k=>{var v=dec[k];return k+':'+(Array.isArray(v)?'arr['+v.length+']':typeof v);}).join(',');
           dbgSample='src='+decSrc+' '+kinfo;
         }
         if(Array.isArray(ss))ss.forEach(s=>{
-          if(typeof s==='object'&&s!==null){
+          if(typeof s==='object'&&s!==null&&!s.machine_name_enc){
             if(!s.machine_name&&!s.ki_name&&!s.ki_mei)s.machine_name=mname;
             allStands.push(s);
           }
