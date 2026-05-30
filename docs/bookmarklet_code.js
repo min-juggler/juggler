@@ -134,27 +134,36 @@ try{
 
   var tryForKey=machineNames.slice();
   bar.textContent='鍵取得中... ('+tryForKey.length+'機種試行)';
+  var dbgStep2={ok:0,nodp:0,nokey:0,lastUrl:'',lastKeys:''};
   for(var si=0;si<tryForKey.length;si++){
     try{
-      var sr=await fetch('/'+sid+'/standlist_slot?kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(tryForKey[si]),{credentials:'include'});
+      var slUrl2='/'+sid+'/standlist_slot?kind_code='+urlKindCode+'&machine_name='+encodeURIComponent(tryForKey[si]);
+      var sr=await fetch(slUrl2,{credentials:'include'});
       if(!sr.ok)continue;
+      dbgStep2.ok++;dbgStep2.lastUrl=tryForKey[si].slice(0,12);
       var sh=await sr.text();
       var sm2=sh.match(/data-page="([^"]+)"/);
-      if(sm2){
-        var sp=JSON.parse(decodeDP(sm2[1])).props||{};
-        if(sp.data&&sp.data.key){
-          encKey=sp.data.key;encIv=sp.data.iv;
-          var propsHid2=sp.hall_id||sp.hallId||(sp.data&&sp.data.hall_id);
-          if(propsHid2)hid=parseInt(propsHid2);
-          break;
-        }
+      if(!sm2){dbgStep2.nodp++;continue;}
+      var sp=JSON.parse(decodeDP(sm2[1])).props||{};
+      if(sp.data&&sp.data.key){
+        encKey=sp.data.key;encIv=sp.data.iv;
+        var propsHid2=sp.hall_id||sp.hallId||(sp.data&&sp.data.hall_id);
+        if(propsHid2)hid=parseInt(propsHid2);
+        break;
+      } else {
+        dbgStep2.nokey++;
+        if(dbgStep2.nokey===1)dbgStep2.lastKeys=Object.keys(sp.data||{}).join(',').slice(0,40);
       }
     }catch(e){}
   }
 
-  bar.textContent='key='+(encKey?encKey.slice(0,12)+'...':'none')+' hid='+hid+' 試行機種:'+machineNames.length;
+  bar.textContent='key='+(encKey?encKey.slice(0,12)+'...':'none')+' hid='+hid+' 試行:'+tryForKey.length;
   await new Promise(r=>setTimeout(r,2000));
-  if(!encKey){bar.textContent='❌ AES鍵取得失敗';setTimeout(()=>bar.remove(),8000);return;}
+  if(!encKey){
+    bar.textContent='❌ AES鍵取得失敗 ok='+dbgStep2.ok+' nodp='+dbgStep2.nodp+' nokey='+dbgStep2.nokey;
+    setTimeout(()=>{bar.textContent='🔍 最後の200URL機種:'+dbgStep2.lastUrl+' sp.data.keys='+dbgStep2.lastKeys;},4000);
+    setTimeout(()=>bar.remove(),15000);return;
+  }
 
   // ===== 復号ヘルパー =====
   async function decryptMl(txt){
