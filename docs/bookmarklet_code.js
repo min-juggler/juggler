@@ -294,8 +294,15 @@ try{
         var ss=Array.isArray(dec)?dec:(dec.data||dec.items||null);
         if(!ss){
           for(var _v of Object.values(dec)){
-            if(extractMachineList(_v))continue; // 機種リストはスキップ(補充済み)
+            if(extractMachineList(_v))continue;
             if(Array.isArray(_v)&&_v.length>0){ss=_v;break;}
+          }
+        }
+        // {"0":{台},"1":{台},...,"sum":{}} 形式（数値キーオブジェクト）を配列に変換
+        if(!ss&&!Array.isArray(dec)&&typeof dec==='object'){
+          var numKeys=Object.keys(dec).filter(k=>!isNaN(parseInt(k)));
+          if(numKeys.length>0){
+            ss=numKeys.sort(function(a,b){return parseInt(a)-parseInt(b);}).map(function(k){return dec[k];}).filter(function(v){return typeof v==='object'&&v!==null;});
           }
         }
         // ssが機種リストなら除外
