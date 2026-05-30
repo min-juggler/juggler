@@ -271,6 +271,8 @@ try{
         var rawTxt=await mlR.text();
         var dTmp=await decryptMl(rawTxt);
         if(!dTmp)continue;
+        // 空配列はスキップ（disp=1が空を返す場合→disp=2を試す）
+        if(Array.isArray(dTmp)&&dTmp.length===0)continue;
         // 配列 or オブジェクト内の配列が機種リストなら補充してスキップ
         var isMl=extractMachineList(Array.isArray(dTmp)?dTmp:null);
         if(!isMl&&!Array.isArray(dTmp)){
