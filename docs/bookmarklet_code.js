@@ -254,10 +254,49 @@ try{
     return true;
   }
 
-  // ===== 機種ごとにループして全台取得 =====
+  // ===== 事前に「全機種一括」URLを試みる（machine_name省略で全台取得できる場合がある） =====
   var allStands=[];
   var dbgOk=0,dbgDec=0,dbgSample='';
-  for(var i=0;i<machineNames.length;i++){
+  var bulkDone=false;
+  for(var kc of [urlKindCode,'S','Z','P']){
+    if(bulkDone)break;
+    for(var dp of [1,2,3]){
+      var bUrl='/n-api/rack_info/machine_list?hall_id='+hid+'&kind_code='+kc+'&machine_name=&target_date='+today+'&disp='+dp;
+      try{
+        var bR=await fetch(bUrl,{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json, text/plain, */*'}});
+        if(!bR.ok)continue;
+        var bTxt=await bR.text();
+        var bDec=await decryptMl(bTxt);
+        if(!bDec)continue;
+        if(Array.isArray(bDec)&&bDec.length===0)continue;
+        if(extractMachineList(Array.isArray(bDec)?bDec:null))continue;
+        if(!Array.isArray(bDec)&&typeof bDec==='object'){
+          var isBulkMl=false;
+          for(var _bv of Object.values(bDec)){if(extractMachineList(_bv)){isBulkMl=true;break;}}
+          if(isBulkMl)continue;
+          if(Object.keys(bDec).length===1&&bDec.sum!==undefined)continue;
+        }
+        // 有効データあり→一括処理
+        bar.textContent='✅ 一括取得成功 kc='+kc+' disp='+dp;
+        var bArr=Array.isArray(bDec)?bDec:null;
+        if(!bArr){
+          for(var _bv2 of Object.values(bDec)){if(Array.isArray(_bv2)&&_bv2.length>0){bArr=_bv2;break;}}
+        }
+        if(!bArr){var nk=Object.keys(bDec).filter(k=>!isNaN(parseInt(k)));if(nk.length>0){bArr=nk.sort((a,b)=>parseInt(a)-parseInt(b)).map(k=>bDec[k]).filter(v=>typeof v==='object'&&v!==null);}}
+        if(bArr&&!extractMachineList(bArr)){
+          bArr.forEach(s=>{if(typeof s==='object'&&s!==null&&!s.machine_name_enc){allStands.push(s);}});
+          dbgDec++;dbgOk++;
+          dbgSample='bulk kc='+kc+' disp='+dp+' n='+allStands.length;
+          bulkDone=true;break;
+        }
+      }catch(e){}
+    }
+  }
+  if(!bulkDone)bar.textContent='一括取得なし→機種別ループへ hid='+hid;
+  await new Promise(r=>setTimeout(r,500));
+
+  // ===== 機種ごとにループして全台取得 =====
+  if(!bulkDone)for(var i=0;i<machineNames.length;i++){
     var mname=machineNames[i];
     bar.textContent='['+(i+1)+'/'+machineNames.length+'] '+mname.slice(0,14)+'...';
     try{
@@ -279,8 +318,11 @@ try{
           for(var _vv of Object.values(dTmp)){isMl=extractMachineList(_vv);if(isMl)break;}
         }
         if(isMl)continue;
-        // {"sum":...}のみ → スキップ
-        if(!Array.isArray(dTmp)&&Object.keys(dTmp).length===1&&dTmp.sum!==undefined)continue;
+        // {"sum":...}のみ → デバッグ記録してスキップ
+        if(!Array.isArray(dTmp)&&Object.keys(dTmp).length===1&&dTmp.sum!==undefined){
+          if(dbgSample==='')dbgSample='sumOnly url='+mlUrl.slice(0,80)+' raw='+rawTxt.slice(0,60);
+          continue;
+        }
         dec=dTmp;decSrc='api';break;
       }
       // ② APIで取れなければ standlist_slot ページから試みる
