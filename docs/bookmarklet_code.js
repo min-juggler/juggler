@@ -28,27 +28,55 @@ function jsonUnescape(s){
   try{return JSON.parse('"'+s.replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\\\\u/g,'\\u')+'"');}catch(e){return s;}
 }
 
+// GitHub APIでファイルを読み書きするヘルパー
+async function ghGet(path){
+  var r=await fetch('https://api.github.com/repos/'+R+'/contents/'+path,{headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json'}});
+  if(!r.ok)return{sha:null,data:null};
+  var j=await r.json();
+  var b64=j.content.replace(/\n/g,'');
+  var bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+  return{sha:j.sha,data:JSON.parse(new TextDecoder('utf-8').decode(bytes))};
+}
+async function ghPut(path,sha,data,msg){
+  var js=JSON.stringify(data,null,2);
+  var body={message:msg,content:btoa(unescape(encodeURIComponent(js))),branch:'main'};
+  if(sha)body.sha=sha;
+  var r=await fetch('https://api.github.com/repos/'+R+'/contents/'+path,{method:'PUT',headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+  return r.ok;
+}
+
 async function push(result){
   var total=result.machines.reduce((a,m)=>a+m.stands.length,0);
-  bar.textContent='📡 GitHubへ送信中...('+total+'台)';
-  var sha=null,cur={};
-  // docs/data/stores.json に書き込む（GitHub Pagesが配信するパス）
-  var apiPath='https://api.github.com/repos/'+R+'/contents/docs/data/stores.json';
-  try{var er=await fetch(apiPath,{headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json'}});
-  if(er.ok){var ej=await er.json();sha=ej.sha;
-    // atob→TextDecoderで正しくUTF-8デコード（単純なatob+JSON.parseだと漢字が文字化けする）
-    var b64=ej.content.replace(/\n/g,'');
-    var bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
-    cur=JSON.parse(new TextDecoder('utf-8').decode(bytes));
-  }}catch(e){}
-  if(!cur.stores)cur={fetched_at:null,stores:{}};
-  cur.fetched_at=new Date().toISOString();cur.stores[sid]=result;
-  var js=JSON.stringify(cur,null,2);
-  var body={message:'データ更新 '+new Date().toLocaleString('ja'),content:btoa(unescape(encodeURIComponent(js))),branch:'main'};
-  if(sha)body.sha=sha;
-  var pr=await fetch(apiPath,{method:'PUT',headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
-  if(pr.ok){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+total+'台 送信完了！';}
-  else{bar.style.background='#888';bar.textContent='⚠️ 送信失敗: '+(await pr.text()).slice(0,80);}
+  var today=new Date().toISOString().slice(0,10);
+  var msg='データ更新 '+new Date().toLocaleString('ja');
+
+  // ① stores.json（当日データ）を更新
+  bar.textContent='📡 stores.json 送信中...('+total+'台)';
+  var s1=await ghGet('docs/data/stores.json');
+  var cur=s1.data||{fetched_at:null,stores:{}};
+  if(!cur.stores)cur.stores={};
+  cur.fetched_at=new Date().toISOString();
+  cur.stores[sid]=result;
+  var ok1=await ghPut('docs/data/stores.json',s1.sha,cur,msg);
+
+  // ② history.json（日別蓄積）に当日分を追記
+  bar.textContent='📡 history.json 追記中...';
+  var s2=await ghGet('docs/data/history.json');
+  var hist=s2.data||{};
+  // 有効データ（ゲーム数>0の台が存在する）のみ保存
+  var realStands=result.machines.reduce((a,m)=>a+m.stands.filter(s=>s.games>0).length,0);
+  if(realStands>0)hist[today]={...(hist[today]||{}),stores:{...((hist[today]||{}).stores||{})},[sid+'_dummy']:undefined};
+  if(realStands>0){
+    if(!hist[today])hist[today]={stores:{}};
+    if(!hist[today].stores)hist[today].stores={};
+    hist[today].stores[sid]=result;
+    hist[today].fetched_at=new Date().toISOString();
+  }
+  var ok2=realStands>0?await ghPut('docs/data/history.json',s2.sha,hist,msg):true;
+
+  if(ok1&&ok2){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+total+'台 送信完了！(履歴も保存)';}
+  else if(ok1){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+total+'台 送信完了 (履歴保存失敗)';}
+  else{bar.style.background='#888';bar.textContent='⚠️ 送信失敗';}
 }
 
 try{

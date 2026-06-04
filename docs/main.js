@@ -173,6 +173,7 @@ let storeData = null;
 let prevStoreData = null;
 let allStands = [];
 let prevAllStands = [];
+let historyData = {};  // { "YYYY-MM-DD": { stores: { sid: { machines: [...] } } } }
 
 const GITHUB_BASE = 'https://raw.githubusercontent.com/min-juggler/juggler/main/docs/data/';
 
@@ -186,13 +187,23 @@ async function loadData() {
       buildAllStands();
       updateDataStatus();
       populateStoreSelect();
-      // 前日データも読み込む
-      loadPrevData(url.replace('stores.json', 'stores_prev.json'));
+      // 履歴データも非同期で読み込む
+      loadHistoryData(url.replace('stores.json', 'history.json'));
       return true;
     } catch { continue; }
   }
   updateDataStatus(null);
   return false;
+}
+
+async function loadHistoryData(url) {
+  try {
+    const res = await fetch(url + '?t=' + Date.now());
+    if (!res.ok) return;
+    historyData = await res.json();
+    // 履歴読み込み完了後に傾向タブを更新
+    renderTrendTab();
+  } catch { historyData = {}; }
 }
 
 async function loadPrevData(url) {
@@ -288,6 +299,9 @@ function analyze() {
   const evening = scored.filter(s => s.games >= 1000 && s.score >= 45).slice(0, 10);
   renderEveningList(evening);
   renderAllStands(scored);
+  // 店舗フィルターに合わせて傾向タブの店舗も切り替え
+  if (storeFilter !== 'all') trendStoreId = storeFilter;
+  renderTrendTab();
 }
 
 function renderMorningList(stands) {
@@ -767,6 +781,157 @@ function initEvents() {
   });
 
   document.getElementById('record-date').value = new Date().toISOString().slice(0, 10);
+}
+
+// ===== 傾向分析 =====
+let trendStoreId = null;
+let trendMachine = null;
+
+function renderTrendTab() {
+  const section = document.getElementById('trend-section');
+  if (!historyData || !Object.keys(historyData).length) return;
+  section.classList.remove('hidden');
+
+  // 店舗タブ
+  const storeTabs = document.getElementById('trend-store-tabs');
+  const storeIds = [...new Set(Object.values(historyData).flatMap(d => Object.keys(d.stores || {})))];
+  if (!trendStoreId || !storeIds.includes(trendStoreId)) trendStoreId = storeIds[0];
+
+  storeTabs.innerHTML = storeIds.map(sid => {
+    const name = Object.values(historyData).map(d => d.stores?.[sid]?.name).find(n => n) || sid;
+    const active = sid === trendStoreId;
+    return `<button onclick="setTrendStore('${sid}')" style="padding:4px 12px;border-radius:16px;border:none;cursor:pointer;font-size:12px;font-weight:${active?'700':'400'};background:${active?'#e63946':'#eee'};color:${active?'#fff':'#333'}">${name}</button>`;
+  }).join('');
+
+  renderTrendMachineTabs();
+}
+
+function setTrendStore(sid) {
+  trendStoreId = sid;
+  trendMachine = null;
+  renderTrendTab();
+}
+
+function renderTrendMachineTabs() {
+  const machineTabs = document.getElementById('trend-machine-tabs');
+  const machines = [...new Set(
+    Object.values(historyData)
+      .flatMap(d => (d.stores?.[trendStoreId]?.machines || []).map(m => m.machine_name))
+  )].map(mn => hw2fw(mn));
+
+  if (!trendMachine || !machines.includes(trendMachine)) trendMachine = machines[0];
+
+  machineTabs.innerHTML = machines.map(mn => {
+    const active = mn === trendMachine;
+    return `<button onclick="setTrendMachine('${mn.replace(/'/g,"\\'")}'')" style="padding:3px 10px;border-radius:12px;border:none;cursor:pointer;font-size:11px;font-weight:${active?'700':'400'};background:${active?'#1d3557':'#eee'};color:${active?'#fff':'#333'}">${mn}</button>`;
+  }).join('');
+
+  renderTrendTable();
+}
+
+function setTrendMachine(mn) {
+  trendMachine = mn;
+  renderTrendMachineTabs();
+}
+
+function estimateSetting(g, bb, rb) {
+  if (g < 1500 || bb < 3) return null;
+  const SETTINGS = {1:{bb:287.4,rb:442.5},2:{bb:282.5,rb:393.9},3:{bb:273.1,rb:331.8},4:{bb:264.3,rb:287.4},5:{bb:252.2,rb:252.2},6:{bb:240.9,rb:240.9}};
+  const bbR = g / bb, rbR = rb > 0 ? g / rb : 9999;
+  let best = 1, bestScore = 9999;
+  for (const [s, v] of Object.entries(SETTINGS)) {
+    const score = Math.abs(bbR - v.bb)/v.bb*0.4 + Math.abs(rbR - v.rb)/v.rb*0.6;
+    if (score < bestScore) { bestScore = score; best = parseInt(s); }
+  }
+  return best;
+}
+
+const SETTING_COLORS = {
+  6: '#2d6a4f', 5: '#52b788', 4: '#b7e4c7',
+  3: '#ffe066', 2: '#ffa94d', 1: '#ff6b6b',
+};
+const SETTING_TEXT_COLORS = { 6:'#fff', 5:'#fff', 4:'#333', 3:'#333', 2:'#333', 1:'#fff' };
+
+function renderTrendTable() {
+  const wrap = document.getElementById('trend-table');
+  const dates = Object.keys(historyData).sort();
+  if (!dates.length || !trendStoreId || !trendMachine) { wrap.innerHTML = ''; return; }
+
+  // 台番 → 日付 → データ
+  const rackMap = {};
+  for (const date of dates) {
+    const machines = historyData[date]?.stores?.[trendStoreId]?.machines || [];
+    for (const m of machines) {
+      if (hw2fw(m.machine_name) !== trendMachine) continue;
+      for (const s of m.stands) {
+        if (!rackMap[s.rack_no]) rackMap[s.rack_no] = {};
+        rackMap[s.rack_no][date] = s;
+      }
+    }
+  }
+
+  const racks = Object.keys(rackMap).sort((a, b) => parseInt(a) - parseInt(b));
+  if (!racks.length) { wrap.innerHTML = '<p style="color:#999;font-size:12px">データなし</p>'; return; }
+
+  // 据え置き台（設定4以上が2日以上連続）をハイライト
+  const keepRacks = new Set();
+  for (const rack of racks) {
+    const dmap = rackMap[rack];
+    let consec = 0;
+    for (const d of dates) {
+      const s = dmap[d];
+      const est = s ? estimateSetting(s.games, s.bb, s.rb) : null;
+      if (est && est >= 4) { consec++; if (consec >= 2) { keepRacks.add(rack); break; } }
+      else consec = 0;
+    }
+  }
+
+  const shortDates = dates.map(d => d.slice(5)); // MM-DD
+
+  let html = `<table style="border-collapse:collapse;font-size:12px;min-width:${60 + dates.length * 54}px">`;
+  html += '<thead><tr>';
+  html += '<th style="padding:4px 8px;text-align:left;position:sticky;left:0;background:#fff;z-index:1;border-bottom:1px solid #ddd;white-space:nowrap">台番</th>';
+  for (const d of shortDates) {
+    html += `<th style="padding:4px 6px;text-align:center;border-bottom:1px solid #ddd;min-width:48px;color:#666">${d}</th>`;
+  }
+  html += '</tr></thead><tbody>';
+
+  for (const rack of racks) {
+    const isKeep = keepRacks.has(rack);
+    html += `<tr style="background:${isKeep?'#f0fff4':''}">`;
+    html += `<td style="padding:4px 8px;position:sticky;left:0;background:${isKeep?'#f0fff4':'#fff'};z-index:1;font-weight:${isKeep?'700':'400'};white-space:nowrap">${rack}番${isKeep?' 🔥':''}</td>`;
+    for (const date of dates) {
+      const s = rackMap[rack]?.[date];
+      if (!s) { html += '<td style="padding:4px 6px;text-align:center;color:#ccc">-</td>'; continue; }
+      const est = estimateSetting(s.games, s.bb, s.rb);
+      const bg = est ? SETTING_COLORS[est] : '#eee';
+      const tc = est ? SETTING_TEXT_COLORS[est] : '#999';
+      const tip = s.games > 0 ? `${s.games}G BB${s.bb} RB${s.rb} 差${s.diff>=0?'+':''}${s.diff}` : '';
+      html += `<td style="padding:2px 4px;text-align:center" title="${tip}">`;
+      if (est) {
+        html += `<span style="display:inline-block;background:${bg};color:${tc};border-radius:4px;padding:2px 6px;font-weight:700">${est}</span>`;
+        if (s.games > 0) html += `<div style="font-size:10px;color:#999">${Math.round(s.games/100)/10}k</div>`;
+      } else if (s.games > 0) {
+        html += `<span style="color:#aaa;font-size:10px">${Math.round(s.games/100)/10}k</span>`;
+      } else {
+        html += '<span style="color:#ddd">-</span>';
+      }
+      html += '</td>';
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+
+  // 凡例と据え置き台サマリー
+  const keepList = [...keepRacks];
+  if (keepList.length) {
+    html += `<div style="margin-top:12px;padding:10px;background:#f0fff4;border-radius:8px;border:1px solid #b7e4c7">`;
+    html += `<div style="font-size:12px;font-weight:700;color:#2d6a4f;margin-bottom:4px">🔥 据え置き候補台（設定4以上が2日以上連続）</div>`;
+    html += keepList.map(r => `<span style="display:inline-block;background:#2d6a4f;color:#fff;border-radius:12px;padding:2px 10px;margin:2px;font-size:12px">${r}番</span>`).join('');
+    html += '</div>';
+  }
+
+  wrap.innerHTML = html;
 }
 
 // ===== デモデータ =====
