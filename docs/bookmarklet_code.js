@@ -1,5 +1,86 @@
 (async function(){
 var T='__TOKEN__',R='__REPO__';
+
+// ===== ダイナム（dynam-data.jp）専用処理 =====
+if(location.href.includes('dynam-data.jp')){
+  var dm=location.href.match(/\/h\/([a-z0-9]+)\//);
+  var duid=dm?dm[1]:null;
+  var DYNAM_STORES={'a725254':'ダイナム米沢店'};
+  var dsname=duid?DYNAM_STORES[duid]||('ダイナム_'+duid):null;
+  if(!duid||!dsname){alert('対応していないダイナム店舗です: '+location.href);return;}
+  var dsid='dynam-'+duid;
+  var bar=document.createElement('div');
+  bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
+  bar.textContent='🎰 ダイナム取得中...';document.body.appendChild(bar);
+  try{
+    var dToday=new Date();
+    var dYMD=dToday.getFullYear()*10000+(dToday.getMonth()+1)*100+dToday.getDate();
+    // ① 機種一覧を取得
+    bar.textContent='機種一覧取得中...';
+    var kiR=await fetch('/h/'+duid+'/cgi-bin/nc-m03-002.php?cd_ps=2&pg=0&dt='+dYMD,{credentials:'include'});
+    if(!kiR.ok)throw new Error('機種一覧取得失敗 status='+kiR.status);
+    var kiJ=await kiR.json();
+    if(kiJ.redirect_captcha)throw new Error('CAPTCHA未解除: '+dsname+'のページを先に開いてください');
+    var kiList=kiJ.Ki||[];
+    bar.textContent='機種一覧: '+kiList.length+'機種 台データ取得中...';
+    // ② 台別データを取得（nc-m03-001.php または nc-m04-001.php）
+    var dAllStands=[];
+    var dbgDaiKeys='';
+    for(var ki of kiList){
+      var kmn=ki.nmk_kisyu||'不明';
+      var dais=ki.dai||[];
+      if(!dais.length)continue;
+      bar.textContent=kmn.slice(0,14)+'... ('+dais.length+'台)';
+      // 台別データAPI（複数候補を試みる）
+      var dDec=null;
+      for(var model of ['nc-m03-001','nc-m04-001','nc-m06-001']){
+        try{
+          var dR=await fetch('/h/'+duid+'/cgi-bin/'+model+'.php?cd_ps=2&bai=11.236&YMD_biz='+dYMD+'&cd_kisyu='+ki.cd_kisyu[0]+'&page=0',{credentials:'include'});
+          if(!dR.ok)continue;
+          var dJ=await dR.json();
+          if(dJ.redirect_captcha)continue;
+          dDec=dJ;break;
+        }catch(e){}
+      }
+      if(dDec){
+        if(!dbgDaiKeys)dbgDaiKeys='model='+JSON.stringify(Object.keys(dDec)).slice(0,60);
+        // Data配列 or Dai配列 or 数値キーオブジェクトを試みる
+        var dArr=null;
+        if(Array.isArray(dDec.Data))dArr=dDec.Data;
+        else if(Array.isArray(dDec.Dai))dArr=dDec.Dai;
+        else if(Array.isArray(dDec))dArr=dDec;
+        else{var nk=Object.keys(dDec).filter(k=>!isNaN(parseInt(k)));if(nk.length>0)dArr=nk.map(k=>dDec[k]);}
+        if(dArr)dArr.forEach(s=>{if(typeof s==='object'&&s!==null){s.machine_name=kmn;dAllStands.push(s);}});
+      } else {
+        // APIが使えない場合: cd_dai一覧からスタブを作成（機種名だけ記録）
+        dais.forEach(d=>{dAllStands.push({cd_dai:d.cd_dai,machine_name:kmn,games:0,bonus_1:0,bonus_2:0,sa_mai:0});});
+      }
+    }
+    if(dAllStands.length===0)throw new Error('台データなし model_keys='+dbgDaiKeys);
+    // スタンドデータ整形
+    var dMap={};
+    dAllStands.forEach(s=>{
+      var mn=s.machine_name||'不明';
+      if(!dMap[mn])dMap[mn]=[];
+      dMap[mn].push({
+        rack_no:String(s.cd_dai||s.rack_no||s.no||'?'),
+        machine_name:mn,
+        games:parseInt(s.game_su||s.ct_game||s.games||s.game_count||0),
+        bb:parseInt(s.ct_bonus_1||s.bonus_1||s.bb||0),
+        rb:parseInt(s.ct_bonus_2||s.bonus_2||s.rb||0),
+        diff:parseInt(s.sa_mai||s.diff||s.substraction||0)
+      });
+    });
+    var dResult={name:dsname,machines:[]};
+    for(var[mn3,sts3]of Object.entries(dMap))dResult.machines.push({machine_name:mn3,count:sts3.length,stands:sts3});
+    if(dAllStands.length>0)setTimeout(()=>{bar.textContent='🔍 stand例: '+JSON.stringify(dAllStands[0]).slice(0,120);},3000);
+    bar.textContent='✅ '+dAllStands.length+'台 GitHub送信中...';
+    await push(dResult,dsid,dsname);
+  }catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
+  setTimeout(()=>bar.remove(),12000);
+  return;
+}
+
 var sid=location.href.includes('yonezawa')?'yonezawa':location.href.includes('kaminoyama')?'kaminoyama':null;
 if(!sid){alert('店舗サイトで実行してください');return;}
 var sname={yonezawa:'アイランド米沢店',kaminoyama:'1円劇場上山店'}[sid];
@@ -45,7 +126,9 @@ async function ghPut(path,sha,data,msg){
   return r.ok;
 }
 
-async function push(result){
+async function push(result,_sid,_sname){
+  // 引数なしの場合はクロージャの sid/sname を使う（テラモバ用後方互換）
+  var _s=_sid||sid, _n=_sname||sname;
   var total=result.machines.reduce((a,m)=>a+m.stands.length,0);
   var today=new Date().toISOString().slice(0,10);
   var msg='データ更新 '+new Date().toLocaleString('ja');
@@ -56,26 +139,24 @@ async function push(result){
   var cur=s1.data||{fetched_at:null,stores:{}};
   if(!cur.stores)cur.stores={};
   cur.fetched_at=new Date().toISOString();
-  cur.stores[sid]=result;
+  cur.stores[_s]=result;
   var ok1=await ghPut('docs/data/stores.json',s1.sha,cur,msg);
 
   // ② history.json（日別蓄積）に当日分を追記
   bar.textContent='📡 history.json 追記中...';
   var s2=await ghGet('docs/data/history.json');
   var hist=s2.data||{};
-  // 有効データ（ゲーム数>0の台が存在する）のみ保存
   var realStands=result.machines.reduce((a,m)=>a+m.stands.filter(s=>s.games>0).length,0);
-  if(realStands>0)hist[today]={...(hist[today]||{}),stores:{...((hist[today]||{}).stores||{})},[sid+'_dummy']:undefined};
   if(realStands>0){
     if(!hist[today])hist[today]={stores:{}};
     if(!hist[today].stores)hist[today].stores={};
-    hist[today].stores[sid]=result;
+    hist[today].stores[_s]=result;
     hist[today].fetched_at=new Date().toISOString();
   }
   var ok2=realStands>0?await ghPut('docs/data/history.json',s2.sha,hist,msg):true;
 
-  if(ok1&&ok2){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+total+'台 送信完了！(履歴も保存)';}
-  else if(ok1){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+total+'台 送信完了 (履歴保存失敗)';}
+  if(ok1&&ok2){bar.style.background='#2d6a4f';bar.textContent='✅ '+_n+' '+total+'台 送信完了！(履歴も保存)';}
+  else if(ok1){bar.style.background='#2d6a4f';bar.textContent='✅ '+_n+' '+total+'台 送信完了 (履歴保存失敗)';}
   else{bar.style.background='#888';bar.textContent='⚠️ 送信失敗';}
 }
 
