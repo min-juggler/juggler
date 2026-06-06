@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1タップ全店舗取得 – iOSショートカット設定</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f2f2f7;color:#1c1c1e}
+    .header{background:linear-gradient(135deg,#1d3557,#e63946);color:#fff;padding:20px 16px;text-align:center}
+    .header h1{font-size:20px;margin-bottom:4px}
+    .header p{font-size:13px;opacity:.85}
+    .card{background:#fff;border-radius:14px;margin:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+    .card h2{font-size:15px;font-weight:700;margin-bottom:12px;color:#1d3557}
+    .btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;text-align:center;margin-top:10px}
+    .btn-primary{background:#e63946;color:#fff}
+    .btn-copy{background:#1d3557;color:#fff;font-size:13px;padding:10px}
+    .btn-green{background:#2d6a4f;color:#fff}
+    .step{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #f0f0f0}
+    .step:last-child{border-bottom:none;margin-bottom:0}
+    .step-num{background:#e63946;color:#fff;border-radius:50%;width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+    .step-body{flex:1}
+    .step-title{font-size:14px;font-weight:700;margin-bottom:4px}
+    .step-desc{font-size:12px;color:#666;line-height:1.7}
+    .step-desc strong{color:#e63946}
+    .code-block{background:#1c1c1e;color:#4ade80;border-radius:10px;padding:12px;font-size:11px;font-family:monospace;word-break:break-all;margin-top:8px;max-height:80px;overflow:hidden;position:relative}
+    .code-block.expanded{max-height:none}
+    .token-ok{display:inline-block;background:#2d6a4f;color:#fff;border-radius:8px;padding:2px 8px;font-size:11px;margin-left:6px}
+    input[type=password]{width:100%;padding:11px;border:1px solid #ddd;border-radius:10px;font-size:14px;margin-bottom:10px}
+    .store-card{background:#f7f7f7;border-radius:10px;padding:12px;margin-bottom:10px}
+    .store-card h3{font-size:13px;font-weight:700;margin-bottom:8px;color:#333}
+    .copied{background:#2d6a4f!important}
+    .flow-arrow{text-align:center;font-size:20px;color:#ccc;margin:4px 0}
+    .badge{display:inline-block;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;margin-right:4px}
+    .badge-ios{background:#007aff;color:#fff}
+    .badge-auto{background:#2d6a4f;color:#fff}
+    .tag-new{background:#ff9f0a;color:#fff;border-radius:6px;padding:1px 6px;font-size:10px;margin-left:4px}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🎰 1タップ全店舗取得</h1>
+  <p>iOSショートカット設定ガイド</p>
+</div>
+
+<!-- STEP0: トークン -->
+<div class="card">
+  <h2>① GitHubトークン <span id="token-badge"></span></h2>
+  <input type="password" id="token-input" placeholder="ghp_... （初回のみ）">
+  <button class="btn btn-primary" onclick="saveToken()">保存してスクリプトを生成</button>
+</div>
+
+<!-- STEP1: ショートカット作成 -->
+<div class="card" id="shortcut-guide" style="display:none">
+  <h2>② iOSショートカットを作る</h2>
+
+  <div style="background:#fff3cd;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#856404">
+    💡 ショートカットを1つ作るだけで、毎日1タップで3店舗のデータが全部取れます
+  </div>
+
+  <!-- ショートカット作成手順 -->
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <div class="step-title">ショートカットアプリを開く</div>
+      <div class="step-desc">ホーム画面の「<strong>ショートカット</strong>」→ 右上の「<strong>＋</strong>」</div>
+    </div>
+  </div>
+
+  <!-- 店舗ごとにURLオープン+JS実行を繰り返す -->
+  <div style="font-size:12px;color:#666;margin-bottom:10px;padding:8px 10px;background:#f5f5f5;border-radius:8px">
+    以下の <strong>①URLを開く → ②スクリプト実行</strong> を3店舗分追加します（計6アクション）
+  </div>
+
+  <!-- アイランド米沢 -->
+  <div class="store-card">
+    <h3>🏪 アイランド米沢</h3>
+    <div class="step-desc" style="margin-bottom:8px">「<strong>URLを開く</strong>」アクションを追加 → 以下のURLを貼り付け</div>
+    <div class="code-block" id="url-yonezawa">https://island.pt.teramoba2.com/yonezawa/standlist_slot?kind_code=Z</div>
+    <button class="btn btn-copy" onclick="copyText('url-yonezawa',this)">📋 URLをコピー</button>
+    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>Safariでスクリプトを実行</strong>」アクションを追加 → 以下をコピーして貼り付け</div>
+    <div class="code-block" id="code-yonezawa">⏳ 生成中...</div>
+    <button class="btn btn-copy" onclick="copyText('code-yonezawa',this)">📋 スクリプトをコピー</button>
+  </div>
+
+  <div class="flow-arrow">↓</div>
+
+  <!-- 上山 -->
+  <div class="store-card">
+    <h3>🏪 1円劇場上山</h3>
+    <div class="step-desc" style="margin-bottom:8px">「<strong>URLを開く</strong>」アクション追加 → URLを貼り付け</div>
+    <div class="code-block" id="url-kaminoyama">https://island.pt.teramoba2.com/kaminoyama/standlist_slot?kind_code=Z</div>
+    <button class="btn btn-copy" onclick="copyText('url-kaminoyama',this)">📋 URLをコピー</button>
+    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け</div>
+    <div class="code-block" id="code-kaminoyama">⏳ 生成中...</div>
+    <button class="btn btn-copy" onclick="copyText('code-kaminoyama',this)">📋 スクリプトをコピー</button>
+  </div>
+
+  <div class="flow-arrow">↓</div>
+
+  <!-- ダイナム -->
+  <div class="store-card">
+    <h3>🏪 ダイナム米沢</h3>
+    <div class="step-desc" style="margin-bottom:8px">「<strong>URLを開く</strong>」アクション追加 → URLを貼り付け</div>
+    <div class="code-block" id="url-dynam">https://www.dynam-data.jp/h/a725254/cgi-bin/nc-v13-001.php?cd_ps=2</div>
+    <button class="btn btn-copy" onclick="copyText('url-dynam',this)">📋 URLをコピー</button>
+    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け</div>
+    <div class="code-block" id="code-dynam">⏳ 生成中...</div>
+    <button class="btn btn-copy" onclick="copyText('code-dynam',this)">📋 スクリプトをコピー</button>
+  </div>
+
+  <div class="step" style="margin-top:14px">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <div class="step-title">ショートカットに名前をつける</div>
+      <div class="step-desc">「<strong>ジャグラーデータ取得</strong>」など好きな名前で保存</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <div class="step-title">ホーム画面に追加</div>
+      <div class="step-desc">ショートカットを開いて右上「…」→「<strong>ホーム画面に追加</strong>」<br>毎日このアイコンをタップするだけで3店舗一括取得！</div>
+    </div>
+  </div>
+</div>
+
+<!-- アプリへ -->
+<div class="card">
+  <h2>③ 取得後はこちらで確認</h2>
+  <a class="btn btn-green" href="https://min-juggler.github.io/juggler/">🎰 アプリで狙い目を見る →</a>
+</div>
+
+<div style="height:40px"></div>
+
+<script>
+const REPO = 'min-juggler/juggler';
+const GITHUB_BASE = 'https://raw.githubusercontent.com/' + REPO + '/main/docs/';
+
+// iOS Shortcut用: completion()付きラッパー
+function wrapForShortcut(code, token, repo) {
+  return code
+    .replace(/__TOKEN__/g, token)
+    .replace(/__REPO__/g, repo)
+    .replace(/\}\)\(\);\s*$/, '})().then(r=>completion("done")).catch(e=>completion("error:"+e.message));');
+}
+
+async function fetchScript(filename) {
+  const r = await fetch(GITHUB_BASE + filename + '?_=' + Date.now(), {cache:'no-store'});
+  return await r.text();
+}
+
+function getToken() { return localStorage.getItem('github_token') || ''; }
+
+function saveToken() {
+  const t = document.getElementById('token-input').value.trim();
+  if (!t) { alert('トークンを入力してください'); return; }
+  localStorage.setItem('github_token', t);
+  updateUI();
+}
+
+async function updateUI() {
+  const token = getToken();
+  const badge = document.getElementById('token-badge');
+  const guide = document.getElementById('shortcut-guide');
+
+  if (!token) {
+    badge.innerHTML = '';
+    guide.style.display = 'none';
+    return;
+  }
+
+  badge.innerHTML = '<span class="token-ok">✅ 設定済</span>';
+  document.getElementById('token-input').placeholder = '変更する場合のみ入力';
+  guide.style.display = 'block';
+
+  try {
+    // テラモバスクリプト（yonezawa/kaminoyama両対応）
+    const teramoba = await fetchScript('bookmarklet_code.js');
+    const dynamCode = await fetchScript('bookmarklet_dynam.js');
+
+    const ywCode  = wrapForShortcut(teramoba, token, REPO);
+    const kmCode  = wrapForShortcut(teramoba, token, REPO);
+    const dynCode = wrapForShortcut(dynamCode, token, REPO);
+
+    document.getElementById('code-yonezawa').textContent  = ywCode;
+    document.getElementById('code-kaminoyama').textContent = kmCode;
+    document.getElementById('code-dynam').textContent     = dynCode;
+  } catch(e) {
+    ['yonezawa','kaminoyama','dynam'].forEach(id => {
+      document.getElementById('code-' + id).textContent = '❌ 生成失敗: ' + e.message;
+    });
+  }
+}
+
+function copyText(elementId, btn) {
+  const text = document.getElementById(elementId).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✅ コピーしました！';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    // フォールバック
+    const el = document.getElementById(elementId);
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand('copy');
+    btn.textContent = '✅ コピーしました！';
+    setTimeout(() => btn.textContent = '📋 コピー', 2000);
+  });
+}
+
+updateUI();
+</script>
+</body>
+</html>
