@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ダイナム米沢 データ取得</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #333; }
+    .header { background: #e63946; color: #fff; padding: 16px; text-align: center; }
+    .header h1 { font-size: 18px; }
+    .header p  { font-size: 12px; margin-top: 4px; opacity: .85; }
+    .card { background: #fff; border-radius: 12px; margin: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+    .card h2 { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #1d3557; }
+    .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; text-align: center; text-decoration: none; margin-top: 10px; }
+    .btn-red   { background: #e63946; color: #fff; }
+    .btn-blue  { background: #1d3557; color: #fff; }
+    .btn-green { background: #2d6a4f; color: #fff; }
+    .btn-gray  { background: #eee; color: #555; font-size: 13px; }
+    .step { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+    .step-num { background: #e63946; color: #fff; border-radius: 50%; width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-text { font-size: 13px; line-height: 1.6; }
+    .step-text strong { color: #e63946; }
+    .note { font-size: 11px; color: #999; background: #f9f9f9; border-radius: 8px; padding: 8px 10px; margin-top: 8px; line-height: 1.6; }
+    input[type=password] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; margin-bottom: 8px; }
+    .saved-badge { display: inline-block; background: #2d6a4f; color: #fff; border-radius: 12px; padding: 2px 10px; font-size: 11px; margin-left: 8px; }
+    #bm-link { display: block; background: #e63946; color: #fff; border-radius: 10px; padding: 14px; text-align: center; font-size: 16px; font-weight: 700; text-decoration: none; margin-top: 10px; word-break: break-all; }
+    .platform-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+    .tab { flex: 1; padding: 8px; text-align: center; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+    .tab.active { background: #1d3557; color: #fff; }
+    .tab.inactive { background: #eee; color: #666; }
+    .platform-content { display: none; }
+    .platform-content.active { display: block; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🎰 ダイナム米沢 データ取得</h1>
+  <p>スマホ専用 ブックマークレット設定</p>
+</div>
+
+<!-- トークン設定 -->
+<div class="card">
+  <h2>① GitHubトークン確認</h2>
+  <div id="token-status" style="font-size:13px;color:#2d6a4f;margin-bottom:8px"></div>
+  <input type="password" id="token-input" placeholder="ghp_... （初回のみ入力）">
+  <button class="btn btn-blue" onclick="saveToken()">保存する</button>
+  <p class="note">トークンはこのブラウザに保存されます。一度保存すればOK。</p>
+</div>
+
+<!-- ブックマークレットリンク -->
+<div class="card">
+  <h2>② ブックマークレットを登録</h2>
+  <a id="bm-link" href="#">⏳ トークンを入力してください</a>
+  <div class="note" style="margin-top:10px">このリンクをブックマークに保存します ↑<br>（タップではなく「長押し→ブックマーク追加」）</div>
+
+  <div class="platform-tabs" style="margin-top:16px">
+    <button class="tab active" onclick="switchTab('ios')">iPhone (Safari)</button>
+    <button class="tab inactive" onclick="switchTab('android')">Android (Chrome)</button>
+  </div>
+
+  <div id="tab-ios" class="platform-content active">
+    <div class="step"><div class="step-num">1</div><div class="step-text">上の赤いリンクを<strong>長押し</strong> → 「ブックマークを追加」</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text">名前を「<strong>ダイナム取得</strong>」にして保存</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">ダイナムのページを開く（下のボタン）</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text">Safariの<strong>アドレスバーに「ダイナム取得」と入力</strong> → 候補が出たらタップ → 実行！</div></div>
+  </div>
+
+  <div id="tab-android" class="platform-content">
+    <div class="step"><div class="step-num">1</div><div class="step-text">上の赤いリンクを<strong>長押し</strong> → 「リンクをコピー」</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text">Chrome右上メニュー → 「☆ ブックマークに追加」して任意ページを保存</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">ブックマーク一覧を開いて「編集」→ URLをコピーしたものに<strong>貼り替え</strong></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text">ダイナムのページで<strong>アドレスバーにブックマーク名を入力</strong> → タップ → 実行！</div></div>
+  </div>
+</div>
+
+<!-- ダイナムへ移動 -->
+<div class="card">
+  <h2>③ ダイナムのページを開く</h2>
+  <a class="btn btn-red" href="https://www.dynam-data.jp/h/a725254/" target="_blank">ダイナム米沢 データページへ →</a>
+  <p class="note" style="margin-top:8px">開いたら②で設定したブックマークを実行してください。<br>ページを開いて数秒待ってから実行すると確実です。</p>
+</div>
+
+<!-- アプリに戻る -->
+<div class="card">
+  <h2>④ 取得完了後</h2>
+  <a class="btn btn-green" href="https://min-juggler.github.io/juggler/">アプリで結果を確認 →</a>
+  <p class="note" style="margin-top:8px">「再読み込み」ボタンを押すとダイナムのデータが追加されます。</p>
+</div>
+
+<div style="height:40px"></div>
+
+<script>
+const REPO = 'min-juggler/juggler';
+const GITHUB_BASE = 'https://raw.githubusercontent.com/' + REPO + '/main/docs/';
+
+function getToken() {
+  return localStorage.getItem('github_token') || '';
+}
+
+function saveToken() {
+  const t = document.getElementById('token-input').value.trim();
+  if (!t) { alert('トークンを入力してください'); return; }
+  localStorage.setItem('github_token', t);
+  updateUI();
+  alert('保存しました！');
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(el => el.className = 'tab inactive');
+  document.querySelectorAll('.platform-content').forEach(el => el.classList.remove('active'));
+  event.currentTarget.className = 'tab active';
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+async function buildBookmarklet(token) {
+  try {
+    const r = await fetch(GITHUB_BASE + 'bookmarklet_dynam.js?_=' + Date.now(), { cache: 'no-store' });
+    const code = await r.text();
+    const replaced = code
+      .replace(/__TOKEN__/g, token)
+      .replace(/__REPO__/g, REPO);
+    return 'javascript:' + encodeURIComponent('(async function(){' + replaced.replace(/^\(async function\(\)\{/, '').replace(/\}\)\(\);?\s*$/, '') + '})();');
+  } catch(e) {
+    return null;
+  }
+}
+
+async function updateUI() {
+  const token = getToken();
+  const statusEl = document.getElementById('token-status');
+  const bmLink = document.getElementById('bm-link');
+
+  if (token) {
+    statusEl.innerHTML = '✅ トークン設定済み <span class="saved-badge">保存済</span>';
+    document.getElementById('token-input').placeholder = '変更する場合のみ入力';
+    bmLink.textContent = '⏳ ブックマークレット生成中...';
+    const url = await buildBookmarklet(token);
+    if (url) {
+      bmLink.href = url;
+      bmLink.textContent = '🎰 ダイナムデータ取得（ここを長押し）';
+    } else {
+      bmLink.textContent = '❌ 生成失敗（ネット接続確認）';
+    }
+  } else {
+    statusEl.textContent = '⚠️ トークン未設定';
+    bmLink.href = '#';
+    bmLink.textContent = '⏳ 先にトークンを入力してください';
+    bmLink.onclick = e => { e.preventDefault(); alert('トークンを入力・保存してください'); };
+  }
+}
+
+updateUI();
+</script>
+
+</body>
+</html>
