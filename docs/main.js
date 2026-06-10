@@ -96,7 +96,8 @@ function calcSettingLikelihood(stand, settings) {
     const rbDiff = Math.max(0, rbProb - vals.rb);
     const bbScore = 1 / (1 + bbDiff / vals.bb);
     const rbScore = 1 / (1 + rbDiff / vals.rb);
-    likelihoods[s] = bbScore * 0.4 + rbScore * 0.6;
+    // 幾何平均: BBとRBの両方が良い台を高評価。片方だけ良くても低評価
+    likelihoods[s] = Math.pow(bbScore, 0.4) * Math.pow(rbScore, 0.6);
   }
   const total = Object.values(likelihoods).reduce((a, b) => a + b, 0);
   const probs = {};
