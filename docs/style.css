@@ -194,14 +194,15 @@ body {
   line-height: 1;
 }
 .stand-info { flex: 1; }
-.stand-machine { font-size: 13px; color: var(--text-muted); }
-.stand-rack { font-size: 18px; font-weight: 700; }
+.stand-machine { font-size: 14px; font-weight: 700; color: #1d3557; }
+.stand-rack { font-size: 16px; font-weight: 700; color: var(--text-primary); }
 .stand-store-tag {
   font-size: 11px;
-  background: #f0f0f0;
+  background: #e8f4fd;
   border-radius: 4px;
   padding: 2px 6px;
-  color: var(--text-muted);
+  color: #457b9d;
+  font-weight: 600;
 }
 
 /* スコア・星 */

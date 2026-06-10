@@ -372,8 +372,10 @@ function buildStandCard(s, rank, label = null) {
       <div class="stand-info">
         <div class="stand-machine">${s.machine_name || '-'}</div>
         <div class="stand-rack">${s.rack_no}番台</div>
-        <div class="stand-store-tag">${s.store_name}</div>
-        ${label ? `<div class="stand-store-tag" style="background:#fff3cd;color:#856404;margin-top:3px">${label}</div>` : ''}
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:2px">
+          <div class="stand-store-tag">🏪 ${s.store_name}</div>
+          ${label ? `<div class="stand-store-tag" style="background:#fff3cd;color:#856404">⭐ ${label}</div>` : ''}
+        </div>
       </div>
       <div style="text-align:right">
         <div class="stars">${stars}</div>
