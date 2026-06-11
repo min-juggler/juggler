@@ -179,7 +179,8 @@ let historyData = {};  // { "YYYY-MM-DD": { stores: { sid: { machines: [...] } }
 const GITHUB_BASE = 'https://raw.githubusercontent.com/min-juggler/juggler/main/docs/data/';
 
 async function loadData() {
-  const urls = ['data/stores.json', GITHUB_BASE + 'stores.json'];
+  // raw.githubusercontent.com を先に試す（GitHub PagesはCDNキャッシュで更新が遅い）
+  const urls = [GITHUB_BASE + 'stores.json', 'data/stores.json'];
   for (const url of urls) {
     try {
       const res = await fetch(url + '?t=' + Date.now());
