@@ -28,84 +28,40 @@ try{
   bar.textContent='ジャグラー '+jugglers.length+'機種発見 台データ取得中...';
   if(jugglers.length===0)throw new Error('ジャグラーが見つかりません ki='+ki.length+'機種');
 
-  // STEP2: 機種ごとに台データ取得
+  // STEP2: 台データ一括取得（cd_kisyuなし→全台1回で取得してタイムアウト回避）
   var allStands=[];
-  var dbgFirst=null;
-  for(var i=0;i<jugglers.length;i++){
-    var ki1=jugglers[i];
-    var cdKisyu=(ki1.cd_kisyu&&ki1.cd_kisyu[0])||'';
-    if(!cdKisyu)continue;
-    bar.textContent='['+(i+1)+'/'+jugglers.length+'] '+ki1.nmk_kisyu.slice(0,14)+'...';
-    try{
-      // nc-m04-001（台別データ）とnc-m03-001を両方試す
-      var raw=null,d2=null;
-      for(var ep of ['nc-m04-001','nc-m03-001']){
-        try{
-          var r2=await fetch('/h/'+storeCode+'/cgi-bin/'+ep+'.php?cd_ps=2&cd_kisyu='+cdKisyu+'&dt='+today,{credentials:'include'});
-          if(!r2.ok)continue;
-          var t=await r2.text();
-          if(t.includes('redirect_captcha')){bar.textContent='❌ captcha必要';setTimeout(()=>bar.remove(),8000);return;}
-          var j=JSON.parse(t);
-          if(!dbgFirst){
-            var ki0=j.Ki&&j.Ki[0]?j.Ki[0]:j.Dai&&j.Dai[0]?j.Dai[0]:null;
-            dbgFirst={ep:ep,topKeys:Object.keys(j).join(','),ki0Keys:ki0?Object.keys(ki0).join(','):'none',raw:t.slice(0,300)};
-          }
-          raw=t;d2=j;break;
-        }catch(e2){}
-      }
-      if(!d2)continue;
-      // 台データの配列を探す
-      var stands=null;
-      if(Array.isArray(d2))stands=d2;
-      else if(d2.Dai&&Array.isArray(d2.Dai))stands=d2.Dai;
-      else if(d2.dai&&Array.isArray(d2.dai))stands=d2.dai;
-      else if(d2.Ki&&Array.isArray(d2.Ki)){
-        // Ki items が台データの場合（no_dai/cd_dai/game_suフィールドを持つ）
-        var k0=d2.Ki[0]||{};
-        if(k0.no_dai||k0.cd_dai||k0.game_su||k0.ct_game){
-          stands=d2.Ki; // Ki items ARE stands
-        } else {
-          // Ki items の中にネストされた台データを探す
-          for(var kx of d2.Ki){
-            var nested=kx.Dai||kx.dai||kx.Data||kx.data||null;
-            if(Array.isArray(nested)&&nested.length>0)stands=(stands||[]).concat(nested);
-          }
-        }
-      }
-      if(!stands){
-        // 最後の手段：配列を含むフィールドを探す
-        for(var val of Object.values(d2)){
-          if(Array.isArray(val)&&val.length>0&&typeof val[0]==='object'){stands=val;break;}
-        }
-      }
-      if(!Array.isArray(stands))continue;
-      stands.forEach(function(s){
-        if(!s||typeof s!=='object')return;
-        // 各種フィールド名のフォールバック
-        var games=parseInt(s.ct_game||s.ct_gyaku||s.game_count||s.games||s.play||0);
-        var bb=parseInt(s.ct_bb||s.bb||s.big||0);
-        var rb=parseInt(s.ct_reg||s.ct_rb||s.rb||s.reg||0);
-        var diff=parseInt(s.sa_mai||s.diff||s.sa||0);
-        var rack=String(s.cd_dai||s.rack_no||s.dai_no||s.no||'?');
-        allStands.push({rack_no:rack,machine_name:ki1.nmk_kisyu,games:games,bb:bb,rb:rb,diff:diff});
-      });
-    }catch(e){}
-  }
+  var dbgKi0='';
+  bar.textContent='台データ一括取得中...';
+  try{
+    var ab=new AbortController();setTimeout(()=>ab.abort(),12000);
+    var rb=await fetch('/h/'+storeCode+'/cgi-bin/nc-m03-001.php?cd_ps=2&dt='+today,{credentials:'include',signal:ab.signal});
+    if(!rb.ok)throw new Error('status='+rb.status);
+    var tb=await rb.text();
+    if(tb.includes('redirect_captcha')){bar.textContent='❌ captcha必要';setTimeout(()=>bar.remove(),8000);return;}
+    var db=JSON.parse(tb);
+    var kiAll=db.Ki||db.Dai||db.dai||[];
+    // Ki[0]の全フィールドをデバッグ用に保存
+    if(kiAll[0])dbgKi0=JSON.stringify(kiAll[0]);
+    // ジャグラーのみ抽出
+    var jugKis=kiAll.filter(function(k){var mn=k.nmk_kisyu||k.name||'';return mn.includes('ジャグラー')||mn.includes('ＪａｇＧｌａＲ');});
+    bar.textContent='ジャグラー '+jugKis.length+'台 発見';
+    jugKis.forEach(function(s){
+      var games=parseInt(s.game_su||s.total_game||s.ct_game||s.ct_gyaku||s.games||0);
+      var bb=parseInt(s.bb_cnt||s.ct_bonus_1||s.bonus_1||s.ct_bb||s.bb||0);
+      var rb=parseInt(s.reg_cnt||s.ct_bonus_2||s.bonus_2||s.ct_rb||s.ct_reg||s.rb||0);
+      var diff=parseInt(s.sa_mai||s.diff||s.substraction||0);
+      var rack=String(s.no_dai||s.dai_no||s.cd_dai||s.no||s.ct_dai||'?');
+      allStands.push({rack_no:rack,machine_name:s.nmk_kisyu||s.name||'不明',games,bb,rb,diff});
+    });
+  }catch(e2){bar.textContent='❌ 一括取得失敗: '+e2.message;setTimeout(()=>bar.remove(),8000);return;}
 
   if(allStands.length===0){
-    bar.textContent='❌ 台データ取得失敗';
-    if(dbgFirst){
-      setTimeout(()=>{bar.textContent='🔍 ep='+dbgFirst.ep+' top='+dbgFirst.topKeys+' ki0='+dbgFirst.ki0Keys;},2000);
-      setTimeout(()=>{bar.textContent='🔍 raw='+dbgFirst.raw;},6000);
-    }
+    bar.textContent='❌ ジャグラー台なし';
+    if(dbgKi0)setTimeout(()=>{bar.textContent='🔍 Ki[0]='+dbgKi0.slice(0,300);},2000);
     setTimeout(()=>bar.remove(),20000);return;
   }
-
-  // デバッグ: 最初の台データのキーを表示
-  if(allStands.length>0){
-    var fs=allStands[0];
-    setTimeout(()=>{bar.textContent='🔍 stand例: '+JSON.stringify(fs).slice(0,120);},3000);
-  }
+  // デバッグ: 最初の台データを表示
+  setTimeout(()=>{bar.textContent='🔍 stand[0]='+JSON.stringify(allStands[0]);},3000);
 
   // STEP3: 機種ごとにまとめる
   var mmap={};
