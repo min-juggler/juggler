@@ -40,8 +40,10 @@ try{
     if(tb.includes('redirect_captcha')){bar.textContent='❌ captcha必要';setTimeout(()=>bar.remove(),8000);return;}
     var db=JSON.parse(tb);
     var kiAll=db.Ki||db.Dai||db.dai||[];
-    // Ki[0]の全フィールドをデバッグ用に保存
-    if(kiAll[0])dbgKi0=JSON.stringify(kiAll[0]);
+    // Ki[0]の全フィールドをデバッグ用に保存（全長表示）
+    if(kiAll[0]){
+      dbgKi0='count='+kiAll.length+' keys='+Object.keys(kiAll[0]).join(',')+' | '+JSON.stringify(kiAll[0]);
+    }
     // ジャグラーのみ抽出
     var jugKis=kiAll.filter(function(k){var mn=k.nmk_kisyu||k.name||'';return mn.includes('ジャグラー')||mn.includes('ＪａｇＧｌａＲ');});
     bar.textContent='ジャグラー '+jugKis.length+'台 発見';
@@ -55,10 +57,15 @@ try{
     });
   }catch(e2){bar.textContent='❌ 一括取得失敗: '+e2.message;setTimeout(()=>bar.remove(),8000);return;}
 
-  if(allStands.length===0){
-    bar.textContent='❌ ジャグラー台なし';
-    if(dbgKi0)setTimeout(()=>{bar.textContent='🔍 Ki[0]='+dbgKi0.slice(0,300);},2000);
-    setTimeout(()=>bar.remove(),20000);return;
+  if(allStands.length===0||allStands.every(s=>s.games===0)){
+    bar.textContent='⚠️ データ0 フィールド名調査中...';
+    // Ki[0]を3段階に分けて全表示
+    var dk=dbgKi0||'なし';
+    setTimeout(()=>{bar.textContent='📋①'+dk.slice(0,250);},1000);
+    setTimeout(()=>{bar.textContent='📋②'+dk.slice(250,500);},6000);
+    setTimeout(()=>{bar.textContent='📋③'+dk.slice(500,750);},11000);
+    setTimeout(()=>bar.remove(),25000);
+    if(allStands.length===0)return;
   }
   // デバッグ: 最初の台データを表示
   setTimeout(()=>{bar.textContent='🔍 stand[0]='+JSON.stringify(allStands[0]);},3000);
