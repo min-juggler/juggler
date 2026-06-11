@@ -37,35 +37,47 @@ try{
     if(!cdKisyu)continue;
     bar.textContent='['+(i+1)+'/'+jugglers.length+'] '+ki1.nmk_kisyu.slice(0,14)+'...';
     try{
-      var r2=await fetch('/h/'+storeCode+'/cgi-bin/nc-m03-001.php?cd_ps=2&cd_kisyu='+cdKisyu+'&dt='+today,{credentials:'include'});
-      if(!r2.ok)continue;
-      var raw=await r2.text();
-      // captchaリダイレクト検出
-      if(raw.includes('redirect_captcha')){
-        bar.textContent='❌ captcha必要 - ページを再読み込みしてから再実行してください';
-        setTimeout(()=>bar.remove(),10000);return;
+      // nc-m04-001（台別データ）とnc-m03-001を両方試す
+      var raw=null,d2=null;
+      for(var ep of ['nc-m04-001','nc-m03-001']){
+        try{
+          var r2=await fetch('/h/'+storeCode+'/cgi-bin/'+ep+'.php?cd_ps=2&cd_kisyu='+cdKisyu+'&dt='+today,{credentials:'include'});
+          if(!r2.ok)continue;
+          var t=await r2.text();
+          if(t.includes('redirect_captcha')){bar.textContent='❌ captcha必要';setTimeout(()=>bar.remove(),8000);return;}
+          var j=JSON.parse(t);
+          if(!dbgFirst){
+            var ki0=j.Ki&&j.Ki[0]?j.Ki[0]:j.Dai&&j.Dai[0]?j.Dai[0]:null;
+            dbgFirst={ep:ep,topKeys:Object.keys(j).join(','),ki0Keys:ki0?Object.keys(ki0).join(','):'none',raw:t.slice(0,300)};
+          }
+          raw=t;d2=j;break;
+        }catch(e2){}
       }
-      var d2=JSON.parse(raw);
-      if(!dbgFirst)dbgFirst={name:ki1.nmk_kisyu,raw:raw.slice(0,200),keys:Object.keys(d2)};
+      if(!d2)continue;
       // 台データの配列を探す
       var stands=null;
-      // 配列直接 or Ki[0].dai的な構造を試す
-      if(Array.isArray(d2)){stands=d2;}
+      if(Array.isArray(d2))stands=d2;
+      else if(d2.Dai&&Array.isArray(d2.Dai))stands=d2.Dai;
+      else if(d2.dai&&Array.isArray(d2.dai))stands=d2.dai;
       else if(d2.Ki&&Array.isArray(d2.Ki)){
-        // Ki配列の中から台データを探す
-        for(var kx of d2.Ki){
-          var dais=kx.dai||kx.stands||kx.list||null;
-          if(Array.isArray(dais)&&dais.length>0){stands=(stands||[]).concat(dais);}
+        // Ki items が台データの場合（no_dai/cd_dai/game_suフィールドを持つ）
+        var k0=d2.Ki[0]||{};
+        if(k0.no_dai||k0.cd_dai||k0.game_su||k0.ct_game){
+          stands=d2.Ki; // Ki items ARE stands
+        } else {
+          // Ki items の中にネストされた台データを探す
+          for(var kx of d2.Ki){
+            var nested=kx.Dai||kx.dai||kx.Data||kx.data||null;
+            if(Array.isArray(nested)&&nested.length>0)stands=(stands||[]).concat(nested);
+          }
         }
       }
-      else{
-        // オブジェクトのどこかに台配列がある
+      if(!stands){
+        // 最後の手段：配列を含むフィールドを探す
         for(var val of Object.values(d2)){
           if(Array.isArray(val)&&val.length>0&&typeof val[0]==='object'){stands=val;break;}
         }
       }
-      if(!stands&&d2.dai)stands=d2.dai;
-      if(!stands&&d2.Dai)stands=d2.Dai;
       if(!Array.isArray(stands))continue;
       stands.forEach(function(s){
         if(!s||typeof s!=='object')return;
@@ -83,9 +95,10 @@ try{
   if(allStands.length===0){
     bar.textContent='❌ 台データ取得失敗';
     if(dbgFirst){
-      setTimeout(()=>{bar.textContent='🔍 APIレスポンス例: keys='+dbgFirst.keys.join(',')+' raw='+dbgFirst.raw;},3000);
+      setTimeout(()=>{bar.textContent='🔍 ep='+dbgFirst.ep+' top='+dbgFirst.topKeys+' ki0='+dbgFirst.ki0Keys;},2000);
+      setTimeout(()=>{bar.textContent='🔍 raw='+dbgFirst.raw;},6000);
     }
-    setTimeout(()=>bar.remove(),15000);return;
+    setTimeout(()=>bar.remove(),20000);return;
   }
 
   // デバッグ: 最初の台データのキーを表示
