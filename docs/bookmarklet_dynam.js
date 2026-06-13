@@ -46,15 +46,32 @@ try{
     try{
       var ab=new AbortController();setTimeout(()=>ab.abort(),8000);
       var r2=await fetch('/h/'+storeCode+'/cgi-bin/'+phpPath,{credentials:'include',signal:ab.signal});
-      if(!r2.ok)continue;
+      var statusCode=r2.status;
       var t2=await r2.text();
+
+      // 最初の機種のレスポンスをデバッグ用に保存（成否問わず）
+      if(ji===0){
+        v05debug='status='+statusCode+' len='+t2.length+' head='+t2.slice(0,200);
+      }
+
+      if(!r2.ok)continue;
       if(t2.includes('redirect_captcha'))continue;
       var d2=JSON.parse(t2);
-      var stands=d2.Ki||d2.Dai||d2.dai||[];
+      var topKeys=Object.keys(d2).join(',');
+      var stands=d2.Ki||d2.Dai||d2.dai||d2.Data||d2.data||d2.Stand||d2.stand||[];
 
-      // 最初の機種のKi[0]をデバッグ用に保存
+      // JSONのトップレベルキーも記録
+      if(ji===0){
+        v05debug='status='+statusCode+' topKeys='+topKeys+' stands='+stands.length+' | '+JSON.stringify(d2).slice(0,200);
+      }
+
+      // standsが空の場合: トップレベルの配列を全キーで探す
+      if(stands.length===0){
+        for(var k in d2){if(Array.isArray(d2[k])&&d2[k].length>0){stands=d2[k];break;}}
+      }
+
       if(ji===0&&stands[0]){
-        v05debug='count='+stands.length+' keys='+Object.keys(stands[0]).join(',')+' | '+JSON.stringify(stands[0]);
+        v05debug='count='+stands.length+' keys='+Object.keys(stands[0]).join(',')+' | '+JSON.stringify(stands[0]).slice(0,300);
       }
 
       stands.forEach(function(s){
@@ -68,7 +85,7 @@ try{
         var diff=parseInt(s.sa_mai||s.diff||s.substraction||0);
         allStands.push({rack_no:rack,machine_name:jug.nmk_kisyu||'不明',games,bb,rb,diff});
       });
-    }catch(e2){}
+    }catch(e2){if(ji===0)v05debug='catch: '+e2.message;}
   }
 
   // ── データが全0の場合: nc-v05-011.phpのフィールド名をデバッグ表示 ──
@@ -84,8 +101,13 @@ try{
   }
 
   if(allStands.length===0){
-    bar.textContent='❌ 台データ取得できず phpPath='+jugglers[0]?.php?.slice(0,60);
-    setTimeout(function(){bar.remove();},8000);
+    // nc-v05-011.phpのレスポンスを3段階で表示
+    var dk=v05debug||'(デバッグ情報なし) phpPath='+jugglers[0]?.php;
+    bar.textContent='❌ 台データ0 調査中...';
+    setTimeout(function(){bar.textContent='📋①'+dk.slice(0,250);},500);
+    setTimeout(function(){bar.textContent='📋②'+dk.slice(250,500);},6000);
+    setTimeout(function(){bar.textContent='📋③'+dk.slice(500,750);},11000);
+    setTimeout(function(){bar.remove();},20000);
     return;
   }
 
