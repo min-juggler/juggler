@@ -33,82 +33,46 @@ try{
   if(jugglers.length===0)throw new Error('ジャグラーなし ki='+ki.length+'機種');
   bar.textContent='ジャグラー'+jugglers.length+'機種 台データ取得中...';
 
-  // STEP2: 各機種のnc-v05-011.phpで台ごとデータ取得
-  // nc-m03-001.phpのKi[n].phpフィールド = "nc-v05-011.php?cd_ps=2&bai=...&nmk_kisyu=..."
+  // STEP2: 【調査モード】v05-011.php(HTML)が呼ぶデータAPIを発見する
+  // nc-v05-011.php はHTML表示ページ。データは別のAPIから読み込まれている
   var allStands=[];
   var v05debug='';
 
-  for(var ji=0;ji<jugglers.length;ji++){
-    var jug=jugglers[ji];
-    var phpPath=jug.php||'';
-    if(!phpPath)continue;
-    bar.textContent='台データ取得中 '+(ji+1)+'/'+jugglers.length+' '+jug.nmk_kisyu;
-    try{
-      var ab=new AbortController();setTimeout(()=>ab.abort(),8000);
-      var r2=await fetch('/h/'+storeCode+'/cgi-bin/'+phpPath,{credentials:'include',signal:ab.signal});
-      var statusCode=r2.status;
-      var t2=await r2.text();
+  // 最初のジャグラー機種の詳細ページHTMLを取得
+  var jug0=jugglers[0];
+  var phpPath0=jug0.php||'';
+  bar.textContent='詳細ページ調査中... '+jug0.nmk_kisyu;
+  try{
+    var ab=new AbortController();setTimeout(()=>ab.abort(),10000);
+    var r2=await fetch('/h/'+storeCode+'/cgi-bin/'+phpPath0,{credentials:'include',signal:ab.signal});
+    var html=await r2.text();
 
-      // 最初の機種のレスポンスをデバッグ用に保存（成否問わず）
-      if(ji===0){
-        v05debug='status='+statusCode+' len='+t2.length+' head='+t2.slice(0,200);
-      }
+    // HTML内の全ての .php 参照を抽出（データAPIの候補）
+    var phpRefs=[];
+    var re=/['"\(]([\w\-\/]*nc-[\w\-]+\.php[^'"\)\s]*)/g, mm;
+    while((mm=re.exec(html))!==null){
+      var u=mm[1];
+      if(phpRefs.indexOf(u)===-1)phpRefs.push(u);
+    }
+    // ajax/fetch/load などのキーワード周辺のURLも探す
+    var re2=/(?:url|ajax|load|src)\s*[:=]\s*['"]([^'"]+\.php[^'"]*)/gi;
+    while((mm=re2.exec(html))!==null){
+      var u2=mm[1];
+      if(phpRefs.indexOf(u2)===-1)phpRefs.push(u2);
+    }
 
-      if(!r2.ok)continue;
-      if(t2.includes('redirect_captcha'))continue;
-      var d2=JSON.parse(t2);
-      var topKeys=Object.keys(d2).join(',');
-      var stands=d2.Ki||d2.Dai||d2.dai||d2.Data||d2.data||d2.Stand||d2.stand||[];
+    v05debug='len='+html.length+' php参照数='+phpRefs.length+' || '+phpRefs.slice(0,8).join(' ## ');
+  }catch(e2){v05debug='catch: '+e2.message;}
 
-      // JSONのトップレベルキーも記録
-      if(ji===0){
-        v05debug='status='+statusCode+' topKeys='+topKeys+' stands='+stands.length+' | '+JSON.stringify(d2).slice(0,200);
-      }
-
-      // standsが空の場合: トップレベルの配列を全キーで探す
-      if(stands.length===0){
-        for(var k in d2){if(Array.isArray(d2[k])&&d2[k].length>0){stands=d2[k];break;}}
-      }
-
-      if(ji===0&&stands[0]){
-        v05debug='count='+stands.length+' keys='+Object.keys(stands[0]).join(',')+' | '+JSON.stringify(stands[0]).slice(0,300);
-      }
-
-      stands.forEach(function(s){
-        // cd_dai: "0101"形式 → parseInt で "101" に変換
-        var rack=String(s.cd_dai||s.no_dai||s.dai_no||s.no||'?');
-        if(/^0\d{3,4}$/.test(rack))rack=String(parseInt(rack));
-
-        var games=parseInt(s.game_su||s.total_game||s.ct_game||s.games||0);
-        var bb=parseInt(s.bb_cnt||s.ct_bb||s.bb||s.ct_bonus_1||s.bonus1||s.big||0);
-        var rb=parseInt(s.reg_cnt||s.ct_rb||s.rb||s.ct_bonus_2||s.ct_reg||s.bonus2||s.reg||0);
-        var diff=parseInt(s.sa_mai||s.diff||s.substraction||0);
-        allStands.push({rack_no:rack,machine_name:jug.nmk_kisyu||'不明',games,bb,rb,diff});
-      });
-    }catch(e2){if(ji===0)v05debug='catch: '+e2.message;}
-  }
-
-  // ── データが全0の場合: nc-v05-011.phpのフィールド名をデバッグ表示 ──
-  var hasData=allStands.some(function(s){return s.games>0;});
-  if(!hasData&&v05debug){
-    bar.textContent='⚠️ データ0 フィールド名確認中...';
+  // ── 調査結果を表示（必ず表示してreturn）──
+  {
+    bar.textContent='🔍 API調査結果...';
     var dk=v05debug;
     setTimeout(function(){bar.textContent='📋①'+dk.slice(0,250);},500);
     setTimeout(function(){bar.textContent='📋②'+dk.slice(250,500);},5000);
     setTimeout(function(){bar.textContent='📋③'+dk.slice(500,750);},10000);
     setTimeout(function(){bar.remove();},20000);
-    return; // GitHubへは送らない
-  }
-
-  if(allStands.length===0){
-    // nc-v05-011.phpのレスポンスを3段階で表示
-    var dk=v05debug||'(デバッグ情報なし) phpPath='+jugglers[0]?.php;
-    bar.textContent='❌ 台データ0 調査中...';
-    setTimeout(function(){bar.textContent='📋①'+dk.slice(0,250);},500);
-    setTimeout(function(){bar.textContent='📋②'+dk.slice(250,500);},6000);
-    setTimeout(function(){bar.textContent='📋③'+dk.slice(500,750);},11000);
-    setTimeout(function(){bar.remove();},20000);
-    return;
+    return; // GitHubへは送らない（調査モード）
   }
 
   // ── STEP3: completion()を早めに呼ぶ（iOSタイムアウト回避） ──
