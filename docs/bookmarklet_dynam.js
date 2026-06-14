@@ -33,45 +33,43 @@ try{
   if(jugglers.length===0)throw new Error('ジャグラーなし ki='+ki.length+'機種');
 
   // STEP2: 機種ごとに nc-m05-003.php で台データ取得（合算データ）
-  // ダイナムはBB/RB内訳なし → 大当り合計(count)と合成確率(ratio)を取得
-  // Dai[].D0 = 今日のデータ {cd_dai:台番号, toku0:{count:大当り合計, ratio:合成確率}}
+  // 【調査モード】個別台ページ nc-v06-001.php が呼ぶBB/RBデータAPIを探す
   var allStands=[];
-  for(var ji=0;ji<jugglers.length;ji++){
-    var jug=jugglers[ji];
-    var phpPath=jug.php||'';
-    var qs=phpPath.indexOf('?')>=0?phpPath.slice(phpPath.indexOf('?')):'?cd_ps=2';
-    bar.textContent='台データ取得中 '+(ji+1)+'/'+jugglers.length+' '+jug.nmk_kisyu;
-    try{
-      var ab=new AbortController();setTimeout(()=>ab.abort(),8000);
-      var r3=await fetch('/h/'+storeCode+'/cgi-bin/nc-m05-003.php'+qs,{credentials:'include',signal:ab.signal});
-      if(!r3.ok)continue;
-      var t3=await r3.text();
-      if(t3[0]!=='{')continue;
-      var j3=JSON.parse(t3);
-      var dais=j3.Dai||[];
-      dais.forEach(function(dai){
-        var d0=dai.D0;
-        if(!d0)return;
-        var rack=String(d0.cd_dai||'?');
-        if(/^0\d{3,4}$/.test(rack))rack=String(parseInt(rack));
-        var bonus=parseInt((d0.toku0&&d0.toku0.count)||0);
-        var prob=parseFloat((d0.toku0&&d0.toku0.ratio)||0); // 合成確率(1/X)
-        // ゲーム数 ≒ 大当り合計 × 合成確率
-        var games=(bonus>0&&prob>0)?Math.round(bonus*prob):0;
-        allStands.push({
-          rack_no:rack,
-          machine_name:jug.nmk_kisyu||'不明',
-          games:games,
-          bb:0,rb:0,diff:0,
-          total_bonus:bonus,
-          combined_prob:prob,   // 合成確率の分母（小さいほど良い）
-          combined_only:true     // ダイナムはBB/RB内訳なしの目印
-        });
-      });
-    }catch(e2){}
-  }
+  var v05debug='';
+  // 最初の機種から最初の台のcd_daiを取得
+  var jug0=jugglers[0];
+  var qs0=jug0.php&&jug0.php.indexOf('?')>=0?jug0.php.slice(jug0.php.indexOf('?')):'?cd_ps=2';
+  var firstCd='0091';
+  try{
+    var r3=await fetch('/h/'+storeCode+'/cgi-bin/nc-m05-003.php'+qs0,{credentials:'include'});
+    var j3=await r3.json();
+    if(j3.Dai&&j3.Dai[0]&&j3.Dai[0].D0&&j3.Dai[0].D0.cd_dai)firstCd=j3.Dai[0].D0.cd_dai;
+  }catch(e){}
 
-  if(allStands.length===0)throw new Error('台データ0');
+  try{
+    // 個別台ページHTMLを取得
+    var rv=await fetch('/h/'+storeCode+'/cgi-bin/nc-v06-001.php?cd_ps=2&cd_dai='+firstCd,{credentials:'include'});
+    var html=await rv.text();
+    // HTML内の nc-*.php 参照を抽出
+    var refs=[];var re=/(nc-[\w\-]+\.php[^'"\)\s<>]*)/g,mm;
+    while((mm=re.exec(html))!==null){if(refs.indexOf(mm[1])===-1)refs.push(mm[1]);}
+    // data-page や JSON っぽい埋め込みを探す
+    var hasDataPage=html.indexOf('data-page')>=0;
+    v05debug='cd_dai='+firstCd+' len='+html.length+' data-page='+hasDataPage+' refs='+refs.length+' || '+refs.slice(0,10).join(' ## ');
+  }catch(eX){v05debug='catch: '+eX.message;}
+
+  // ── 調査結果表示 ──
+  bar.textContent='🔍 v06調査（6枚撮って）...';
+  var dk=v05debug;
+  setTimeout(function(){bar.textContent='📋①'+dk.slice(0,250);},500);
+  setTimeout(function(){bar.textContent='📋②'+dk.slice(250,500);},4500);
+  setTimeout(function(){bar.textContent='📋③'+dk.slice(500,750);},9000);
+  setTimeout(function(){bar.textContent='📋④'+dk.slice(750,1000);},13500);
+  setTimeout(function(){bar.textContent='📋⑤'+dk.slice(1000,1250);},18000);
+  setTimeout(function(){bar.textContent='📋⑥'+dk.slice(1250,1500);},22500);
+  setTimeout(function(){bar.remove();},27000);
+  if(typeof completion==='function')completion('done');
+  return;
 
   // ── completion()を早めに呼ぶ（iOSタイムアウト回避）──
   if(typeof completion==='function')completion('done');
