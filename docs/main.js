@@ -78,51 +78,56 @@ function getMachineSettings(machineName) {
   return JUGGLER_SETTINGS.default;
 }
 
-function calcSettingLikelihood(stand, settings) {
+// 各設定の「当てはまり度」(0〜1)を両側ガウスで算出。設定値に近いほど高い。
+// 合成確率を主軸(0.45)、REG重視(0.35)、BIG軽め(0.20)。ジャグラーの設定差の出方に合わせた重み。
+function _rawLikelihoods(stand, settings) {
   const { games } = stand;
   if (!games || games < 100) return null;
+  // サンプル(G数)が少ないほど分布を広げる(自信を下げる)
+  const k = Math.max(0.12, 0.14 * Math.sqrt(2500 / Math.max(games, 800)));
+  const gauss = (obs, exp) => { const z = (obs - exp) / (exp * k); return Math.exp(-0.5 * z * z); };
+  const raw = {};
 
-  // ダイナム等: BB/RB内訳がなく合成確率のみの台
+  // ダイナム等: BB/RB内訳がなく合成確率のみ
   if (stand.combined_only) {
     const combProb = stand.combined_prob || (stand.total_bonus > 0 ? games / stand.total_bonus : 0);
     if (!combProb || !isFinite(combProb)) return null;
-    const likelihoods = {};
     for (const [setting, vals] of Object.entries(settings)) {
-      const s = parseInt(setting);
-      // 設定の合成確率の分母 = 1/(1/bb + 1/rb)
-      const expComb = 1 / (1 / vals.bb + 1 / vals.rb);
-      const diff = Math.max(0, combProb - expComb);
-      likelihoods[s] = 1 / (1 + diff / expComb);
+      const expComb = vals.combined || (1 / (1 / vals.bb + 1 / vals.rb));
+      raw[parseInt(setting)] = gauss(combProb, expComb);
     }
-    const total = Object.values(likelihoods).reduce((a, b) => a + b, 0);
-    const probs = {};
-    for (const [s, l] of Object.entries(likelihoods)) probs[parseInt(s)] = l / total;
-    return probs;
+    return raw;
   }
 
   const { bb, rb } = stand;
   if (!bb || !rb) return null;
-  const bbProb = games / bb;   // 実際のBB確率の分母（小さいほど良い）
-  const rbProb = games / rb;
-
+  const bbProb = games / bb, rbProb = games / rb, combProb = games / (bb + rb);
   if (!isFinite(bbProb) || !isFinite(rbProb)) return null;
-
-  const likelihoods = {};
   for (const [setting, vals] of Object.entries(settings)) {
-    const s = parseInt(setting);
-    // 実測値が設定値より「良い（小さい）」場合は距離0とみなす
-    // → 設定6より良い台は設定6との差が0として扱われ正しく高評価になる
-    const bbDiff = Math.max(0, bbProb - vals.bb);
-    const rbDiff = Math.max(0, rbProb - vals.rb);
-    const bbScore = 1 / (1 + bbDiff / vals.bb);
-    const rbScore = 1 / (1 + rbDiff / vals.rb);
-    // 幾何平均: BBとRBの両方が良い台を高評価。片方だけ良くても低評価
-    likelihoods[s] = Math.pow(bbScore, 0.4) * Math.pow(rbScore, 0.6);
+    const expComb = vals.combined || (1 / (1 / vals.bb + 1 / vals.rb));
+    const bbScore = gauss(bbProb, vals.bb);
+    const rbScore = gauss(rbProb, vals.rb);
+    const combScore = gauss(combProb, expComb);
+    raw[parseInt(setting)] = Math.pow(bbScore, 0.20) * Math.pow(rbScore, 0.35) * Math.pow(combScore, 0.45);
   }
-  const total = Object.values(likelihoods).reduce((a, b) => a + b, 0);
+  return raw;
+}
+
+function calcSettingLikelihood(stand, settings) {
+  const raw = _rawLikelihoods(stand, settings);
+  if (!raw) return null;
+  const total = Object.values(raw).reduce((a, b) => a + b, 0);
+  if (!(total > 0)) return null;
   const probs = {};
-  for (const [s, l] of Object.entries(likelihoods)) probs[parseInt(s)] = l / total;
+  for (const [s, l] of Object.entries(raw)) probs[parseInt(s)] = l / total;
   return probs;
+}
+
+// 最良設定への当てはまり度(0〜1)。BB/RB/合成が互いに矛盾する台ほど低くなる。
+function calcFitQuality(stand, settings) {
+  const raw = _rawLikelihoods(stand, settings);
+  if (!raw) return 0;
+  return Math.max(...Object.values(raw));
 }
 
 function calcExpectedSetting(probs) {
@@ -140,12 +145,16 @@ function calcExpectedProfitFromProbs(probs, timeMin, budgetYen) {
   return Math.round(weightedEvCoins * actualGames * 4);
 }
 
-function calcScore(probs, expectedSetting, stand) {
+function calcScore(probs, expectedSetting, stand, fit = 1) {
   if (!probs || !expectedSetting) return 0;
   const highProb = (probs[4] || 0) + (probs[5] || 0) + (probs[6] || 0);
   const s6prob = probs[6] || 0;
   const gameBonus = Math.min(stand.games / 3000, 1.0);
-  return Math.min(100, Math.round(highProb * 50 + s6prob * 30 + gameBonus * 20));
+  // 設定推定の部分は「当てはまり度」で割引（BB/RB/合成が矛盾する台は減点）
+  const settingPart = (highProb * 55 + s6prob * 25) * fit;
+  // 差枚ボーナス（±8点まで）: 勝っている台を加点
+  const diffBonus = stand.combined_only ? 0 : Math.max(-8, Math.min(8, (stand.diff || 0) / 250));
+  return Math.max(0, Math.min(100, Math.round(settingPart + gameBonus * 20 + diffBonus)));
 }
 
 function scoreToStars(score) {
@@ -290,7 +299,8 @@ function scoreStands(stands, budget, timeMin) {
     const settings = getMachineSettings(stand.machine_name || '');
     const probs = calcSettingLikelihood(stand, settings);
     const expectedSetting = calcExpectedSetting(probs);
-    const score = calcScore(probs, expectedSetting, stand);
+    const fit = calcFitQuality(stand, settings);
+    const score = calcScore(probs, expectedSetting, stand, fit);
     const expectedProfit = calcExpectedProfitFromProbs(probs, timeMin, budget);
     const tags = buildReasonTags(stand, probs, expectedSetting);
     return { ...stand, probs, expectedSetting, score, expectedProfit, tags };
