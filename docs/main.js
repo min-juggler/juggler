@@ -79,8 +79,28 @@ function getMachineSettings(machineName) {
 }
 
 function calcSettingLikelihood(stand, settings) {
-  const { games, bb, rb } = stand;
+  const { games } = stand;
   if (!games || games < 100) return null;
+
+  // ダイナム等: BB/RB内訳がなく合成確率のみの台
+  if (stand.combined_only) {
+    const combProb = stand.combined_prob || (stand.total_bonus > 0 ? games / stand.total_bonus : 0);
+    if (!combProb || !isFinite(combProb)) return null;
+    const likelihoods = {};
+    for (const [setting, vals] of Object.entries(settings)) {
+      const s = parseInt(setting);
+      // 設定の合成確率の分母 = 1/(1/bb + 1/rb)
+      const expComb = 1 / (1 / vals.bb + 1 / vals.rb);
+      const diff = Math.max(0, combProb - expComb);
+      likelihoods[s] = 1 / (1 + diff / expComb);
+    }
+    const total = Object.values(likelihoods).reduce((a, b) => a + b, 0);
+    const probs = {};
+    for (const [s, l] of Object.entries(likelihoods)) probs[parseInt(s)] = l / total;
+    return probs;
+  }
+
+  const { bb, rb } = stand;
   if (!bb || !rb) return null;
   const bbProb = games / bb;   // 実際のBB確率の分母（小さいほど良い）
   const rbProb = games / rb;
@@ -162,6 +182,10 @@ function buildReasonTags(stand, probs, expectedSetting) {
   if (stand.rb > 0 && stand.games > 0) {
     const rbRate = stand.games / stand.rb;
     if (rbRate < 250) tags.push({ text: `RB好調 1/${Math.round(rbRate)}`, good: true });
+  }
+  if (stand.combined_only && stand.combined_prob > 0) {
+    if (stand.combined_prob < 135) tags.push({ text: `合成好調 1/${Math.round(stand.combined_prob)}`, good: true });
+    else if (stand.combined_prob > 170) tags.push({ text: `合成不調 1/${Math.round(stand.combined_prob)}`, good: false });
   }
   if (stand.games > 2000) tags.push({ text: `十分なサンプル ${stand.games}G`, good: true });
   else if (stand.games < 500) tags.push({ text: `サンプル少 ${stand.games}G`, good: false });
@@ -353,7 +377,9 @@ function buildStandCard(s, rank, label = null) {
   const rankClass = rank <= 3 ? `rank-${rank}` : '';
   const bbRate = s.bb > 0 ? `1/${Math.round(s.games / s.bb)}` : '-';
   const rbRate = s.rb > 0 ? `1/${Math.round(s.games / s.rb)}` : '-';
-  const combinedRate = (s.bb + s.rb) > 0 ? `1/${Math.round(s.games / (s.bb + s.rb))}` : '-';
+  const combinedRate = s.combined_only
+    ? (s.combined_prob > 0 ? `1/${Math.round(s.combined_prob)}` : '-')
+    : ((s.bb + s.rb) > 0 ? `1/${Math.round(s.games / (s.bb + s.rb))}` : '-');
   const estSetting = s.expectedSetting ? s.expectedSetting.toFixed(1) : '-';
   const profitClass = (s.expectedProfit || 0) >= 0 ? 'expect-positive' : 'expect-negative';
   const profitSign = (s.expectedProfit || 0) >= 0 ? '+' : '';
@@ -385,6 +411,19 @@ function buildStandCard(s, rank, label = null) {
       </div>
     </div>
     <div class="stand-data-grid">
+      ${s.combined_only ? `
+      <div class="stand-data-cell">
+        <span class="data-label">G数</span>
+        <span class="data-value">${(s.games||0).toLocaleString()}</span>
+      </div>
+      <div class="stand-data-cell">
+        <span class="data-label">大当り</span>
+        <span class="data-value">${s.total_bonus||0}回</span>
+      </div>
+      <div class="stand-data-cell">
+        <span class="data-label">合成確率</span>
+        <span class="data-value">${combinedRate}</span>
+      </div>` : `
       <div class="stand-data-cell">
         <span class="data-label">BB確率</span>
         <span class="data-value">${bbRate}</span>
@@ -396,7 +435,7 @@ function buildStandCard(s, rank, label = null) {
       <div class="stand-data-cell">
         <span class="data-label">合算</span>
         <span class="data-value">${combinedRate}</span>
-      </div>
+      </div>`}
       <div class="stand-data-cell">
         <span class="data-label">推定設定</span>
         <span class="data-value" style="color:${color}">${estSetting}</span>
@@ -445,16 +484,22 @@ function showDetail(storeId, rackNo) {
   const rbRate = stand.rb > 0 ? `1/${Math.round(stand.games / stand.rb)}` : '-';
   const diffColor = (stand.diff || 0) >= 0 ? '#2d6a4f' : '#e63946';
   const diffSign = (stand.diff || 0) >= 0 ? '+' : '';
+  const combRate = stand.combined_prob > 0 ? `1/${Math.round(stand.combined_prob)}` : '-';
 
-  document.getElementById('modal-body').innerHTML = `
-    <h3>${stand.machine_name} <span style="color:#e63946">${stand.rack_no}番台</span></h3>
-    <p style="color:#999;font-size:12px;margin-bottom:14px">${stand.store_name}</p>
-    <div class="modal-grid">
+  const modalCells = stand.combined_only ? `
+      <div class="modal-cell"><div class="label">ゲーム数</div><div class="value">${(stand.games||0).toLocaleString()}G</div></div>
+      <div class="modal-cell"><div class="label">大当り回数</div><div class="value">${stand.total_bonus||0}回</div></div>
+      <div class="modal-cell"><div class="label">合成確率</div><div class="value">${combRate}</div></div>
+      <div class="modal-cell"><div class="label">推定設定</div><div class="value">${stand.expectedSetting?stand.expectedSetting.toFixed(1):'-'}</div></div>` : `
       <div class="modal-cell"><div class="label">ゲーム数</div><div class="value">${(stand.games||0).toLocaleString()}G</div></div>
       <div class="modal-cell"><div class="label">差枚数</div><div class="value" style="color:${diffColor}">${diffSign}${(stand.diff||0).toLocaleString()}</div></div>
       <div class="modal-cell"><div class="label">BB確率</div><div class="value">${bbRate}</div></div>
-      <div class="modal-cell"><div class="label">RB確率</div><div class="value">${rbRate}</div></div>
-    </div>
+      <div class="modal-cell"><div class="label">RB確率</div><div class="value">${rbRate}</div></div>`;
+
+  document.getElementById('modal-body').innerHTML = `
+    <h3>${stand.machine_name} <span style="color:#e63946">${stand.rack_no}番台</span></h3>
+    <p style="color:#999;font-size:12px;margin-bottom:14px">${stand.store_name}${stand.combined_only?' ・BB/RB内訳なし(合成確率で判定)':''}</p>
+    <div class="modal-grid">${modalCells}</div>
 
     <h4 style="font-size:13px;font-weight:700;margin:14px 0 8px;color:#555">設定推測確率</h4>
     <div style="position:relative;height:160px">

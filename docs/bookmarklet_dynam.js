@@ -18,7 +18,7 @@ var today=new Date().toISOString().slice(0,10).replace(/-/g,'');
 
 try{
   // STEP1: 機種一覧取得 (nc-m03-001.php)
-  // → 各Ki itemの"php"フィールドに nc-v05-011.php の台ごとデータURLが入っている
+  // 各Ki itemの"php"フィールド = nc-v05-011.php?cd_ps=2&bai=..&nmk_kisyu=.. (機種ごとのクエリ)
   bar.textContent='機種一覧取得中...';
   var r1=await fetch('/h/'+storeCode+'/cgi-bin/nc-m03-001.php?cd_ps=2&dt='+today,{credentials:'include'});
   if(!r1.ok)throw new Error('機種一覧失敗 '+r1.status);
@@ -31,61 +31,54 @@ try{
     return mn.includes('ジャグラー')||mn.includes('ＪａｇＧｌａＲ');
   });
   if(jugglers.length===0)throw new Error('ジャグラーなし ki='+ki.length+'機種');
-  bar.textContent='ジャグラー'+jugglers.length+'機種 台データ取得中...';
 
-  // STEP2: 【調査モード】nc-m05-* データAPIを発見する
-  // v=HTML表示ページ, m=JSONデータAPI の法則。v05-011 のデータ版を探す
+  // STEP2: 機種ごとに nc-m05-003.php で台データ取得（合算データ）
+  // ダイナムはBB/RB内訳なし → 大当り合計(count)と合成確率(ratio)を取得
+  // Dai[].D0 = 今日のデータ {cd_dai:台番号, toku0:{count:大当り合計, ratio:合成確率}}
   var allStands=[];
-  var v05debug='';
-
-  var jug0=jugglers[0];
-  var phpPath0=jug0.php||''; // 例: nc-v05-011.php?cd_ps=2&bai=...&nmk_kisyu=...
-  var qs=phpPath0.indexOf('?')>=0?phpPath0.slice(phpPath0.indexOf('?')):'?cd_ps=2';
-
-  // nc-m05-003=合成(大当り)。BIG/REG/差枚は別の nc-m05-00X にあるはず。
-  // 003〜009を調べ、各々のDai[0].D0.toku0(count/ratio)を比較してメトリクスを特定する
-  try{
-    var out=[];
-    for(var n=3;n<=9;n++){
-      var ep='nc-m05-00'+n+'.php';
-      try{
-        var abn=new AbortController();setTimeout(()=>abn.abort(),5000);
-        var rn=await fetch('/h/'+storeCode+'/cgi-bin/'+ep+qs,{credentials:'include',signal:abn.signal});
-        var tn=await rn.text();
-        var info='00'+n+'[st='+rn.status+']';
-        if(rn.ok&&tn[0]==='{'){
-          var jn=JSON.parse(tn);
-          var d0=jn.Dai&&jn.Dai[0]&&jn.Dai[0].D0;
-          if(d0&&d0.toku0){info+='D0.toku0='+JSON.stringify(d0.toku0);}
-          else if(d0){info+='D0keys='+Object.keys(d0).join(',')+' '+JSON.stringify(d0).slice(0,90);}
-          else{info+='keys='+Object.keys(jn).join(',');}
-        }else{info+=(tn[0]==='<'?'HTML':tn.slice(0,12));}
-        out.push(info);
-      }catch(en){out.push('00'+n+' err:'+en.message);}
-    }
-    v05debug=out.join(' ||| ');
-  }catch(eX){v05debug='catch: '+eX.message;}
-
-  // ── 調査結果を表示（必ず表示してreturn）──
-  {
-    bar.textContent='🔍 API調査結果（6枚撮って）...';
-    var dk=v05debug;
-    setTimeout(function(){bar.textContent='📋①'+dk.slice(0,250);},500);
-    setTimeout(function(){bar.textContent='📋②'+dk.slice(250,500);},4500);
-    setTimeout(function(){bar.textContent='📋③'+dk.slice(500,750);},9000);
-    setTimeout(function(){bar.textContent='📋④'+dk.slice(750,1000);},13500);
-    setTimeout(function(){bar.textContent='📋⑤'+dk.slice(1000,1250);},18000);
-    setTimeout(function(){bar.textContent='📋⑥'+dk.slice(1250,1500);},22500);
-    setTimeout(function(){bar.remove();},27000);
-    return; // GitHubへは送らない（調査モード）
+  for(var ji=0;ji<jugglers.length;ji++){
+    var jug=jugglers[ji];
+    var phpPath=jug.php||'';
+    var qs=phpPath.indexOf('?')>=0?phpPath.slice(phpPath.indexOf('?')):'?cd_ps=2';
+    bar.textContent='台データ取得中 '+(ji+1)+'/'+jugglers.length+' '+jug.nmk_kisyu;
+    try{
+      var ab=new AbortController();setTimeout(()=>ab.abort(),8000);
+      var r3=await fetch('/h/'+storeCode+'/cgi-bin/nc-m05-003.php'+qs,{credentials:'include',signal:ab.signal});
+      if(!r3.ok)continue;
+      var t3=await r3.text();
+      if(t3[0]!=='{')continue;
+      var j3=JSON.parse(t3);
+      var dais=j3.Dai||[];
+      dais.forEach(function(dai){
+        var d0=dai.D0;
+        if(!d0)return;
+        var rack=String(d0.cd_dai||'?');
+        if(/^0\d{3,4}$/.test(rack))rack=String(parseInt(rack));
+        var bonus=parseInt((d0.toku0&&d0.toku0.count)||0);
+        var prob=parseFloat((d0.toku0&&d0.toku0.ratio)||0); // 合成確率(1/X)
+        // ゲーム数 ≒ 大当り合計 × 合成確率
+        var games=(bonus>0&&prob>0)?Math.round(bonus*prob):0;
+        allStands.push({
+          rack_no:rack,
+          machine_name:jug.nmk_kisyu||'不明',
+          games:games,
+          bb:0,rb:0,diff:0,
+          total_bonus:bonus,
+          combined_prob:prob,   // 合成確率の分母（小さいほど良い）
+          combined_only:true     // ダイナムはBB/RB内訳なしの目印
+        });
+      });
+    }catch(e2){}
   }
 
-  // ── STEP3: completion()を早めに呼ぶ（iOSタイムアウト回避） ──
-  // GitHub送信はこの後も非同期で続く（ブラウザはページを保持している）
+  if(allStands.length===0)throw new Error('台データ0');
+
+  // ── completion()を早めに呼ぶ（iOSタイムアウト回避）──
   if(typeof completion==='function')completion('done');
 
-  // ── STEP4: GitHubに送信 ──
-  bar.textContent='📡 '+allStands.length+'台 GitHub送信中...';
+  // ── STEP3: GitHubに送信 ──
+  var realStands=allStands.filter(function(s){return s.games>0;}).length;
+  bar.textContent='📡 '+allStands.length+'台('+realStands+'稼働) GitHub送信中...';
   var today2=new Date().toISOString().slice(0,10);
   var msg='データ更新 '+new Date().toLocaleString('ja');
 
@@ -125,7 +118,6 @@ try{
   // history.json追記
   var s2=await ghGet('docs/data/history.json');
   var hist=s2.data||{};
-  var realStands=allStands.filter(function(s){return s.games>0;}).length;
   if(realStands>0){
     if(!hist[today2])hist[today2]={stores:{}};
     if(!hist[today2].stores)hist[today2].stores={};
