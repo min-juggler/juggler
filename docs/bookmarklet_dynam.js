@@ -42,45 +42,36 @@ try{
   var phpPath0=jug0.php||''; // 例: nc-v05-011.php?cd_ps=2&bai=...&nmk_kisyu=...
   var qs=phpPath0.indexOf('?')>=0?phpPath0.slice(phpPath0.indexOf('?')):'?cd_ps=2';
 
-  // 試すデータAPI候補（v05-011 → m05-* に変換）
-  var candidates=['nc-m05-011.php','nc-m05-003.php','nc-m05-001.php','nc-m05-002.php','nc-m05-010.php'];
-  var found=[];
+  // 判明: nc-m05-003.php=実データ(D0-D6), nc-m05-001.php=台番号(cd_dai)
+  // D0〜D6が何の数字か特定するため、実際の値を表示する
+  try{
+    var ab=new AbortController();setTimeout(()=>ab.abort(),8000);
+    var r3=await fetch('/h/'+storeCode+'/cgi-bin/nc-m05-003.php'+qs,{credentials:'include',signal:ab.signal});
+    var j3=await r3.json();
+    var ab2=new AbortController();setTimeout(()=>ab2.abort(),8000);
+    var r1d=await fetch('/h/'+storeCode+'/cgi-bin/nc-m05-001.php'+qs,{credentials:'include',signal:ab2.signal});
+    var j1=await r1d.json();
 
-  for(var ci=0;ci<candidates.length;ci++){
-    var cand=candidates[ci];
-    bar.textContent='API調査 '+(ci+1)+'/'+candidates.length+' '+cand;
-    try{
-      var ab=new AbortController();setTimeout(()=>ab.abort(),6000);
-      var rc=await fetch('/h/'+storeCode+'/cgi-bin/'+cand+qs,{credentials:'include',signal:ab.signal});
-      var tc=await rc.text();
-      var info=cand+'[st='+rc.status+']';
-      if(rc.ok&&tc[0]==='{'){
-        try{
-          var jc=JSON.parse(tc);
-          var keys=Object.keys(jc);
-          // 配列フィールドを探す
-          var arrInfo='';
-          for(var k in jc){if(Array.isArray(jc[k])&&jc[k].length>0){arrInfo+=' '+k+'('+jc[k].length+')['+Object.keys(jc[k][0]).join(',')+']';}}
-          info+=' JSON keys='+keys.join(',')+arrInfo;
-        }catch(e3){info+=' parse失敗';}
-      }else{
-        info+=(tc[0]==='<'?' HTML':' '+tc.slice(0,15));
-      }
-      found.push(info);
-    }catch(ec){found.push(cand+' err:'+ec.message);}
-  }
+    var kiStr=j3.Ki?JSON.stringify(j3.Ki).slice(0,200):'なし';
+    var locStr=j3.Location?JSON.stringify(j3.Location).slice(0,150):'なし';
+    var d0=j3.Dai&&j3.Dai[0]?JSON.stringify(j3.Dai[0]):'なし';
+    var d1=j3.Dai&&j3.Dai[1]?JSON.stringify(j3.Dai[1]):'なし';
+    var cd0=j1.Dai&&j1.Dai[0]?JSON.stringify(j1.Dai[0]):'なし';
 
-  v05debug=found.join(' ||| ');
+    v05debug='【Ki】'+kiStr+' 【Loc】'+locStr+' 【003-Dai0】'+d0+' 【003-Dai1】'+d1+' 【001-Dai0】'+cd0;
+  }catch(eX){v05debug='catch: '+eX.message;}
 
   // ── 調査結果を表示（必ず表示してreturn）──
   {
-    bar.textContent='🔍 API調査結果...';
+    bar.textContent='🔍 API調査結果（6枚撮って）...';
     var dk=v05debug;
     setTimeout(function(){bar.textContent='📋①'+dk.slice(0,250);},500);
-    setTimeout(function(){bar.textContent='📋②'+dk.slice(250,500);},5000);
-    setTimeout(function(){bar.textContent='📋③'+dk.slice(500,750);},10000);
-    setTimeout(function(){bar.textContent='📋④'+dk.slice(750,1000);},15000);
-    setTimeout(function(){bar.remove();},22000);
+    setTimeout(function(){bar.textContent='📋②'+dk.slice(250,500);},4500);
+    setTimeout(function(){bar.textContent='📋③'+dk.slice(500,750);},9000);
+    setTimeout(function(){bar.textContent='📋④'+dk.slice(750,1000);},13500);
+    setTimeout(function(){bar.textContent='📋⑤'+dk.slice(1000,1250);},18000);
+    setTimeout(function(){bar.textContent='📋⑥'+dk.slice(1250,1500);},22500);
+    setTimeout(function(){bar.remove();},27000);
     return; // GitHubへは送らない（調査モード）
   }
 
