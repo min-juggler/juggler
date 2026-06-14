@@ -139,25 +139,13 @@
 const REPO = 'min-juggler/juggler';
 const GITHUB_BASE = 'https://raw.githubusercontent.com/' + REPO + '/main/docs/';
 
-// iOS Shortcut用: completion()付きラッパー
+// iOS Shortcut用: completion()付きラッパー（インライン方式）
+// ※ iOS Shortcutsは eval() を禁止しているため、ローダー方式は使えない
 function wrapForShortcut(code, token, repo) {
   return code
     .replace(/__TOKEN__/g, token)
     .replace(/__REPO__/g, repo)
     .replace(/\}\)\(\);\s*$/, '})().then(r=>completion("done")).catch(e=>completion("error:"+e.message));');
-}
-
-// ★ローダー方式: 毎回GitHubから最新スクリプトを取得して実行する
-// → スクリプトを更新してもショートカットを貼り直す必要がない（1回貼れば永続）
-function buildLoader(filename, token, repo) {
-  var url = GITHUB_BASE + filename;
-  return "(async function(){"
-    + "var r=await fetch('" + url + "?_='+Date.now(),{cache:'no-store'});"
-    + "var c=await r.text();"
-    + "c=c.replace(/__TOKEN__/g,'" + token + "').replace(/__REPO__/g,'" + repo + "');"
-    + "await eval(c);"
-    + "})().then(function(){if(typeof completion==='function')completion('done')})"
-    + ".catch(function(e){if(typeof completion==='function')completion('err:'+e.message);else alert('err:'+e.message)});";
 }
 
 async function fetchScript(filename) {
@@ -189,14 +177,19 @@ async function updateUI() {
   document.getElementById('token-input').placeholder = '変更する場合のみ入力';
   guide.style.display = 'block';
 
-  // ★ローダー方式に統一: 1回貼れば、以後スクリプト更新時も貼り直し不要
-  const ywCode  = buildLoader('bookmarklet_code.js', token, REPO);
-  const kmCode  = buildLoader('bookmarklet_code.js', token, REPO);
-  const dynCode = buildLoader('bookmarklet_dynam.js', token, REPO);
+  try {
+    // テラモバスクリプト（yonezawa/kaminoyama両対応）
+    const teramoba = await fetchScript('bookmarklet_code.js');
+    const dynamCode = await fetchScript('bookmarklet_dynam.js');
 
-  document.getElementById('code-yonezawa').textContent  = ywCode;
-  document.getElementById('code-kaminoyama').textContent = kmCode;
-  document.getElementById('code-dynam').textContent     = dynCode;
+    document.getElementById('code-yonezawa').textContent  = wrapForShortcut(teramoba, token, REPO);
+    document.getElementById('code-kaminoyama').textContent = wrapForShortcut(teramoba, token, REPO);
+    document.getElementById('code-dynam').textContent     = wrapForShortcut(dynamCode, token, REPO);
+  } catch(e) {
+    ['yonezawa','kaminoyama','dynam'].forEach(id => {
+      document.getElementById('code-' + id).textContent = '❌ 生成失敗: ' + e.message;
+    });
+  }
 }
 
 function copyText(elementId, btn) {
