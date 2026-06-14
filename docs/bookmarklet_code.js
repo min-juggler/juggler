@@ -75,6 +75,7 @@ if(location.href.includes('dynam-data.jp')){
     for(var[mn3,sts3]of Object.entries(dMap))dResult.machines.push({machine_name:mn3,count:sts3.length,stands:sts3});
     if(dAllStands.length>0)setTimeout(()=>{bar.textContent='🔍 stand例: '+JSON.stringify(dAllStands[0]).slice(0,120);},3000);
     bar.textContent='✅ '+dAllStands.length+'台 GitHub送信中...';
+    if(typeof completion==='function')completion('done');
     await push(dResult,dsid,dsname);
   }catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
   setTimeout(()=>bar.remove(),12000);
@@ -500,6 +501,9 @@ try{
     setTimeout(()=>{bar.textContent='🔍 stand例: '+fsVals;},3000);
   }
   bar.textContent='✅ '+allStands.length+'台(試行'+machineNames.length+'機種) GitHub送信中...';
+  // iOSショートカットのタイムアウト回避: 送信前にcompletion()を呼ぶ
+  // (ページは生きたままなので送信は裏で完走する)
+  if(typeof completion==='function')completion('done');
   await push(result);
 }catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
 setTimeout(()=>bar.remove(),10000);
