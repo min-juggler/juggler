@@ -33,45 +33,33 @@ try{
   if(jugglers.length===0)throw new Error('ジャグラーなし ki='+ki.length+'機種');
 
   // STEP2: 機種ごとに nc-m05-003.php で台データ取得（合算データ）
-  // ダイナムはBB/RB内訳なし → 大当り合計(count)と合成確率(ratio)を取得
-  // Dai[].D0 = 今日のデータ {cd_dai:台番号, toku0:{count:大当り合計, ratio:合成確率}}
+  // 【調査モード】DATA表示ページのHTMLからBIG/REGの構造を調べる
   var allStands=[];
-  for(var ji=0;ji<jugglers.length;ji++){
-    var jug=jugglers[ji];
-    var phpPath=jug.php||'';
-    var qs=phpPath.indexOf('?')>=0?phpPath.slice(phpPath.indexOf('?')):'?cd_ps=2';
-    bar.textContent='台データ取得中 '+(ji+1)+'/'+jugglers.length+' '+jug.nmk_kisyu;
-    try{
-      var ab=new AbortController();setTimeout(()=>ab.abort(),8000);
-      var r3=await fetch('/h/'+storeCode+'/cgi-bin/nc-m05-003.php'+qs,{credentials:'include',signal:ab.signal});
-      if(!r3.ok)continue;
-      var t3=await r3.text();
-      if(t3[0]!=='{')continue;
-      var j3=JSON.parse(t3);
-      var dais=j3.Dai||[];
-      dais.forEach(function(dai){
-        var d0=dai.D0;
-        if(!d0)return;
-        var rack=String(d0.cd_dai||'?');
-        if(/^0\d{3,4}$/.test(rack))rack=String(parseInt(rack));
-        var bonus=parseInt((d0.toku0&&d0.toku0.count)||0);
-        var prob=parseFloat((d0.toku0&&d0.toku0.ratio)||0); // 合成確率(1/X)
-        // ゲーム数 ≒ 大当り合計 × 合成確率
-        var games=(bonus>0&&prob>0)?Math.round(bonus*prob):0;
-        allStands.push({
-          rack_no:rack,
-          machine_name:jug.nmk_kisyu||'不明',
-          games:games,
-          bb:0,rb:0,diff:0,
-          total_bonus:bonus,
-          combined_prob:prob,   // 合成確率の分母（小さいほど良い）
-          combined_only:true     // ダイナムはBB/RB内訳なしの目印
-        });
-      });
-    }catch(e2){}
-  }
+  var v05debug='';
+  var jug0=jugglers[0];
+  var qs0=jug0.php&&jug0.php.indexOf('?')>=0?jug0.php.slice(jug0.php.indexOf('?')):'?cd_ps=2';
+  try{
+    var rv=await fetch('/h/'+storeCode+'/cgi-bin/nc-v05-011.php'+qs0,{credentials:'include'});
+    var html=await rv.text();
+    // "BIG" "REG" "BONUS" 等の文字位置を探し、周辺HTMLを抜き出す
+    var idxBig=html.indexOf('BIG');
+    var idxReg=html.indexOf('REG');
+    var idx91=html.indexOf('0091');
+    // 数値データらしき場所のサンプル：最初の"BONUS"周辺
+    var idxBonus=html.indexOf('BONUS');
+    var anchor=idx91>=0?idx91:(idxBonus>=0?idxBonus:idxBig);
+    var chunk=anchor>=0?html.slice(anchor,anchor+700):'(見つからず)';
+    // タグを除去して読みやすく
+    chunk=chunk.replace(/<[^>]+>/g,'｜').replace(/[\s　]+/g,' ').replace(/｜+/g,'｜');
+    v05debug='len='+html.length+' BIG@'+idxBig+' REG@'+idxReg+' 0091@'+idx91+' || '+chunk;
+  }catch(eX){v05debug='catch: '+eX.message;}
 
-  if(allStands.length===0)throw new Error('台データ0');
+  bar.textContent='🔍 HTML構造調査（7枚撮って）...';
+  var dk=v05debug;
+  for(var pi=0;pi<7;pi++){(function(p){setTimeout(function(){bar.textContent='📋'+(p+1)+' '+dk.slice(p*230,p*230+230);},500+p*4000);})(pi);}
+  setTimeout(function(){bar.remove();},31000);
+  if(typeof completion==='function')completion('done');
+  return;
 
   // ── completion()を早めに呼ぶ（iOSタイムアウト回避）──
   if(typeof completion==='function')completion('done');
