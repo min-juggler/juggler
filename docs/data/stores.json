@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-06-14T14:07:22.480Z",
+  "fetched_at": "2026-06-14T14:40:26.684Z",
   "stores": {
     "yonezawa": {
       "name": "アイランド米沢店",
@@ -2110,71 +2110,339 @@
       "machines": [
         {
           "machine_name": "Ｓファンキージャグラー２ＫＴ",
-          "count": 1,
+          "count": 8,
           "stands": [
             {
-              "rack_no": "8",
+              "rack_no": "91",
               "machine_name": "Ｓファンキージャグラー２ＫＴ",
-              "games": 0,
+              "games": 2583,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": 0,
+              "total_bonus": 21,
+              "combined_prob": 123,
+              "combined_only": true
+            },
+            {
+              "rack_no": "92",
+              "machine_name": "Ｓファンキージャグラー２ＫＴ",
+              "games": 1632,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 8,
+              "combined_prob": 204,
+              "combined_only": true
+            },
+            {
+              "rack_no": "93",
+              "machine_name": "Ｓファンキージャグラー２ＫＴ",
+              "games": 1410,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 5,
+              "combined_prob": 282,
+              "combined_only": true
+            },
+            {
+              "rack_no": "94",
+              "machine_name": "Ｓファンキージャグラー２ＫＴ",
+              "games": 1472,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 8,
+              "combined_prob": 184,
+              "combined_only": true
+            },
+            {
+              "rack_no": "145",
+              "machine_name": "Ｓファンキージャグラー２ＫＴ",
+              "games": 1120,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 7,
+              "combined_prob": 160,
+              "combined_only": true
+            },
+            {
+              "rack_no": "146",
+              "machine_name": "Ｓファンキージャグラー２ＫＴ",
+              "games": 1074,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 6,
+              "combined_prob": 179,
+              "combined_only": true
+            },
+            {
+              "rack_no": "147",
+              "machine_name": "Ｓファンキージャグラー２ＫＴ",
+              "games": 1047,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 3,
+              "combined_prob": 349,
+              "combined_only": true
+            },
+            {
+              "rack_no": "148",
+              "machine_name": "Ｓファンキージャグラー２ＫＴ",
+              "games": 1184,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 8,
+              "combined_prob": 148,
+              "combined_only": true
             }
           ]
         },
         {
           "machine_name": "ＳハッピージャグラーＶⅢＥＡ",
-          "count": 1,
+          "count": 6,
           "stands": [
             {
-              "rack_no": "6",
+              "rack_no": "155",
+              "machine_name": "ＳハッピージャグラーＶⅢＥＡ",
+              "games": 4002,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 29,
+              "combined_prob": 138,
+              "combined_only": true
+            },
+            {
+              "rack_no": "156",
+              "machine_name": "ＳハッピージャグラーＶⅢＥＡ",
+              "games": 399,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 1,
+              "combined_prob": 399,
+              "combined_only": true
+            },
+            {
+              "rack_no": "157",
               "machine_name": "ＳハッピージャグラーＶⅢＥＡ",
               "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "158",
+              "machine_name": "ＳハッピージャグラーＶⅢＥＡ",
+              "games": 1197,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 7,
+              "combined_prob": 171,
+              "combined_only": true
+            },
+            {
+              "rack_no": "159",
+              "machine_name": "ＳハッピージャグラーＶⅢＥＡ",
+              "games": 2223,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 13,
+              "combined_prob": 171,
+              "combined_only": true
+            },
+            {
+              "rack_no": "160",
+              "machine_name": "ＳハッピージャグラーＶⅢＥＡ",
+              "games": 575,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 1,
+              "combined_prob": 575,
+              "combined_only": true
             }
           ]
         },
         {
           "machine_name": "ＳネオアイムジャグラーＥＸ－ＫＫ",
-          "count": 1,
+          "count": 5,
           "stands": [
             {
-              "rack_no": "5",
+              "rack_no": "86",
+              "machine_name": "ＳネオアイムジャグラーＥＸ－ＫＫ",
+              "games": 229,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 1,
+              "combined_prob": 229,
+              "combined_only": true
+            },
+            {
+              "rack_no": "87",
+              "machine_name": "ＳネオアイムジャグラーＥＸ－ＫＫ",
+              "games": 1963,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 13,
+              "combined_prob": 151,
+              "combined_only": true
+            },
+            {
+              "rack_no": "88",
               "machine_name": "ＳネオアイムジャグラーＥＸ－ＫＫ",
               "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "89",
+              "machine_name": "ＳネオアイムジャグラーＥＸ－ＫＫ",
+              "games": 2668,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 29,
+              "combined_prob": 92,
+              "combined_only": true
+            },
+            {
+              "rack_no": "90",
+              "machine_name": "ＳネオアイムジャグラーＥＸ－ＫＫ",
+              "games": 346,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 1,
+              "combined_prob": 346,
+              "combined_only": true
             }
           ]
         },
         {
           "machine_name": "ＳアイムジャグラーＥＸ－ＴＰ",
-          "count": 1,
+          "count": 5,
           "stands": [
             {
-              "rack_no": "5",
+              "rack_no": "149",
+              "machine_name": "ＳアイムジャグラーＥＸ－ＴＰ",
+              "games": 546,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 1,
+              "combined_prob": 546,
+              "combined_only": true
+            },
+            {
+              "rack_no": "150",
+              "machine_name": "ＳアイムジャグラーＥＸ－ＴＰ",
+              "games": 1540,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 10,
+              "combined_prob": 154,
+              "combined_only": true
+            },
+            {
+              "rack_no": "151",
               "machine_name": "ＳアイムジャグラーＥＸ－ＴＰ",
               "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "152",
+              "machine_name": "ＳアイムジャグラーＥＸ－ＴＰ",
+              "games": 630,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 3,
+              "combined_prob": 210,
+              "combined_only": true
+            },
+            {
+              "rack_no": "153",
+              "machine_name": "ＳアイムジャグラーＥＸ－ＴＰ",
+              "games": 2592,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 16,
+              "combined_prob": 162,
+              "combined_only": true
             }
           ]
         },
         {
           "machine_name": "Ｓゴーゴージャグラー３ＫＡ",
-          "count": 1,
+          "count": 4,
           "stands": [
             {
-              "rack_no": "4",
+              "rack_no": "81",
               "machine_name": "Ｓゴーゴージャグラー３ＫＡ",
-              "games": 0,
+              "games": 1308,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": 0,
+              "total_bonus": 4,
+              "combined_prob": 327,
+              "combined_only": true
+            },
+            {
+              "rack_no": "82",
+              "machine_name": "Ｓゴーゴージャグラー３ＫＡ",
+              "games": 472,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 4,
+              "combined_prob": 118,
+              "combined_only": true
+            },
+            {
+              "rack_no": "83",
+              "machine_name": "Ｓゴーゴージャグラー３ＫＡ",
+              "games": 852,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 6,
+              "combined_prob": 142,
+              "combined_only": true
+            },
+            {
+              "rack_no": "84",
+              "machine_name": "Ｓゴーゴージャグラー３ＫＡ",
+              "games": 5512,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 53,
+              "combined_prob": 104,
+              "combined_only": true
             }
           ]
         },
@@ -2183,12 +2451,15 @@
           "count": 1,
           "stands": [
             {
-              "rack_no": "1",
+              "rack_no": "85",
               "machine_name": "ＳミスタージャグラーＫＫ",
-              "games": 0,
+              "games": 4158,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": 0,
+              "total_bonus": 33,
+              "combined_prob": 126,
+              "combined_only": true
             }
           ]
         },
@@ -2197,12 +2468,15 @@
           "count": 1,
           "stands": [
             {
-              "rack_no": "1",
+              "rack_no": "154",
               "machine_name": "ＳジャグラーガールズＳＳ－ＫＨ",
-              "games": 0,
+              "games": 2106,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": 0,
+              "total_bonus": 13,
+              "combined_prob": 162,
+              "combined_only": true
             }
           ]
         }
