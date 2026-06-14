@@ -33,36 +33,44 @@ try{
   if(jugglers.length===0)throw new Error('ジャグラーなし ki='+ki.length+'機種');
   bar.textContent='ジャグラー'+jugglers.length+'機種 台データ取得中...';
 
-  // STEP2: 【調査モード】v05-011.php(HTML)が呼ぶデータAPIを発見する
-  // nc-v05-011.php はHTML表示ページ。データは別のAPIから読み込まれている
+  // STEP2: 【調査モード】nc-m05-* データAPIを発見する
+  // v=HTML表示ページ, m=JSONデータAPI の法則。v05-011 のデータ版を探す
   var allStands=[];
   var v05debug='';
 
-  // 最初のジャグラー機種の詳細ページHTMLを取得
   var jug0=jugglers[0];
-  var phpPath0=jug0.php||'';
-  bar.textContent='詳細ページ調査中... '+jug0.nmk_kisyu;
-  try{
-    var ab=new AbortController();setTimeout(()=>ab.abort(),10000);
-    var r2=await fetch('/h/'+storeCode+'/cgi-bin/'+phpPath0,{credentials:'include',signal:ab.signal});
-    var html=await r2.text();
+  var phpPath0=jug0.php||''; // 例: nc-v05-011.php?cd_ps=2&bai=...&nmk_kisyu=...
+  var qs=phpPath0.indexOf('?')>=0?phpPath0.slice(phpPath0.indexOf('?')):'?cd_ps=2';
 
-    // HTML内の全ての .php 参照を抽出（データAPIの候補）
-    var phpRefs=[];
-    var re=/['"\(]([\w\-\/]*nc-[\w\-]+\.php[^'"\)\s]*)/g, mm;
-    while((mm=re.exec(html))!==null){
-      var u=mm[1];
-      if(phpRefs.indexOf(u)===-1)phpRefs.push(u);
-    }
-    // ajax/fetch/load などのキーワード周辺のURLも探す
-    var re2=/(?:url|ajax|load|src)\s*[:=]\s*['"]([^'"]+\.php[^'"]*)/gi;
-    while((mm=re2.exec(html))!==null){
-      var u2=mm[1];
-      if(phpRefs.indexOf(u2)===-1)phpRefs.push(u2);
-    }
+  // 試すデータAPI候補（v05-011 → m05-* に変換）
+  var candidates=['nc-m05-011.php','nc-m05-003.php','nc-m05-001.php','nc-m05-002.php','nc-m05-010.php'];
+  var found=[];
 
-    v05debug='len='+html.length+' php参照数='+phpRefs.length+' || '+phpRefs.slice(0,8).join(' ## ');
-  }catch(e2){v05debug='catch: '+e2.message;}
+  for(var ci=0;ci<candidates.length;ci++){
+    var cand=candidates[ci];
+    bar.textContent='API調査 '+(ci+1)+'/'+candidates.length+' '+cand;
+    try{
+      var ab=new AbortController();setTimeout(()=>ab.abort(),6000);
+      var rc=await fetch('/h/'+storeCode+'/cgi-bin/'+cand+qs,{credentials:'include',signal:ab.signal});
+      var tc=await rc.text();
+      var info=cand+'[st='+rc.status+']';
+      if(rc.ok&&tc[0]==='{'){
+        try{
+          var jc=JSON.parse(tc);
+          var keys=Object.keys(jc);
+          // 配列フィールドを探す
+          var arrInfo='';
+          for(var k in jc){if(Array.isArray(jc[k])&&jc[k].length>0){arrInfo+=' '+k+'('+jc[k].length+')['+Object.keys(jc[k][0]).join(',')+']';}}
+          info+=' JSON keys='+keys.join(',')+arrInfo;
+        }catch(e3){info+=' parse失敗';}
+      }else{
+        info+=(tc[0]==='<'?' HTML':' '+tc.slice(0,15));
+      }
+      found.push(info);
+    }catch(ec){found.push(cand+' err:'+ec.message);}
+  }
+
+  v05debug=found.join(' ||| ');
 
   // ── 調査結果を表示（必ず表示してreturn）──
   {
@@ -71,7 +79,8 @@ try{
     setTimeout(function(){bar.textContent='📋①'+dk.slice(0,250);},500);
     setTimeout(function(){bar.textContent='📋②'+dk.slice(250,500);},5000);
     setTimeout(function(){bar.textContent='📋③'+dk.slice(500,750);},10000);
-    setTimeout(function(){bar.remove();},20000);
+    setTimeout(function(){bar.textContent='📋④'+dk.slice(750,1000);},15000);
+    setTimeout(function(){bar.remove();},22000);
     return; // GitHubへは送らない（調査モード）
   }
 
