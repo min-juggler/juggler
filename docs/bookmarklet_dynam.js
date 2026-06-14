@@ -42,34 +42,28 @@ try{
   var phpPath0=jug0.php||''; // 例: nc-v05-011.php?cd_ps=2&bai=...&nmk_kisyu=...
   var qs=phpPath0.indexOf('?')>=0?phpPath0.slice(phpPath0.indexOf('?')):'?cd_ps=2';
 
-  // 判明: nc-m05-003.php = 過去7日(D0-D6)の合算データ(toku0.count=大当り,ratio=合成確率)
-  // BB/RB内訳を取るため、個別台API nc-m06-001.php?cd_dai=0091 を調査する
+  // nc-m05-003=合成(大当り)。BIG/REG/差枚は別の nc-m05-00X にあるはず。
+  // 003〜009を調べ、各々のDai[0].D0.toku0(count/ratio)を比較してメトリクスを特定する
   try{
-    // m05-003から最初の台のcd_daiを取得
-    var ab=new AbortController();setTimeout(()=>ab.abort(),8000);
-    var r3=await fetch('/h/'+storeCode+'/cgi-bin/nc-m05-003.php'+qs,{credentials:'include',signal:ab.signal});
-    var j3=await r3.json();
-    var firstCd=(j3.Dai&&j3.Dai[0]&&j3.Dai[0].D0&&j3.Dai[0].D0.cd_dai)||'0091';
-
-    // 個別台API候補を試す（href=nc-v06-001.php → data版 nc-m06-001.php）
-    var cands=['nc-m06-001.php','nc-m06-002.php','nc-m06-003.php'];
     var out=[];
-    for(var ci=0;ci<cands.length;ci++){
+    for(var n=3;n<=9;n++){
+      var ep='nc-m05-00'+n+'.php';
       try{
-        var ab6=new AbortController();setTimeout(()=>ab6.abort(),6000);
-        var r6=await fetch('/h/'+storeCode+'/cgi-bin/'+cands[ci]+'?cd_ps=2&cd_dai='+firstCd,{credentials:'include',signal:ab6.signal});
-        var t6=await r6.text();
-        var info=cands[ci]+'[st='+r6.status+']';
-        if(r6.ok&&t6[0]==='{'){
-          var j6=JSON.parse(t6);
-          var arrInfo='';
-          for(var k in j6){if(Array.isArray(j6[k])&&j6[k].length>0){arrInfo+=' '+k+'('+j6[k].length+')='+JSON.stringify(j6[k][0]).slice(0,120);}}
-          info+=' keys='+Object.keys(j6).join(',')+arrInfo+' RAW='+t6.slice(0,200);
-        }else{info+=(t6[0]==='<'?' HTML':' '+t6.slice(0,30));}
+        var abn=new AbortController();setTimeout(()=>abn.abort(),5000);
+        var rn=await fetch('/h/'+storeCode+'/cgi-bin/'+ep+qs,{credentials:'include',signal:abn.signal});
+        var tn=await rn.text();
+        var info='00'+n+'[st='+rn.status+']';
+        if(rn.ok&&tn[0]==='{'){
+          var jn=JSON.parse(tn);
+          var d0=jn.Dai&&jn.Dai[0]&&jn.Dai[0].D0;
+          if(d0&&d0.toku0){info+='D0.toku0='+JSON.stringify(d0.toku0);}
+          else if(d0){info+='D0keys='+Object.keys(d0).join(',')+' '+JSON.stringify(d0).slice(0,90);}
+          else{info+='keys='+Object.keys(jn).join(',');}
+        }else{info+=(tn[0]==='<'?'HTML':tn.slice(0,12));}
         out.push(info);
-      }catch(e6){out.push(cands[ci]+' err:'+e6.message);}
+      }catch(en){out.push('00'+n+' err:'+en.message);}
     }
-    v05debug='cd_dai='+firstCd+' || '+out.join(' ||| ');
+    v05debug=out.join(' ||| ');
   }catch(eX){v05debug='catch: '+eX.message;}
 
   // ── 調査結果を表示（必ず表示してreturn）──
