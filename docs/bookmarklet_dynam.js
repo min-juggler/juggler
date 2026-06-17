@@ -33,35 +33,23 @@ try{
   if(jugglers.length===0)throw new Error('ジャグラーなし ki='+ki.length+'機種');
 
   // STEP2: 機種ごとに nc-m05-003.php で台データ取得（合算データ）
-  // 【調査モード】toku パラメータでBIG/REGが取れるか試す
+  // 【調査モード】ページが実際に叩いた通信URL一覧を取得（performance）
   var allStands=[];
   var v05debug='';
-  var jug0=jugglers[0];
-  var qs0=jug0.php&&jug0.php.indexOf('?')>=0?jug0.php.slice(jug0.php.indexOf('?')):'?cd_ps=2';
   try{
-    // nc-switch要素の全文を取得（パラメータ名特定用）
-    var rv=await fetch('/h/'+storeCode+'/cgi-bin/nc-v05-011.php'+qs0,{credentials:'include'});
-    var html=await rv.text();
-    var sw='';
-    var swm=html.match(/<[^>]*nc-switch[^>]*>/g);
-    if(swm)sw=swm.slice(0,4).join(' ').replace(/"/g,"'");
-
-    // nc-m05-003 を toku/cd_toku 違いで叩き、Dai[0].D0.toku0.count を比較
-    // (BONUS=21なので、BIG=13 / REG=8 が出るパラメータを探す)
-    var tests=['','&toku=1','&toku=2','&cd_toku=1','&cd_toku=2','&tok=1','&tok=2','&kind=1','&kind=2'];
-    var res=[];
-    for(var ti=0;ti<tests.length;ti++){
-      try{
-        var rt=await fetch('/h/'+storeCode+'/cgi-bin/nc-m05-003.php'+qs0+tests[ti],{credentials:'include'});
-        var jt=await rt.json();
-        var c=jt.Dai&&jt.Dai[0]&&jt.Dai[0].D0&&jt.Dai[0].D0.toku0?jt.Dai[0].D0.toku0.count:'?';
-        res.push((tests[ti]||'(なし)')+'=count'+c);
-      }catch(e){res.push((tests[ti]||'(なし)')+'=err');}
-    }
-    v05debug='switch:'+sw.slice(0,200)+' ||| count比較: '+res.join(' / ');
+    var ents=performance.getEntriesByType('resource').map(function(e){return e.name;});
+    // cgi-bin / nc- / .php を含むURLだけ抽出（クエリは短縮）
+    var apis=ents.filter(function(u){return u.indexOf('cgi-bin')>=0||u.indexOf('nc-')>=0;});
+    apis=apis.map(function(u){
+      var i=u.indexOf('cgi-bin/');
+      return i>=0?u.slice(i+8,i+8+70):u.slice(-70);
+    });
+    // 重複除去
+    var uniq=[];apis.forEach(function(u){if(uniq.indexOf(u)===-1)uniq.push(u);});
+    v05debug='通信API数='+uniq.length+' || '+uniq.join(' ## ');
   }catch(eX){v05debug='catch: '+eX.message;}
 
-  bar.textContent='🔍 toku調査（7枚撮って）...';
+  bar.textContent='🔍 通信URL調査（7枚撮って）...';
   var dk=v05debug;
   for(var pi=0;pi<7;pi++){(function(p){setTimeout(function(){bar.textContent='📋'+(p+1)+' '+dk.slice(p*230,p*230+230);},500+p*4000);})(pi);}
   setTimeout(function(){bar.remove();},31000);
