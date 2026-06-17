@@ -33,46 +33,45 @@ try{
   if(jugglers.length===0)throw new Error('ジャグラーなし ki='+ki.length+'機種');
 
   // STEP2: 機種ごとに nc-m05-003.php で台データ取得（合算データ）
-  // 【調査モード】nc-m06-001.php (apikey付き) の中身を調べる
+  // ※ BIG/REG内訳は個別台API(nc-m06)で取れるがapikeyが使い捨てトークンのため不可。
+  //   合算データ(大当り合計 count + 合成確率 ratio)のみ取得する。
+  // Dai[].D0 = 今日のデータ {cd_dai:台番号, toku0:{count:大当り合計, ratio:合成確率}}
   var allStands=[];
-  var v05debug='';
-  var jug0=jugglers[0];
-  var qs0=jug0.php&&jug0.php.indexOf('?')>=0?jug0.php.slice(jug0.php.indexOf('?')):'?cd_ps=2';
-  try{
-    // apikeyを取得: performance履歴 → ページHTML の順
-    var apikey='';
-    var ents=performance.getEntriesByType('resource').map(function(e){return e.name;});
-    for(var i=0;i<ents.length;i++){var km=ents[i].match(/apikey=([\w\-]+)/);if(km){apikey=km[1];break;}}
-    if(!apikey){
-      var rh=await fetch('/h/'+storeCode+'/cgi-bin/nc-v05-011.php'+qs0,{credentials:'include'});
-      var hh=await rh.text();
-      var km2=hh.match(/apikey['"=:\s]+([\w\-]{10,})/);if(km2)apikey=km2[1];
-    }
+  for(var ji=0;ji<jugglers.length;ji++){
+    var jug=jugglers[ji];
+    var phpPath=jug.php||'';
+    var qs=phpPath.indexOf('?')>=0?phpPath.slice(phpPath.indexOf('?')):'?cd_ps=2';
+    bar.textContent='台データ取得中 '+(ji+1)+'/'+jugglers.length+' '+jug.nmk_kisyu;
+    try{
+      var ab=new AbortController();setTimeout(()=>ab.abort(),8000);
+      var r3=await fetch('/h/'+storeCode+'/cgi-bin/nc-m05-003.php'+qs,{credentials:'include',signal:ab.signal});
+      if(!r3.ok)continue;
+      var t3=await r3.text();
+      if(t3[0]!=='{')continue;
+      var j3=JSON.parse(t3);
+      var dais=j3.Dai||[];
+      dais.forEach(function(dai){
+        var d0=dai.D0;
+        if(!d0)return;
+        var rack=String(d0.cd_dai||'?');
+        if(/^0\d{3,4}$/.test(rack))rack=String(parseInt(rack));
+        var bonus=parseInt((d0.toku0&&d0.toku0.count)||0);
+        var prob=parseFloat((d0.toku0&&d0.toku0.ratio)||0); // 合成確率(1/X)
+        var games=(bonus>0&&prob>0)?Math.round(bonus*prob):0;
+        allStands.push({
+          rack_no:rack,
+          machine_name:jug.nmk_kisyu||'不明',
+          games:games,
+          bb:0,rb:0,diff:0,
+          total_bonus:bonus,
+          combined_prob:prob,
+          combined_only:true
+        });
+      });
+    }catch(e2){}
+  }
 
-    // 最初の台のcd_daiを取得
-    var firstCd='0091';
-    var r3=await fetch('/h/'+storeCode+'/cgi-bin/nc-m05-003.php'+qs0,{credentials:'include'});
-    var j3=await r3.json();
-    if(j3.Dai&&j3.Dai[0]&&j3.Dai[0].D0&&j3.Dai[0].D0.cd_dai)firstCd=j3.Dai[0].D0.cd_dai;
-
-    // nc-m06-001 / nc-m06-003 を apikey + XHRヘッダー付きで叩く
-    var H={'X-Requested-With':'XMLHttpRequest','Accept':'application/json, text/plain, */*'};
-    var out6='';
-    for(var ep6 of ['nc-m06-001','nc-m06-003']){
-      var u6='/h/'+storeCode+'/cgi-bin/'+ep6+'.php?cd_dai='+firstCd+'&YMD_biz='+today+'&apikey='+apikey;
-      var r6=await fetch(u6,{credentials:'include',headers:H});
-      var t6=await r6.text();
-      out6+=ep6+'[st='+r6.status+' len='+t6.length+']='+t6.slice(0,350)+' ## ';
-    }
-    v05debug='apikey='+(apikey||'なし').slice(0,10)+' cd_dai='+firstCd+' || '+out6;
-  }catch(eX){v05debug='catch: '+eX.message;}
-
-  bar.textContent='🔍 m06調査（7枚撮って）...';
-  var dk=v05debug;
-  for(var pi=0;pi<7;pi++){(function(p){setTimeout(function(){bar.textContent='📋'+(p+1)+' '+dk.slice(p*230,p*230+230);},500+p*4000);})(pi);}
-  setTimeout(function(){bar.remove();},31000);
-  if(typeof completion==='function')completion('done');
-  return;
+  if(allStands.length===0)throw new Error('台データ0');
 
   // ── completion()を早めに呼ぶ（iOSタイムアウト回避）──
   if(typeof completion==='function')completion('done');
