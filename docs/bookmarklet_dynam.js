@@ -55,11 +55,16 @@ try{
     var j3=await r3.json();
     if(j3.Dai&&j3.Dai[0]&&j3.Dai[0].D0&&j3.Dai[0].D0.cd_dai)firstCd=j3.Dai[0].D0.cd_dai;
 
-    // nc-m06-001 を apikey付きで叩く
-    var u6='/h/'+storeCode+'/cgi-bin/nc-m06-001.php?cd_dai='+firstCd+'&YMD_biz='+today+'&apikey='+apikey;
-    var r6=await fetch(u6,{credentials:'include'});
-    var t6=await r6.text();
-    v05debug='apikey='+(apikey||'なし')+' cd_dai='+firstCd+' st='+r6.status+' || '+t6.slice(0,800);
+    // nc-m06-001 / nc-m06-003 を apikey + XHRヘッダー付きで叩く
+    var H={'X-Requested-With':'XMLHttpRequest','Accept':'application/json, text/plain, */*'};
+    var out6='';
+    for(var ep6 of ['nc-m06-001','nc-m06-003']){
+      var u6='/h/'+storeCode+'/cgi-bin/'+ep6+'.php?cd_dai='+firstCd+'&YMD_biz='+today+'&apikey='+apikey;
+      var r6=await fetch(u6,{credentials:'include',headers:H});
+      var t6=await r6.text();
+      out6+=ep6+'[st='+r6.status+' len='+t6.length+']='+t6.slice(0,350)+' ## ';
+    }
+    v05debug='apikey='+(apikey||'なし').slice(0,10)+' cd_dai='+firstCd+' || '+out6;
   }catch(eX){v05debug='catch: '+eX.message;}
 
   bar.textContent='🔍 m06調査（7枚撮って）...';
