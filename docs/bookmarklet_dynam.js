@@ -33,23 +33,36 @@ try{
   if(jugglers.length===0)throw new Error('ジャグラーなし ki='+ki.length+'機種');
 
   // STEP2: 機種ごとに nc-m05-003.php で台データ取得（合算データ）
-  // 【調査モード】ページが実際に叩いた通信URL一覧を取得（performance）
+  // 【調査モード】nc-m06-001.php (apikey付き) の中身を調べる
   var allStands=[];
   var v05debug='';
+  var jug0=jugglers[0];
+  var qs0=jug0.php&&jug0.php.indexOf('?')>=0?jug0.php.slice(jug0.php.indexOf('?')):'?cd_ps=2';
   try{
+    // apikeyを取得: performance履歴 → ページHTML の順
+    var apikey='';
     var ents=performance.getEntriesByType('resource').map(function(e){return e.name;});
-    // cgi-bin / nc- / .php を含むURLだけ抽出（クエリは短縮）
-    var apis=ents.filter(function(u){return u.indexOf('cgi-bin')>=0||u.indexOf('nc-')>=0;});
-    apis=apis.map(function(u){
-      var i=u.indexOf('cgi-bin/');
-      return i>=0?u.slice(i+8,i+8+70):u.slice(-70);
-    });
-    // 重複除去
-    var uniq=[];apis.forEach(function(u){if(uniq.indexOf(u)===-1)uniq.push(u);});
-    v05debug='通信API数='+uniq.length+' || '+uniq.join(' ## ');
+    for(var i=0;i<ents.length;i++){var km=ents[i].match(/apikey=([\w\-]+)/);if(km){apikey=km[1];break;}}
+    if(!apikey){
+      var rh=await fetch('/h/'+storeCode+'/cgi-bin/nc-v05-011.php'+qs0,{credentials:'include'});
+      var hh=await rh.text();
+      var km2=hh.match(/apikey['"=:\s]+([\w\-]{10,})/);if(km2)apikey=km2[1];
+    }
+
+    // 最初の台のcd_daiを取得
+    var firstCd='0091';
+    var r3=await fetch('/h/'+storeCode+'/cgi-bin/nc-m05-003.php'+qs0,{credentials:'include'});
+    var j3=await r3.json();
+    if(j3.Dai&&j3.Dai[0]&&j3.Dai[0].D0&&j3.Dai[0].D0.cd_dai)firstCd=j3.Dai[0].D0.cd_dai;
+
+    // nc-m06-001 を apikey付きで叩く
+    var u6='/h/'+storeCode+'/cgi-bin/nc-m06-001.php?cd_dai='+firstCd+'&YMD_biz='+today+'&apikey='+apikey;
+    var r6=await fetch(u6,{credentials:'include'});
+    var t6=await r6.text();
+    v05debug='apikey='+(apikey||'なし')+' cd_dai='+firstCd+' st='+r6.status+' || '+t6.slice(0,800);
   }catch(eX){v05debug='catch: '+eX.message;}
 
-  bar.textContent='🔍 通信URL調査（7枚撮って）...';
+  bar.textContent='🔍 m06調査（7枚撮って）...';
   var dk=v05debug;
   for(var pi=0;pi<7;pi++){(function(p){setTimeout(function(){bar.textContent='📋'+(p+1)+' '+dk.slice(p*230,p*230+230);},500+p*4000);})(pi);}
   setTimeout(function(){bar.remove();},31000);
