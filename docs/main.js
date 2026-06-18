@@ -360,6 +360,7 @@ function analyze() {
 function analyzeStoreTendency(sid) {
   const dates = Object.keys(historyData).sort();
   const highByDate = {}, allByDate = {};
+  const rack = {}; // rk -> {hi, tot, machine}
   let baseHit = 0, baseTot = 0;
   for (const d of dates) {
     const machines = historyData[d]?.stores?.[sid]?.machines || [];
@@ -371,7 +372,9 @@ function analyzeStoreTendency(sid) {
       if (es == null) continue;
       const rk = String(s.rack_no);
       all.add(rk); baseTot++;
-      if (es >= 4.2) { high.add(rk); baseHit++; }
+      const r = rack[rk] || (rack[rk] = { hi: 0, tot: 0, machine: s.machine_name });
+      r.tot++;
+      if (es >= 4.2) { high.add(rk); baseHit++; r.hi++; }
     }
     highByDate[d] = high; allByDate[d] = all;
   }
@@ -390,7 +393,13 @@ function analyzeStoreTendency(sid) {
   const cont = contTot ? contHit / contTot : 0;
   let signal = 'none';
   if (contTot >= 10) signal = cont >= base * 1.3 ? 'strong' : (cont > base ? 'weak' : 'none');
-  return { days: dates.length, base, cont, contTot, signal };
+  // 高設定を入れやすい台番号（朝イチの目安）: 全体率の1.5倍以上 & 6日以上記録
+  const rackRows = Object.entries(rack)
+    .filter(([rk, r]) => r.tot >= 6 && r.hi >= 2 && r.hi / r.tot >= Math.max(0.35, base * 1.5))
+    .map(([rk, r]) => ({ rack: rk, hi: r.hi, tot: r.tot, rate: r.hi / r.tot, machine: r.machine }))
+    .sort((a, b) => b.rate - a.rate || b.tot - a.tot)
+    .slice(0, 6);
+  return { days: dates.length, base, cont, contTot, signal, rackRows };
 }
 
 function renderTendency(storeFilter) {
@@ -420,12 +429,26 @@ function renderTendency(storeFilter) {
       : t.signal === 'weak'
       ? `多少の据え置き傾向あり。昨日の高設定台は参考程度に。`
       : `据え置き傾向は弱め。朝イチは前日データに頼りすぎない方が無難です。`;
+    let rackHtml = '';
+    if (t.rackRows && t.rackRows.length) {
+      const items = t.rackRows.map(r =>
+        `<div class="t-rack-item"><span class="t-rack-no">${r.rack}番</span>
+         <span class="t-rack-machine">${hw2fw(r.machine || '')}</span>
+         <span class="t-rack-rate">過去${r.tot}日中${r.hi}日 (${Math.round(r.rate * 100)}%)</span></div>`
+      ).join('');
+      rackHtml = `<div class="t-rack-wrap">
+        <div class="t-rack-title">🎯 高設定を入れやすい台（朝イチの目安）</div>
+        ${items}
+        <div class="t-rack-note">※過去データの傾向です。当日のデータが出たら上の判定を優先してください。</div>
+      </div>`;
+    }
     cards.push(`<div class="tendency-card">
       <div class="t-store">${name} ${badge}</div>
       <div class="t-row"><span>全体の高設定率</span><span class="t-val">${Math.round(t.base * 100)}%</span></div>
       <div class="t-row"><span>前日高設定→翌日も高設定</span><span class="t-val">${Math.round(t.cont * 100)}%${ratio >= 1.1 ? `（通常の${ratio.toFixed(1)}倍）` : ''}</span></div>
       <div class="t-row"><span>分析サンプル</span><span class="t-val">${t.days}日 / ${t.contTot}件</span></div>
       <div class="t-advice">💡 ${advice}</div>
+      ${rackHtml}
     </div>`);
   }
   if (cards.length === 0) { section.classList.add('hidden'); return; }

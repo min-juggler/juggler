@@ -179,6 +179,14 @@ body {
 .t-weak { background: #fff3cd; color: #856404; }
 .t-none { background: #f1f1f1; color: #888; }
 .tendency-card .t-advice { margin-top: 8px; font-size: 12.5px; line-height: 1.7; color: var(--text); background: var(--bg); border-radius: 8px; padding: 8px 10px; }
+.t-rack-wrap { margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 8px; }
+.t-rack-title { font-size: 13px; font-weight: 700; color: #b5451b; margin-bottom: 6px; }
+.t-rack-item { display: flex; align-items: baseline; gap: 8px; padding: 4px 0; border-bottom: 1px solid #f3f3f3; }
+.t-rack-item:last-of-type { border-bottom: none; }
+.t-rack-no { font-size: 15px; font-weight: 800; color: #1d3557; min-width: 52px; }
+.t-rack-machine { flex: 1; font-size: 12px; color: var(--text-muted); }
+.t-rack-rate { font-size: 12px; font-weight: 700; color: var(--success); }
+.t-rack-note { font-size: 11px; color: #999; margin-top: 6px; line-height: 1.6; }
 
 /* 辛口判定バナー */
 .verdict-banner {
