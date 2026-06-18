@@ -163,6 +163,23 @@ body {
 }
 .ranking-header h2 { font-size: 16px; font-weight: 700; }
 
+/* 店舗傾向カード */
+.tendency-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  margin: 8px 12px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+}
+.tendency-card .t-store { font-size: 15px; font-weight: 800; color: #1d3557; margin-bottom: 8px; }
+.tendency-card .t-row { display: flex; justify-content: space-between; align-items: baseline; padding: 3px 0; font-size: 13px; }
+.tendency-card .t-row .t-val { font-weight: 700; }
+.tendency-badge { display: inline-block; border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 700; margin-left: 6px; }
+.t-strong { background: var(--success-bg); color: var(--success); }
+.t-weak { background: #fff3cd; color: #856404; }
+.t-none { background: #f1f1f1; color: #888; }
+.tendency-card .t-advice { margin-top: 8px; font-size: 12.5px; line-height: 1.7; color: var(--text); background: var(--bg); border-radius: 8px; padding: 8px 10px; }
+
 /* 辛口判定バナー */
 .verdict-banner {
   margin: 12px;

@@ -319,6 +319,9 @@ function analyze() {
 
   const filterStore = stands => storeFilter === 'all' ? stands : stands.filter(s => s.store_id === storeFilter);
 
+  // ===== 店舗の傾向（据え置き分析） =====
+  renderTendency(storeFilter);
+
   // ===== 朝イチランキング（前日データ） =====
   const prevStands = filterStore(prevAllStands);
   if (prevStands.length > 0) {
@@ -350,6 +353,84 @@ function analyze() {
   // 店舗フィルターに合わせて傾向タブの店舗も切り替え
   if (storeFilter !== 'all') trendStoreId = storeFilter;
   renderTrendTab();
+}
+
+// 店舗の据え置き傾向を履歴から分析
+// 高設定=推定設定4.2以上(3000G以上)。前日高設定→翌日も高設定の割合を全体率と比較
+function analyzeStoreTendency(sid) {
+  const dates = Object.keys(historyData).sort();
+  const highByDate = {}, allByDate = {};
+  let baseHit = 0, baseTot = 0;
+  for (const d of dates) {
+    const machines = historyData[d]?.stores?.[sid]?.machines || [];
+    const high = new Set(), all = new Set();
+    for (const m of machines) for (const st of (m.stands || [])) {
+      const s = { ...st, machine_name: st.machine_name || m.machine_name };
+      if (!(s.games >= 3000)) continue;
+      const es = calcExpectedSetting(calcSettingLikelihood(s, getMachineSettings(s.machine_name || '')));
+      if (es == null) continue;
+      const rk = String(s.rack_no);
+      all.add(rk); baseTot++;
+      if (es >= 4.2) { high.add(rk); baseHit++; }
+    }
+    highByDate[d] = high; allByDate[d] = all;
+  }
+  let contHit = 0, contTot = 0;
+  for (let i = 1; i < dates.length; i++) {
+    const prevH = highByDate[dates[i - 1]] || new Set();
+    const curH = highByDate[dates[i]] || new Set();
+    const curAll = allByDate[dates[i]] || new Set();
+    for (const rk of prevH) {
+      if (!curAll.has(rk)) continue; // 翌日も十分回っている台のみ対象
+      contTot++;
+      if (curH.has(rk)) contHit++;
+    }
+  }
+  const base = baseTot ? baseHit / baseTot : 0;
+  const cont = contTot ? contHit / contTot : 0;
+  let signal = 'none';
+  if (contTot >= 10) signal = cont >= base * 1.3 ? 'strong' : (cont > base ? 'weak' : 'none');
+  return { days: dates.length, base, cont, contTot, signal };
+}
+
+function renderTendency(storeFilter) {
+  const section = document.getElementById('tendency-section');
+  const list = document.getElementById('tendency-list');
+  if (!historyData || Object.keys(historyData).length < 3) { section.classList.add('hidden'); return; }
+
+  const sids = storeFilter === 'all'
+    ? Object.keys(storeData?.stores || {})
+    : [storeFilter];
+  const cards = [];
+  for (const sid of sids) {
+    const name = storeData?.stores?.[sid]?.name || sid;
+    const t = analyzeStoreTendency(sid);
+    if (t.contTot < 5) {
+      cards.push(`<div class="tendency-card"><div class="t-store">${name}</div>
+        <div class="t-row"><span>据え置き傾向</span><span class="t-val">データ蓄積中<span class="tendency-badge t-none">サンプル不足</span></span></div>
+        <div class="t-advice">まだ判定に十分なデータがありません（${t.days}日分）。通い続けてデータが貯まると傾向が出ます。</div></div>`);
+      continue;
+    }
+    const badge = t.signal === 'strong' ? '<span class="tendency-badge t-strong">据え置き傾向 強</span>'
+      : t.signal === 'weak' ? '<span class="tendency-badge t-weak">据え置き傾向 弱</span>'
+      : '<span class="tendency-badge t-none">傾向なし</span>';
+    const ratio = t.base > 0 ? (t.cont / t.base) : 0;
+    const advice = t.signal === 'strong'
+      ? `前日の高設定台が翌日も高設定で残る確率が高い店です。<b>朝イチは昨日の高設定台（下の🌅狙い台）を狙う</b>のが有効。`
+      : t.signal === 'weak'
+      ? `多少の据え置き傾向あり。昨日の高設定台は参考程度に。`
+      : `据え置き傾向は弱め。朝イチは前日データに頼りすぎない方が無難です。`;
+    cards.push(`<div class="tendency-card">
+      <div class="t-store">${name} ${badge}</div>
+      <div class="t-row"><span>全体の高設定率</span><span class="t-val">${Math.round(t.base * 100)}%</span></div>
+      <div class="t-row"><span>前日高設定→翌日も高設定</span><span class="t-val">${Math.round(t.cont * 100)}%${ratio >= 1.1 ? `（通常の${ratio.toFixed(1)}倍）` : ''}</span></div>
+      <div class="t-row"><span>分析サンプル</span><span class="t-val">${t.days}日 / ${t.contTot}件</span></div>
+      <div class="t-advice">💡 ${advice}</div>
+    </div>`);
+  }
+  if (cards.length === 0) { section.classList.add('hidden'); return; }
+  section.classList.remove('hidden');
+  list.innerHTML = cards.join('');
 }
 
 function renderVerdict(stands) {
