@@ -163,6 +163,19 @@ body {
 }
 .ranking-header h2 { font-size: 16px; font-weight: 700; }
 
+/* 辛口判定バナー */
+.verdict-banner {
+  margin: 12px;
+  border-radius: var(--radius);
+  padding: 18px 16px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.verdict-go { background: linear-gradient(135deg, #2d6a4f, #40916c); color: #fff; }
+.verdict-stop { background: linear-gradient(135deg, #6c757d, #495057); color: #fff; }
+.verdict-banner .verdict-title { font-size: 20px; font-weight: 900; margin-bottom: 4px; }
+.verdict-banner .verdict-sub { font-size: 13px; opacity: 0.92; line-height: 1.6; }
+
 /* 推奨台カード */
 .stand-card {
   background: var(--card-bg);

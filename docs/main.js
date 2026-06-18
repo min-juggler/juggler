@@ -62,6 +62,11 @@ const SETTING_EV_PER_GAME = {
 const COINS_PER_1000YEN = 50;
 const GAME_SPEED = 400;
 
+// 辛口判定の基準（厳しめ）: これを満たす台が無ければ「撤退推奨」
+// もっと辛く → 数字を上げる / 甘く → 下げる
+const VERDICT_MIN_HIGH56 = 0.55;  // 設定5以上である確率がこれ以上
+const VERDICT_MIN_GAMES = 3000;   // 信頼できるサンプル数
+
 // ===== ストレージ =====
 const Storage = {
   get(key, fallback = null) {
@@ -331,6 +336,13 @@ function analyze() {
   if (todayStands.length === 0) { showEmptyState(); return; }
 
   const scored = scoreStands(todayStands, budget, timeMin).sort((a, b) => b.score - a.score);
+
+  // ===== 辛口判定（鉄板台 / 撤退推奨） =====
+  // 仕事終わり到着前提: 当日データで「設定5以上が濃厚」かつ十分なサンプルの台だけ
+  const high56 = s => (s.probs ? (s.probs[5] || 0) + (s.probs[6] || 0) : 0);
+  const verdict = scored.filter(s => s.games >= VERDICT_MIN_GAMES && high56(s) >= VERDICT_MIN_HIGH56).slice(0, 8);
+  renderVerdict(verdict);
+
   // 夕方：1000G以上で高スコア台
   const evening = scored.filter(s => s.games >= 1000 && s.score >= 45).slice(0, 10);
   renderEveningList(evening);
@@ -338,6 +350,28 @@ function analyze() {
   // 店舗フィルターに合わせて傾向タブの店舗も切り替え
   if (storeFilter !== 'all') trendStoreId = storeFilter;
   renderTrendTab();
+}
+
+function renderVerdict(stands) {
+  const section = document.getElementById('verdict-section');
+  const banner = document.getElementById('verdict-banner');
+  const list = document.getElementById('verdict-list');
+  section.classList.remove('hidden');
+
+  if (stands.length === 0) {
+    banner.className = 'verdict-banner verdict-stop';
+    banner.innerHTML = `
+      <div class="verdict-title">🚪 今日は打てる台なし</div>
+      <div class="verdict-sub">基準（設定5以上の確率${Math.round(VERDICT_MIN_HIGH56*100)}%以上・${VERDICT_MIN_GAMES.toLocaleString()}G以上）を満たす台がありません。<br>無理に打たず<b>撤退推奨</b>です。</div>`;
+    list.innerHTML = '';
+    return;
+  }
+
+  banner.className = 'verdict-banner verdict-go';
+  banner.innerHTML = `
+    <div class="verdict-title">🔥 鉄板候補 ${stands.length}台</div>
+    <div class="verdict-sub">この台が<b>空いていたら打ち</b>。<br>全部埋まっていて空かないなら撤退推奨です。</div>`;
+  list.innerHTML = stands.map((s, i) => buildStandCard(s, i + 1, '鉄板候補')).join('');
 }
 
 function renderMorningList(stands) {
