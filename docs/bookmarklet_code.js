@@ -111,16 +111,29 @@ function jsonUnescape(s){
 }
 
 // GitHub APIでファイルを読み書きするヘルパー
+// ※ Contents APIは1MB超のファイルでcontentが空になるため、その場合はraw URLから取得
 async function ghGet(path){
   var r=await fetch('https://api.github.com/repos/'+R+'/contents/'+path,{headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json'}});
   if(!r.ok)return{sha:null,data:null};
   var j=await r.json();
-  var b64=j.content.replace(/\n/g,'');
-  var bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
-  return{sha:j.sha,data:JSON.parse(new TextDecoder('utf-8').decode(bytes))};
+  var data=null;
+  try{
+    if(j.content){
+      var b64=j.content.replace(/\n/g,'');
+      var bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+      data=JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    }
+  }catch(e){data=null;}
+  if(data===null){ // 1MB超でcontentが空 → raw URLから取得
+    try{
+      var rr=await fetch('https://raw.githubusercontent.com/'+R+'/main/'+path+'?_='+Date.now(),{cache:'no-store'});
+      if(rr.ok){var tx=await rr.text();if(tx)data=JSON.parse(tx);}
+    }catch(e){}
+  }
+  return{sha:j.sha,data:data};
 }
 async function ghPut(path,sha,data,msg){
-  var js=JSON.stringify(data,null,2);
+  var js=path.indexOf('history')>=0?JSON.stringify(data):JSON.stringify(data,null,2); // historyは圧縮
   var body={message:msg,content:btoa(unescape(encodeURIComponent(js))),branch:'main'};
   if(sha)body.sha=sha;
   var r=await fetch('https://api.github.com/repos/'+R+'/contents/'+path,{method:'PUT',headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
