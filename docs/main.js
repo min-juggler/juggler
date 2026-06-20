@@ -221,7 +221,7 @@ async function loadData() {
   const urls = [GITHUB_BASE + 'stores.json', 'data/stores.json'];
   for (const url of urls) {
     try {
-      const res = await fetch(url + '?t=' + Date.now());
+      const res = await fetch(url + '?t=' + Date.now(), { cache: 'no-store' });
       if (!res.ok) continue;
       storeData = await res.json();
       buildAllStands();
@@ -238,7 +238,7 @@ async function loadData() {
 
 async function loadHistoryData(url) {
   try {
-    const res = await fetch(url + '?t=' + Date.now());
+    const res = await fetch(url + '?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) return;
     historyData = await res.json();
     // 履歴読み込み完了後に傾向タブを更新
@@ -248,7 +248,7 @@ async function loadHistoryData(url) {
 
 async function loadPrevData(url) {
   try {
-    const res = await fetch(url + '?t=' + Date.now());
+    const res = await fetch(url + '?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) return;
     prevStoreData = await res.json();
     prevAllStands = [];
