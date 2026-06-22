@@ -6,7 +6,7 @@ var m=location.href.match(/dynam-data\.jp\/h\/([a-z0-9]+)\//);
 if(!m){alert('ダイナムのページで実行してください');return;}
 var storeCode=m[1]; // 例: a725254
 
-var STORES={'a725254':{sid:'dynam_yonezawa',name:'ダイナム米沢店'}};
+var STORES={'a725254':{sid:'dynam_yonezawa',name:'ダイナム米沢店'},'a736724':{sid:'dynam_tendo',name:'ダイナム天童店'}};
 var storeInfo=STORES[storeCode]||{sid:'dynam_'+storeCode,name:'ダイナム'+storeCode};
 var sid=storeInfo.sid, sname=storeInfo.name;
 

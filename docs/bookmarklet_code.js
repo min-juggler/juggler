@@ -5,7 +5,7 @@ var T='__TOKEN__',R='__REPO__';
 if(location.href.includes('dynam-data.jp')){
   var dm=location.href.match(/\/h\/([a-z0-9]+)\//);
   var duid=dm?dm[1]:null;
-  var DYNAM_STORES={'a725254':'ダイナム米沢店'};
+  var DYNAM_STORES={'a725254':'ダイナム米沢店','a736724':'ダイナム天童店'};
   var dsname=duid?DYNAM_STORES[duid]||('ダイナム_'+duid):null;
   if(!duid||!dsname){alert('対応していないダイナム店舗です: '+location.href);return;}
   var dsid='dynam-'+duid;
