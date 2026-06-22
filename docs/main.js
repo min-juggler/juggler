@@ -1414,12 +1414,12 @@ async function init() {
   const hasData = await loadData();
   const hasRealData = hasData && allStands.length > 0;
 
+  // 認証カード(データ取得方法)は毎日取り直すため常に表示する
+  showAuthCard(true);
   if (!hasRealData) {
-    showAuthCard(true);   // データなし → 認証カードを表示
     loadDemoData();
     analyze();
   } else {
-    showAuthCard(false);  // データあり → 認証カードを隠す
     analyze();
   }
 }
