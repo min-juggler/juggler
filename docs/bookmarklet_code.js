@@ -1,5 +1,8 @@
 (async function(){
 var T='__TOKEN__',R='__REPO__';
+// 取得対象日のオフセット（0=今日, -1=昨日）。ローダーが window.__JUG_DAYOFF__ をセットする。
+var __OFF=(typeof window!=='undefined'&&typeof window.__JUG_DAYOFF__==='number')?window.__JUG_DAYOFF__:0;
+function __baseDate(){var d=new Date();if(__OFF)d.setDate(d.getDate()+__OFF);return d;}
 
 // ===== ダイナム（dynam-data.jp）専用処理 =====
 // ※ 個別台のBIG/REGはapikeyが使い捨てトークンのため取得不可。
@@ -14,7 +17,7 @@ if(location.href.includes('dynam-data.jp')){
   var bar=document.createElement('div');
   bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
   bar.textContent='🎰 ダイナム取得中...';document.body.appendChild(bar);
-  var dToday=new Date().toISOString().slice(0,10).replace(/-/g,'');
+  var dToday=__baseDate().toISOString().slice(0,10).replace(/-/g,'');
   try{
     // STEP1: 機種一覧取得 (nc-m03-001.php)
     bar.textContent='機種一覧取得中...';
@@ -128,8 +131,8 @@ async function push(result,_sid,_sname){
   // 引数なしの場合はクロージャの sid/sname を使う（テラモバ用後方互換）
   var _s=_sid||sid, _n=_sname||sname;
   var total=result.machines.reduce((a,m)=>a+m.stands.length,0);
-  var today=new Date().toISOString().slice(0,10);
-  var msg='データ更新 '+new Date().toLocaleString('ja');
+  var today=__baseDate().toISOString().slice(0,10);
+  var msg='データ更新 '+new Date().toLocaleString('ja')+(__OFF?' (対象日:'+today+')':'');
 
   // ① stores.json（当日データ）を更新
   bar.textContent='📡 stores.json 送信中...('+total+'台)';
@@ -159,7 +162,7 @@ async function push(result,_sid,_sname){
 }
 
 try{
-  var today=new Date().toISOString().slice(0,10);
+  var today=__baseDate().toISOString().slice(0,10);
   var urlKindCode=new URLSearchParams(location.search).get('kind_code')||'Z';
 
   function h2b(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b;}

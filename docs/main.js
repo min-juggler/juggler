@@ -1203,9 +1203,10 @@ function saveToken() {
 
 // ===== ブックマークレット（自動更新ローダー） =====
 // bookmarklet_code.js を毎回GitHubから取得するため、再ドラッグ不要
-function buildInlineBookmarklet(token, repo) {
+function buildInlineBookmarklet(token, repo, dayOffset = 0) {
   return `(async function(){
 var T='${token}',R='${repo}';
+window.__JUG_DAYOFF__=${dayOffset};
 try{
   var r=await fetch('https://raw.githubusercontent.com/'+R+'/main/docs/bookmarklet_code.js?_='+Date.now(),{cache:'no-store'});
   if(!r.ok){alert('コード取得失敗 '+r.status);return;}
@@ -1363,14 +1364,19 @@ function buildBookmarklet() {
     return;
   }
 
-  const loader = buildInlineBookmarklet(token, repo);
-  const code = loader;
-
   const el = document.getElementById('bookmarklet-link');
   if (el) {
-    el.href = 'javascript:' + encodeURIComponent(code);
+    el.href = 'javascript:' + encodeURIComponent(buildInlineBookmarklet(token, repo, 0));
     el.textContent = '🎰 ジャグラーデータ取得';
     el.style.background = '#e63946';
+  }
+
+  // 昨日のデータ取得用（取り忘れた日のリカバリ）
+  const elY = document.getElementById('bookmarklet-link-yesterday');
+  if (elY) {
+    elY.href = 'javascript:' + encodeURIComponent(buildInlineBookmarklet(token, repo, -1));
+    elY.textContent = '📅 昨日のデータ取得';
+    elY.style.background = '#457b9d';
   }
 }
 
