@@ -216,6 +216,32 @@ let historyData = {};  // { "YYYY-MM-DD": { stores: { sid: { machines: [...] } }
 
 const GITHUB_BASE = 'https://raw.githubusercontent.com/min-juggler/juggler/main/docs/data/';
 
+// 古いスクリプト由来の店舗IDを正規IDへ寄せる（iOSショートカットの旧版対策）
+const STORE_ALIAS = {
+  'dynam_a736724': 'dynam_tendo',
+  'dynam-a736724': 'dynam_tendo',
+  'dynam-a725254': 'dynam_yonezawa',
+};
+const STORE_NAME_FIX = {
+  'dynam_tendo': 'ダイナム天童店',
+  'dynam_yonezawa': 'ダイナム米沢店',
+};
+function normalizeStoresDict(stores) {
+  if (!stores) return stores;
+  const cnt = s => (s.machines || []).reduce((a, m) => a + (m.stands ? m.stands.length : 0), 0);
+  for (const [bad, good] of Object.entries(STORE_ALIAS)) {
+    if (!stores[bad]) continue;
+    if (!stores[good] || cnt(stores[bad]) > cnt(stores[good])) {
+      stores[good] = stores[bad];
+    }
+    delete stores[bad];
+  }
+  for (const [id, nm] of Object.entries(STORE_NAME_FIX)) {
+    if (stores[id]) stores[id].name = nm;
+  }
+  return stores;
+}
+
 async function loadData() {
   // raw.githubusercontent.com を先に試す（GitHub PagesはCDNキャッシュで更新が遅い）
   const urls = [GITHUB_BASE + 'stores.json', 'data/stores.json'];
@@ -224,6 +250,7 @@ async function loadData() {
       const res = await fetch(url + '?t=' + Date.now(), { cache: 'no-store' });
       if (!res.ok) continue;
       storeData = await res.json();
+      normalizeStoresDict(storeData.stores);
       buildAllStands();
       updateDataStatus();
       populateStoreSelect();
@@ -241,6 +268,10 @@ async function loadHistoryData(url) {
     const res = await fetch(url + '?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) return;
     historyData = await res.json();
+    // 各日の店舗IDも正規化（旧版スクリプト対策）
+    for (const day of Object.values(historyData)) {
+      if (day && day.stores) normalizeStoresDict(day.stores);
+    }
     // 履歴読み込み完了後に傾向タブを更新
     renderTrendTab();
   } catch { historyData = {}; }
@@ -251,6 +282,7 @@ async function loadPrevData(url) {
     const res = await fetch(url + '?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) return;
     prevStoreData = await res.json();
+    normalizeStoresDict(prevStoreData.stores);
     prevAllStands = [];
     for (const [storeId, store] of Object.entries(prevStoreData.stores)) {
       for (const machine of store.machines) {
