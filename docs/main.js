@@ -213,6 +213,8 @@ let prevStoreData = null;
 let allStands = [];
 let prevAllStands = [];
 let historyData = {};  // { "YYYY-MM-DD": { stores: { sid: { machines: [...] } } } }
+let prevPivotDate = null;     // 朝イチ基準にした「前日」の日付
+let storeTendencyMap = {};    // sid -> analyzeStoreTendency結果（朝イチ台のタグ用）
 
 const GITHUB_BASE = 'https://raw.githubusercontent.com/min-juggler/juggler/main/docs/data/';
 
@@ -254,8 +256,8 @@ async function loadData() {
       buildAllStands();
       updateDataStatus();
       populateStoreSelect();
-      // 履歴データも非同期で読み込む
-      loadHistoryData(url.replace('stores.json', 'history.json'));
+      // 履歴データを読み込む（朝イチ用の前日データもここで作る）
+      await loadHistoryData(url.replace('stores.json', 'history.json'));
       return true;
     } catch { continue; }
   }
@@ -272,9 +274,28 @@ async function loadHistoryData(url) {
     for (const day of Object.values(historyData)) {
       if (day && day.stores) normalizeStoresDict(day.stores);
     }
+    // 朝イチ用：最新の履歴日を「前日（据え置き基準）」として展開
+    buildPrevFromHistory();
     // 履歴読み込み完了後に傾向タブを更新
     renderTrendTab();
   } catch { historyData = {}; }
+}
+
+// 最新の履歴日を「前日（据え置き基準）」として朝イチ用データを作る
+function buildPrevFromHistory() {
+  prevAllStands = [];
+  const dates = Object.keys(historyData || {}).sort();
+  if (!dates.length) return;
+  prevPivotDate = dates[dates.length - 1];
+  const stores = historyData[prevPivotDate]?.stores || {};
+  for (const [storeId, store] of Object.entries(stores)) {
+    for (const machine of (store.machines || [])) {
+      const displayName = hw2fw(machine.machine_name);
+      for (const stand of (machine.stands || [])) {
+        prevAllStands.push({ ...stand, store_id: storeId, store_name: store.name, machine_name: stand.machine_name || displayName });
+      }
+    }
+  }
 }
 
 async function loadPrevData(url) {
@@ -351,6 +372,9 @@ function analyze() {
 
   const filterStore = stands => storeFilter === 'all' ? stands : stands.filter(s => s.store_id === storeFilter);
 
+  // ===== 店舗の据え置き傾向を全店分まとめて算出 =====
+  buildTendencyMap();
+
   // ===== 店舗の傾向（据え置き分析） =====
   renderTendency(storeFilter);
 
@@ -425,13 +449,41 @@ function analyzeStoreTendency(sid) {
   const cont = contTot ? contHit / contTot : 0;
   let signal = 'none';
   if (contTot >= 10) signal = cont >= base * 1.3 ? 'strong' : (cont > base ? 'weak' : 'none');
+  // データの信頼度（日数と連続判定サンプル数から）
+  let confidence = 'low';
+  if (dates.length >= 20 && contTot >= 20) confidence = 'high';
+  else if (dates.length >= 12 && contTot >= 10) confidence = 'mid';
+  const needDays = confidence === 'low' ? Math.max(1, 14 - dates.length) : 0;
   // 高設定を入れやすい台番号（朝イチの目安）: 全体率の1.5倍以上 & 6日以上記録
   const rackRows = Object.entries(rack)
     .filter(([rk, r]) => r.tot >= 6 && r.hi >= 2 && r.hi / r.tot >= Math.max(0.35, base * 1.5))
     .map(([rk, r]) => ({ rack: rk, hi: r.hi, tot: r.tot, rate: r.hi / r.tot, machine: r.machine }))
     .sort((a, b) => b.rate - a.rate || b.tot - a.tot)
     .slice(0, 6);
-  return { days: dates.length, base, cont, contTot, signal, rackRows };
+  return { days: dates.length, base, cont, contTot, signal, confidence, needDays, rackRows };
+}
+
+// 全店舗の据え置き傾向をまとめて算出（朝イチ台のタグ付け用にキャッシュ）
+function buildTendencyMap() {
+  storeTendencyMap = {};
+  for (const sid of Object.keys(storeData?.stores || {})) {
+    try { storeTendencyMap[sid] = analyzeStoreTendency(sid); } catch { /* skip */ }
+  }
+}
+
+// 据え置き店としての分かりやすい判定文（信頼度込み）
+function tendencyVerdict(t) {
+  if (!t || t.confidence === 'low' || t.contTot < 8) {
+    return { label: '⏳ 判定中（データ不足）', cls: 't-none',
+      note: t && t.needDays ? `あと約${t.needDays}日通えばラフ判定できます（現在${t ? t.days : 0}日分）` : 'まだ判定に十分なデータがありません' };
+  }
+  const conf = t.confidence === 'high' ? '信頼度:高' : '信頼度:中';
+  if (t.signal === 'strong') return { label: `✅ 据え置き店`, cls: 't-strong', conf,
+    note: '前日の高設定台が翌日も残りやすい。朝イチは昨日の高設定台（🌅）が買い。' };
+  if (t.signal === 'weak') return { label: `△ やや据え置き`, cls: 't-weak', conf,
+    note: '多少の据え置き傾向あり。前日台は参考程度に。' };
+  return { label: `❌ 据え置き弱い（リセット寄り）`, cls: 't-none', conf,
+    note: '前日データに頼りすぎない方が無難。朝イチは博打になりやすい。' };
 }
 
 function renderTendency(storeFilter) {
@@ -446,21 +498,17 @@ function renderTendency(storeFilter) {
   for (const sid of sids) {
     const name = storeData?.stores?.[sid]?.name || sid;
     const t = analyzeStoreTendency(sid);
-    if (t.contTot < 5) {
-      cards.push(`<div class="tendency-card"><div class="t-store">${name}</div>
-        <div class="t-row"><span>据え置き傾向</span><span class="t-val">データ蓄積中<span class="tendency-badge t-none">サンプル不足</span></span></div>
-        <div class="t-advice">まだ判定に十分なデータがありません（${t.days}日分）。通い続けてデータが貯まると傾向が出ます。</div></div>`);
+    const v = tendencyVerdict(t);
+    // データ不足の店は判定文だけ大きく出す
+    if (t.confidence === 'low' || t.contTot < 8) {
+      cards.push(`<div class="tendency-card">
+        <div class="t-store">${name}</div>
+        <div class="t-verdict ${v.cls}">${v.label}</div>
+        <div class="t-advice">${v.note}</div></div>`);
       continue;
     }
-    const badge = t.signal === 'strong' ? '<span class="tendency-badge t-strong">据え置き傾向 強</span>'
-      : t.signal === 'weak' ? '<span class="tendency-badge t-weak">据え置き傾向 弱</span>'
-      : '<span class="tendency-badge t-none">傾向なし</span>';
     const ratio = t.base > 0 ? (t.cont / t.base) : 0;
-    const advice = t.signal === 'strong'
-      ? `前日の高設定台が翌日も高設定で残る確率が高い店です。<b>朝イチは昨日の高設定台（下の🌅狙い台）を狙う</b>のが有効。`
-      : t.signal === 'weak'
-      ? `多少の据え置き傾向あり。昨日の高設定台は参考程度に。`
-      : `据え置き傾向は弱め。朝イチは前日データに頼りすぎない方が無難です。`;
+    const advice = v.note;
     let rackHtml = '';
     if (t.rackRows && t.rackRows.length) {
       const items = t.rackRows.map(r =>
@@ -475,7 +523,8 @@ function renderTendency(storeFilter) {
       </div>`;
     }
     cards.push(`<div class="tendency-card">
-      <div class="t-store">${name} ${badge}</div>
+      <div class="t-store">${name}</div>
+      <div class="t-verdict ${v.cls}">${v.label} <span class="t-conf">${v.conf || ''}</span></div>
       <div class="t-row"><span>全体の高設定率</span><span class="t-val">${Math.round(t.base * 100)}%</span></div>
       <div class="t-row"><span>前日高設定→翌日も高設定</span><span class="t-val">${Math.round(t.cont * 100)}%${ratio >= 1.1 ? `（通常の${ratio.toFixed(1)}倍）` : ''}</span></div>
       <div class="t-row"><span>分析サンプル</span><span class="t-val">${t.days}日 / ${t.contTot}件</span></div>
@@ -520,7 +569,20 @@ function renderMorningList(stands) {
     list.innerHTML = `<div class="empty-state"><div class="icon">🌅</div><p>前日データがありません</p></div>`;
     return;
   }
+  // 各台に「その店が据え置き店か」のタグを付ける（信頼して狙えるか一目で分かるように）
+  stands.forEach(s => { s._trust = morningTrustTag(s.store_id); });
   list.innerHTML = stands.map((s, i) => buildStandCard(s, i + 1, '昨日高設定')).join('');
+}
+
+// 朝イチ台に出す「据え置き信頼度」タグ
+function morningTrustTag(sid) {
+  const t = storeTendencyMap[sid];
+  const v = tendencyVerdict(t);
+  if (v.cls === 't-strong') return { text: '✅ 据え置き店◎ 信じて狙える', good: true };
+  if (v.cls === 't-weak')   return { text: '△ やや据え置き 参考程度', good: true };
+  if (t && (t.confidence === 'low' || t.contTot < 8))
+    return { text: '⚠️ 据え置きデータ不足 自己責任', good: false };
+  return { text: '❌ リセット寄り 朝イチは博打', good: false };
 }
 
 function renderEveningList(stands) {
@@ -566,7 +628,7 @@ function buildStandCard(s, rank, label = null) {
   const profitText = s.expectedProfit !== null
     ? `<span class="${profitClass}">${profitSign}${s.expectedProfit.toLocaleString()}円</span>`
     : '<span>-</span>';
-  const tagsHtml = s.tags.map(t =>
+  const tagsHtml = ((s._trust ? [s._trust] : []).concat(s.tags)).map(t =>
     `<span class="tag ${t.good ? 'tag-good' : 'tag-warn'}">${t.text}</span>`
   ).join('');
 
