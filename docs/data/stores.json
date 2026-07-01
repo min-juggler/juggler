@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-07-01T14:45:24.893Z",
+  "fetched_at": "2026-07-01T14:45:40.288Z",
   "stores": {
     "yonezawa": {
       "name": "アイランド米沢店",
@@ -1866,240 +1866,2070 @@
       "name": "1円劇場上山店",
       "machines": [
         {
-          "machine_name": "S ネオアイムジャグラーEX KK⑱",
-          "count": 18,
+          "machine_name": "P リング 呪いの7日間2 FWA①",
+          "count": 1,
           "stands": [
             {
-              "rack_no": "501",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 2063,
-              "bb": 12,
-              "rb": 4,
-              "diff": 710
-            },
-            {
-              "rack_no": "502",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 474,
-              "bb": 1,
-              "rb": 0,
-              "diff": -392
-            },
-            {
-              "rack_no": "503",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 838,
-              "bb": 5,
-              "rb": 1,
-              "diff": 396
-            },
-            {
-              "rack_no": "505",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 1423,
-              "bb": 3,
-              "rb": 5,
-              "diff": -346
-            },
-            {
-              "rack_no": "506",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 1585,
-              "bb": 3,
-              "rb": 5,
-              "diff": -824
-            },
-            {
-              "rack_no": "507",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 655,
-              "bb": 2,
-              "rb": 0,
-              "diff": -323
-            },
-            {
-              "rack_no": "508",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 1006,
-              "bb": 3,
-              "rb": 1,
-              "diff": -423
-            },
-            {
-              "rack_no": "510",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 1791,
-              "bb": 8,
-              "rb": 5,
-              "diff": 295
-            },
-            {
-              "rack_no": "521",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 5626,
-              "bb": 20,
-              "rb": 11,
-              "diff": -1032
-            },
-            {
-              "rack_no": "522",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 723,
-              "bb": 4,
-              "rb": 3,
-              "diff": 328
-            },
-            {
-              "rack_no": "523",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 2002,
-              "bb": 12,
-              "rb": 4,
-              "diff": 1074
-            },
-            {
-              "rack_no": "525",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 445,
-              "bb": 1,
-              "rb": 1,
-              "diff": -170
-            },
-            {
-              "rack_no": "526",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 1345,
-              "bb": 4,
-              "rb": 1,
-              "diff": -412
-            },
-            {
-              "rack_no": "527",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 1130,
-              "bb": 9,
-              "rb": 0,
-              "diff": 827
-            },
-            {
-              "rack_no": "528",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 1240,
-              "bb": 6,
-              "rb": 2,
-              "diff": 262
-            },
-            {
-              "rack_no": "530",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 282,
+              "rack_no": "1",
+              "machine_name": "P リング 呪いの7日間2 FWA①",
+              "games": 112,
               "bb": 0,
               "rb": 0,
-              "diff": -407
-            },
-            {
-              "rack_no": "531",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 1330,
-              "bb": 6,
-              "rb": 2,
-              "diff": 94
-            },
-            {
-              "rack_no": "532",
-              "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 2025,
-              "bb": 8,
-              "rb": 10,
-              "diff": 545
+              "diff": -1640
             }
           ]
         },
         {
-          "machine_name": "S ミスタージャグラー KK⑤",
-          "count": 5,
+          "machine_name": "PAシン・エヴァンゲリオン Y①",
+          "count": 1,
           "stands": [
             {
-              "rack_no": "511",
-              "machine_name": "S ミスタージャグラー KK⑤",
-              "games": 841,
-              "bb": 5,
-              "rb": 2,
-              "diff": 377
+              "rack_no": "2",
+              "machine_name": "PAシン・エヴァンゲリオン Y①",
+              "games": 203,
+              "bb": 0,
+              "rb": 0,
+              "diff": -4130
+            }
+          ]
+        },
+        {
+          "machine_name": "P ゴジラ対エヴァンゲリオン YR①",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "3",
+              "machine_name": "P ゴジラ対エヴァンゲリオン YR①",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "P 江頭2：50inナナシーLT V3①",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "5",
+              "machine_name": "P 江頭2：50inナナシーLT V3①",
+              "games": 199,
+              "bb": 1,
+              "rb": 0,
+              "diff": -3620
+            }
+          ]
+        },
+        {
+          "machine_name": "P魔法少女まどかマギカ A5①",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "6",
+              "machine_name": "P魔法少女まどかマギカ A5①",
+              "games": 171,
+              "bb": 3,
+              "rb": 0,
+              "diff": -500
+            }
+          ]
+        },
+        {
+          "machine_name": "PF戦姫絶唱シンフォギア2 YR①",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "7",
+              "machine_name": "PF戦姫絶唱シンフォギア2 YR①",
+              "games": 349,
+              "bb": 17,
+              "rb": 0,
+              "diff": 1290
+            }
+          ]
+        },
+        {
+          "machine_name": "PAダンまち2 YG①",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "8",
+              "machine_name": "PAダンまち2 YG①",
+              "games": 56,
+              "bb": 0,
+              "rb": 0,
+              "diff": -620
+            }
+          ]
+        },
+        {
+          "machine_name": "P ギルティクラウン2 SB①",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "10",
+              "machine_name": "P ギルティクラウン2 SB①",
+              "games": 158,
+              "bb": 4,
+              "rb": 0,
+              "diff": 450
+            }
+          ]
+        },
+        {
+          "machine_name": "P とある科学の超電磁砲 RVZ①2",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "11",
+              "machine_name": "P とある科学の超電磁砲 RVZ①2",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
             },
             {
-              "rack_no": "512",
-              "machine_name": "S ミスタージャグラー KK⑤",
-              "games": 2931,
+              "rack_no": "32",
+              "machine_name": "P とある科学の超電磁砲 RVZ①2",
+              "games": 105,
+              "bb": 13,
+              "rb": 0,
+              "diff": 1470
+            }
+          ]
+        },
+        {
+          "machine_name": "P F機動戦士ガンダムSEED YZ②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "12",
+              "machine_name": "P F機動戦士ガンダムSEED YZ②",
+              "games": 18,
+              "bb": 0,
+              "rb": 0,
+              "diff": -350
+            }
+          ]
+        },
+        {
+          "machine_name": "PA機動戦士ガンダムユニコーンbY②",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "13",
+              "machine_name": "PA機動戦士ガンダムユニコーンbY②",
+              "games": 299,
+              "bb": 25,
+              "rb": 0,
+              "diff": 5360
+            },
+            {
+              "rack_no": "15",
+              "machine_name": "PA機動戦士ガンダムユニコーンbY②",
+              "games": 569,
+              "bb": 12,
+              "rb": 0,
+              "diff": -3940
+            }
+          ]
+        },
+        {
+          "machine_name": "PA 花の慶次 裂 99ver． N3−VY②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "16",
+              "machine_name": "PA 花の慶次 裂 99ver． N3−VY②",
+              "games": 926,
+              "bb": 8,
+              "rb": 0,
+              "diff": -3380
+            }
+          ]
+        },
+        {
+          "machine_name": "PA 真・花の慶次2 漆黒 N2−X1②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "17",
+              "machine_name": "PA 真・花の慶次2 漆黒 N2−X1②",
+              "games": 599,
+              "bb": 3,
+              "rb": 0,
+              "diff": -6130
+            }
+          ]
+        },
+        {
+          "machine_name": "P 真・花の慶次3 N−K②2",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "18",
+              "machine_name": "P 真・花の慶次3 N−K②2",
+              "games": 228,
+              "bb": 2,
+              "rb": 0,
+              "diff": -1740
+            },
+            {
+              "rack_no": "20",
+              "machine_name": "P 真・花の慶次3 N−K②2",
+              "games": 736,
+              "bb": 7,
+              "rb": 0,
+              "diff": -4820
+            }
+          ]
+        },
+        {
+          "machine_name": "PA 花の慶次〜傾奇一転 87verN②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "21",
+              "machine_name": "PA 花の慶次〜傾奇一転 87verN②",
+              "games": 1612,
+              "bb": 15,
+              "rb": 0,
+              "diff": -4330
+            }
+          ]
+        },
+        {
+          "machine_name": "PAコマコマ倶楽部坂本冬美LOOP1②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "22",
+              "machine_name": "PAコマコマ倶楽部坂本冬美LOOP1②",
+              "games": 487,
+              "bb": 13,
+              "rb": 0,
+              "diff": 2300
+            }
+          ]
+        },
+        {
+          "machine_name": "PAコマコマ倶楽部坂本冬美 V1②3",
+          "count": 3,
+          "stands": [
+            {
+              "rack_no": "23",
+              "machine_name": "PAコマコマ倶楽部坂本冬美 V1②3",
+              "games": 624,
+              "bb": 10,
+              "rb": 0,
+              "diff": 770
+            },
+            {
+              "rack_no": "25",
+              "machine_name": "PAコマコマ倶楽部坂本冬美 V1②3",
+              "games": 27,
+              "bb": 0,
+              "rb": 0,
+              "diff": -440
+            },
+            {
+              "rack_no": "26",
+              "machine_name": "PAコマコマ倶楽部坂本冬美 V1②3",
+              "games": 31,
+              "bb": 0,
+              "rb": 0,
+              "diff": -390
+            }
+          ]
+        },
+        {
+          "machine_name": "P 激デジ 真・牙狼 RBY4②2",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "27",
+              "machine_name": "P 激デジ 真・牙狼 RBY4②2",
+              "games": 194,
+              "bb": 1,
+              "rb": 0,
+              "diff": -2750
+            },
+            {
+              "rack_no": "28",
+              "machine_name": "P 激デジ 真・牙狼 RBY4②2",
+              "games": 7,
+              "bb": 0,
+              "rb": 0,
+              "diff": -170
+            }
+          ]
+        },
+        {
+          "machine_name": "PA 激デジ牙狼月虹ノ旅人 RL②2",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "30",
+              "machine_name": "PA 激デジ牙狼月虹ノ旅人 RL②2",
+              "games": 726,
+              "bb": 12,
+              "rb": 0,
+              "diff": 1290
+            },
+            {
+              "rack_no": "31",
+              "machine_name": "PA 激デジ牙狼月虹ノ旅人 RL②2",
+              "games": 594,
               "bb": 11,
-              "rb": 7,
-              "diff": -382
+              "rb": 0,
+              "diff": 2480
+            }
+          ]
+        },
+        {
+          "machine_name": "Pモンスターハンターライズ GSPB①",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "33",
+              "machine_name": "Pモンスターハンターライズ GSPB①",
+              "games": 303,
+              "bb": 12,
+              "rb": 0,
+              "diff": -930
+            }
+          ]
+        },
+        {
+          "machine_name": "P Fからくりサーカス Y①",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "35",
+              "machine_name": "P Fからくりサーカス Y①",
+              "games": 155,
+              "bb": 4,
+              "rb": 0,
+              "diff": 1840
+            }
+          ]
+        },
+        {
+          "machine_name": "PA Fからくりサーカス2 YF①",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "36",
+              "machine_name": "PA Fからくりサーカス2 YF①",
+              "games": 349,
+              "bb": 3,
+              "rb": 0,
+              "diff": -1670
+            }
+          ]
+        },
+        {
+          "machine_name": "P F戦姫絶唱シンフォギア3 YR①",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "37",
+              "machine_name": "P F戦姫絶唱シンフォギア3 YR①",
+              "games": 41,
+              "bb": 17,
+              "rb": 0,
+              "diff": 3530
+            }
+          ]
+        },
+        {
+          "machine_name": "PA Fうたわれるもの LT Y①",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "38",
+              "machine_name": "PA Fうたわれるもの LT Y①",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "Pルパン三世2000カラット涙L2AZ1①",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "50",
+              "machine_name": "Pルパン三世2000カラット涙L2AZ1①",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "P 地獄少女 Light FVB①",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "51",
+              "machine_name": "P 地獄少女 Light FVB①",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "P ルパン三世 THE FIRST 9YS1Y①",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "52",
+              "machine_name": "P ルパン三世 THE FIRST 9YS1Y①",
+              "games": 1275,
+              "bb": 16,
+              "rb": 0,
+              "diff": 80
+            }
+          ]
+        },
+        {
+          "machine_name": "PハネモノファミリースタジアムMD",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "53",
+              "machine_name": "PハネモノファミリースタジアムMD",
+              "games": 75,
+              "bb": 1,
+              "rb": 0,
+              "diff": -1260
+            }
+          ]
+        },
+        {
+          "machine_name": "P はねものファインプレー H3③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "55",
+              "machine_name": "P はねものファインプレー H3③",
+              "games": 36,
+              "bb": 0,
+              "rb": 0,
+              "diff": -1070
+            }
+          ]
+        },
+        {
+          "machine_name": "P 北斗の拳 強敵 LT SSPA③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "56",
+              "machine_name": "P 北斗の拳 強敵 LT SSPA③",
+              "games": 625,
+              "bb": 10,
+              "rb": 0,
+              "diff": -3260
+            }
+          ]
+        },
+        {
+          "machine_name": "P 宇宙戦艦ヤマト2202 bH③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "57",
+              "machine_name": "P 宇宙戦艦ヤマト2202 bH③",
+              "games": 1071,
+              "bb": 29,
+              "rb": 0,
+              "diff": 6260
+            }
+          ]
+        },
+        {
+          "machine_name": "PA F戦姫絶唱シンフォギア4 AR③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "58",
+              "machine_name": "PA F戦姫絶唱シンフォギア4 AR③",
+              "games": 62,
+              "bb": 1,
+              "rb": 0,
+              "diff": -700
+            }
+          ]
+        },
+        {
+          "machine_name": "PA Fかぐや様は告らせたい YG③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "60",
+              "machine_name": "PA Fかぐや様は告らせたい YG③",
+              "games": 1419,
+              "bb": 38,
+              "rb": 0,
+              "diff": 16630
+            }
+          ]
+        },
+        {
+          "machine_name": "P 真・黄門ちゃま 甘デジ 9YU1Y③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "61",
+              "machine_name": "P 真・黄門ちゃま 甘デジ 9YU1Y③",
+              "games": 494,
+              "bb": 6,
+              "rb": 0,
+              "diff": -780
+            }
+          ]
+        },
+        {
+          "machine_name": "P ビッグドリーム3 77ver． SSPH③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "62",
+              "machine_name": "P ビッグドリーム3 77ver． SSPH③",
+              "games": 182,
+              "bb": 2,
+              "rb": 0,
+              "diff": -2070
+            }
+          ]
+        },
+        {
+          "machine_name": "P 戦国乙女5 甘デジ 9AU1③2",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "63",
+              "machine_name": "P 戦国乙女5 甘デジ 9AU1③2",
+              "games": 419,
+              "bb": 1,
+              "rb": 0,
+              "diff": -6300
+            }
+          ]
+        },
+        {
+          "machine_name": "P 009 RE：CYBORG N3−K④",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "65",
+              "machine_name": "P 009 RE：CYBORG N3−K④",
+              "games": 113,
+              "bb": 3,
+              "rb": 0,
+              "diff": 580
+            }
+          ]
+        },
+        {
+          "machine_name": "PA フィーバー真花月2 夜桜 Y④",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "66",
+              "machine_name": "PA フィーバー真花月2 夜桜 Y④",
+              "games": 1102,
+              "bb": 12,
+              "rb": 0,
+              "diff": -2120
+            }
+          ]
+        },
+        {
+          "machine_name": "P 花満開 月光 GCA④2",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "67",
+              "machine_name": "P 花満開 月光 GCA④2",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
             },
             {
-              "rack_no": "513",
-              "machine_name": "S ミスタージャグラー KK⑤",
-              "games": 46,
+              "rack_no": "81",
+              "machine_name": "P 花満開 月光 GCA④2",
+              "games": 25,
+              "bb": 0,
+              "rb": 0,
+              "diff": -400
+            }
+          ]
+        },
+        {
+          "machine_name": "PA フィーバーパワフル R④4",
+          "count": 4,
+          "stands": [
+            {
+              "rack_no": "68",
+              "machine_name": "PA フィーバーパワフル R④4",
+              "games": 271,
+              "bb": 0,
+              "rb": 0,
+              "diff": -4460
+            },
+            {
+              "rack_no": "70",
+              "machine_name": "PA フィーバーパワフル R④4",
+              "games": 39,
+              "bb": 0,
+              "rb": 0,
+              "diff": -750
+            },
+            {
+              "rack_no": "78",
+              "machine_name": "PA フィーバーパワフル R④4",
+              "games": 235,
+              "bb": 3,
+              "rb": 0,
+              "diff": -410
+            },
+            {
+              "rack_no": "80",
+              "machine_name": "PA フィーバーパワフル R④4",
+              "games": 258,
+              "bb": 2,
+              "rb": 0,
+              "diff": -2620
+            }
+          ]
+        },
+        {
+          "machine_name": "PA フィーバークィーンⅡ YS④3",
+          "count": 3,
+          "stands": [
+            {
+              "rack_no": "71",
+              "machine_name": "PA フィーバークィーンⅡ YS④3",
+              "games": 393,
+              "bb": 3,
+              "rb": 0,
+              "diff": -1890
+            },
+            {
+              "rack_no": "72",
+              "machine_name": "PA フィーバークィーンⅡ YS④3",
+              "games": 276,
+              "bb": 2,
+              "rb": 0,
+              "diff": -2370
+            },
+            {
+              "rack_no": "76",
+              "machine_name": "PA フィーバークィーンⅡ YS④3",
+              "games": 536,
+              "bb": 10,
+              "rb": 0,
+              "diff": -200
+            }
+          ]
+        },
+        {
+          "machine_name": "P フィーバークィーンⅡ V④2",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "73",
+              "machine_name": "P フィーバークィーンⅡ V④2",
+              "games": 3,
+              "bb": 0,
+              "rb": 0,
+              "diff": -70
+            },
+            {
+              "rack_no": "75",
+              "machine_name": "P フィーバークィーンⅡ V④2",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "P フィーバークィーンⅡ④",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "77",
+              "machine_name": "P フィーバークィーンⅡ④",
+              "games": 186,
+              "bb": 7,
+              "rb": 0,
+              "diff": 1000
+            }
+          ]
+        },
+        {
+          "machine_name": "PA わんわんパラダイス AGBD④",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "82",
+              "machine_name": "PA わんわんパラダイス AGBD④",
+              "games": 1094,
+              "bb": 19,
+              "rb": 0,
+              "diff": 300
+            }
+          ]
+        },
+        {
+          "machine_name": "PA 野生の王国Ⅵ N2④",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "83",
+              "machine_name": "PA 野生の王国Ⅵ N2④",
+              "games": 354,
+              "bb": 4,
+              "rb": 0,
+              "diff": -30
+            }
+          ]
+        },
+        {
+          "machine_name": "P 超甘LT華牌RR AX5③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "85",
+              "machine_name": "P 超甘LT華牌RR AX5③",
+              "games": 5,
+              "bb": 0,
+              "rb": 0,
+              "diff": -120
+            }
+          ]
+        },
+        {
+          "machine_name": "PAリングバースデイ呪いの始FWC③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "86",
+              "machine_name": "PAリングバースデイ呪いの始FWC③",
+              "games": 275,
+              "bb": 0,
+              "rb": 0,
+              "diff": -4850
+            }
+          ]
+        },
+        {
+          "machine_name": "P 戦国乙女 LEGEND BATTLE 9YU1Y③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "87",
+              "machine_name": "P 戦国乙女 LEGEND BATTLE 9YU1Y③",
+              "games": 503,
+              "bb": 7,
+              "rb": 0,
+              "diff": -1930
+            }
+          ]
+        },
+        {
+          "machine_name": "P聖戦士ダンバイン2 SSPB③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "88",
+              "machine_name": "P聖戦士ダンバイン2 SSPB③",
+              "games": 174,
+              "bb": 0,
+              "rb": 0,
+              "diff": -2870
+            }
+          ]
+        },
+        {
+          "machine_name": "P Re：ゼロ 鬼がかり A03③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "100",
+              "machine_name": "P Re：ゼロ 鬼がかり A03③",
+              "games": 1516,
+              "bb": 24,
+              "rb": 0,
+              "diff": 5930
+            }
+          ]
+        },
+        {
+          "machine_name": "PA 冬のソナタ MA1③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "101",
+              "machine_name": "PA 冬のソナタ MA1③",
+              "games": 615,
+              "bb": 9,
+              "rb": 0,
+              "diff": -4170
+            }
+          ]
+        },
+        {
+          "machine_name": "P 南国育ち デカパト 9AU2③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "102",
+              "machine_name": "P 南国育ち デカパト 9AU2③",
+              "games": 92,
+              "bb": 0,
+              "rb": 0,
+              "diff": -1320
+            }
+          ]
+        },
+        {
+          "machine_name": "PA Fダンベル何キロ持てる Y③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "103",
+              "machine_name": "PA Fダンベル何キロ持てる Y③",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "PA シン・エヴァンゲリオン Y③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "105",
+              "machine_name": "PA シン・エヴァンゲリオン Y③",
+              "games": 671,
+              "bb": 8,
+              "rb": 0,
+              "diff": -2060
+            }
+          ]
+        },
+        {
+          "machine_name": "PA 大海物語5 アグネスARBC",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "106",
+              "machine_name": "PA 大海物語5 アグネスARBC",
+              "games": 1044,
+              "bb": 18,
+              "rb": 0,
+              "diff": 1850
+            }
+          ]
+        },
+        {
+          "machine_name": "PAスーパー海物語IN地中海2HLA④",
+          "count": 4,
+          "stands": [
+            {
+              "rack_no": "107",
+              "machine_name": "PAスーパー海物語IN地中海2HLA④",
+              "games": 1022,
+              "bb": 19,
+              "rb": 0,
+              "diff": -1590
+            },
+            {
+              "rack_no": "108",
+              "machine_name": "PAスーパー海物語IN地中海2HLA④",
+              "games": 198,
+              "bb": 3,
+              "rb": 0,
+              "diff": -920
+            },
+            {
+              "rack_no": "155",
+              "machine_name": "PAスーパー海物語IN地中海2HLA④",
+              "games": 2,
               "bb": 0,
               "rb": 0,
               "diff": -90
             },
             {
-              "rack_no": "515",
-              "machine_name": "S ミスタージャグラー KK⑤",
-              "games": 327,
+              "rack_no": "156",
+              "machine_name": "PAスーパー海物語IN地中海2HLA④",
+              "games": 254,
               "bb": 2,
-              "rb": 1,
-              "diff": 32
+              "rb": 0,
+              "diff": -2470
+            }
+          ]
+        },
+        {
+          "machine_name": "PA 新海物語 AR BB④",
+          "count": 4,
+          "stands": [
+            {
+              "rack_no": "110",
+              "machine_name": "PA 新海物語 AR BB④",
+              "games": 774,
+              "bb": 13,
+              "rb": 0,
+              "diff": -2450
             },
             {
-              "rack_no": "516",
-              "machine_name": "S ミスタージャグラー KK⑤",
-              "games": 4813,
+              "rack_no": "111",
+              "machine_name": "PA 新海物語 AR BB④",
+              "games": 309,
+              "bb": 6,
+              "rb": 0,
+              "diff": -730
+            },
+            {
+              "rack_no": "152",
+              "machine_name": "PA 新海物語 AR BB④",
+              "games": 315,
+              "bb": 2,
+              "rb": 0,
+              "diff": -3150
+            },
+            {
+              "rack_no": "153",
+              "machine_name": "PA 新海物語 AR BB④",
+              "games": 879,
+              "bb": 9,
+              "rb": 0,
+              "diff": -4900
+            }
+          ]
+        },
+        {
+          "machine_name": "PA 海物語3R3 LBA⑤",
+          "count": 5,
+          "stands": [
+            {
+              "rack_no": "112",
+              "machine_name": "PA 海物語3R3 LBA⑤",
+              "games": 789,
+              "bb": 17,
+              "rb": 0,
+              "diff": 1510
+            },
+            {
+              "rack_no": "113",
+              "machine_name": "PA 海物語3R3 LBA⑤",
+              "games": 185,
+              "bb": 2,
+              "rb": 0,
+              "diff": -950
+            },
+            {
+              "rack_no": "115",
+              "machine_name": "PA 海物語3R3 LBA⑤",
+              "games": 1042,
+              "bb": 18,
+              "rb": 0,
+              "diff": -720
+            },
+            {
+              "rack_no": "150",
+              "machine_name": "PA 海物語3R3 LBA⑤",
+              "games": 133,
+              "bb": 0,
+              "rb": 0,
+              "diff": -1730
+            },
+            {
+              "rack_no": "151",
+              "machine_name": "PA 海物語3R3 LBA⑤",
+              "games": 295,
+              "bb": 2,
+              "rb": 0,
+              "diff": -2110
+            }
+          ]
+        },
+        {
+          "machine_name": "PA ギンギラパラダイス 夢幻 HBA②",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "116",
+              "machine_name": "PA ギンギラパラダイス 夢幻 HBA②",
+              "games": 149,
+              "bb": 5,
+              "rb": 0,
+              "diff": 1250
+            },
+            {
+              "rack_no": "137",
+              "machine_name": "PA ギンギラパラダイス 夢幻 HBA②",
+              "games": 783,
               "bb": 24,
-              "rb": 18,
-              "diff": 1913
+              "rb": 0,
+              "diff": 7840
             }
           ]
         },
         {
-          "machine_name": "S ウルトラミラクルジャグラー KT",
+          "machine_name": "PAスーパー海物語IN沖縄6RBD③",
+          "count": 3,
+          "stands": [
+            {
+              "rack_no": "117",
+              "machine_name": "PAスーパー海物語IN沖縄6RBD③",
+              "games": 83,
+              "bb": 1,
+              "rb": 0,
+              "diff": -550
+            },
+            {
+              "rack_no": "118",
+              "machine_name": "PAスーパー海物語IN沖縄6RBD③",
+              "games": 1390,
+              "bb": 16,
+              "rb": 0,
+              "diff": -4420
+            },
+            {
+              "rack_no": "135",
+              "machine_name": "PAスーパー海物語IN沖縄6RBD③",
+              "games": 976,
+              "bb": 23,
+              "rb": 0,
+              "diff": 8020
+            }
+          ]
+        },
+        {
+          "machine_name": "P大海物語4スペシャルBLACK SCA④",
+          "count": 4,
+          "stands": [
+            {
+              "rack_no": "120",
+              "machine_name": "P大海物語4スペシャルBLACK SCA④",
+              "games": 39,
+              "bb": 0,
+              "rb": 0,
+              "diff": -530
+            },
+            {
+              "rack_no": "121",
+              "machine_name": "P大海物語4スペシャルBLACK SCA④",
+              "games": 143,
+              "bb": 1,
+              "rb": 0,
+              "diff": -780
+            },
+            {
+              "rack_no": "132",
+              "machine_name": "P大海物語4スペシャルBLACK SCA④",
+              "games": 153,
+              "bb": 2,
+              "rb": 0,
+              "diff": 890
+            },
+            {
+              "rack_no": "133",
+              "machine_name": "P大海物語4スペシャルBLACK SCA④",
+              "games": 104,
+              "bb": 0,
+              "rb": 0,
+              "diff": -1270
+            }
+          ]
+        },
+        {
+          "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
+          "count": 8,
+          "stands": [
+            {
+              "rack_no": "122",
+              "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
+              "games": 56,
+              "bb": 0,
+              "rb": 0,
+              "diff": -820
+            },
+            {
+              "rack_no": "123",
+              "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
+              "games": 33,
+              "bb": 0,
+              "rb": 0,
+              "diff": -580
+            },
+            {
+              "rack_no": "125",
+              "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "126",
+              "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
+              "games": 421,
+              "bb": 0,
+              "rb": 0,
+              "diff": -6020
+            },
+            {
+              "rack_no": "127",
+              "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "128",
+              "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
+              "games": 757,
+              "bb": 6,
+              "rb": 0,
+              "diff": 950
+            },
+            {
+              "rack_no": "130",
+              "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
+              "games": 31,
+              "bb": 0,
+              "rb": 0,
+              "diff": -390
+            },
+            {
+              "rack_no": "131",
+              "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
+              "games": 373,
+              "bb": 2,
+              "rb": 0,
+              "diff": -350
+            }
+          ]
+        },
+        {
+          "machine_name": "PA スーパー海物語 IN 沖縄5SBA",
           "count": 1,
           "stands": [
             {
-              "rack_no": "517",
-              "machine_name": "S ウルトラミラクルジャグラー KT",
-              "games": 1071,
+              "rack_no": "136",
+              "machine_name": "PA スーパー海物語 IN 沖縄5SBA",
+              "games": 331,
+              "bb": 7,
+              "rb": 0,
+              "diff": 920
+            }
+          ]
+        },
+        {
+          "machine_name": "PA 海物語3R2スペシャル MBA",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "138",
+              "machine_name": "PA 海物語3R2スペシャル MBA",
+              "games": 378,
+              "bb": 2,
+              "rb": 0,
+              "diff": -5270
+            }
+          ]
+        },
+        {
+          "machine_name": "PA 元祖ギンギラパラダイス HBC",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "157",
+              "machine_name": "PA 元祖ギンギラパラダイス HBC",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "P 新世紀エヴァンゲリオン咆哮 Y②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "158",
+              "machine_name": "P 新世紀エヴァンゲリオン咆哮 Y②",
+              "games": 22,
+              "bb": 0,
+              "rb": 0,
+              "diff": -410
+            }
+          ]
+        },
+        {
+          "machine_name": "P ラブ嬢3 L2YR3②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "160",
+              "machine_name": "P ラブ嬢3 L2YR3②",
+              "games": 52,
+              "bb": 0,
+              "rb": 0,
+              "diff": -1050
+            }
+          ]
+        },
+        {
+          "machine_name": "P 咲Saki全国編テンパイHBB②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "161",
+              "machine_name": "P 咲Saki全国編テンパイHBB②",
+              "games": 174,
+              "bb": 28,
+              "rb": 0,
+              "diff": 2780
+            }
+          ]
+        },
+        {
+          "machine_name": "P 天才バカボン LTH−JH②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "162",
+              "machine_name": "P 天才バカボン LTH−JH②",
+              "games": 697,
+              "bb": 1,
+              "rb": 0,
+              "diff": -10970
+            }
+          ]
+        },
+        {
+          "machine_name": "P 攻殻機動隊SAC＿2045 LTH−TS②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "163",
+              "machine_name": "P 攻殻機動隊SAC＿2045 LTH−TS②",
+              "games": 143,
+              "bb": 2,
+              "rb": 0,
+              "diff": 840
+            }
+          ]
+        },
+        {
+          "machine_name": "P戦国乙女LEGEND BATTLE M2AZ1Y②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "165",
+              "machine_name": "P戦国乙女LEGEND BATTLE M2AZ1Y②",
+              "games": 150,
+              "bb": 4,
+              "rb": 0,
+              "diff": 1490
+            }
+          ]
+        },
+        {
+          "machine_name": "P J−RUSH5 RSJ S②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "166",
+              "machine_name": "P J−RUSH5 RSJ S②",
+              "games": 542,
+              "bb": 10,
+              "rb": 0,
+              "diff": 1710
+            }
+          ]
+        },
+        {
+          "machine_name": "P GO！GO！マリン 3000 HCD②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "167",
+              "machine_name": "P GO！GO！マリン 3000 HCD②",
+              "games": 367,
+              "bb": 0,
+              "rb": 0,
+              "diff": -6720
+            }
+          ]
+        },
+        {
+          "machine_name": "P リング 呪いの7日間3 JSG②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "168",
+              "machine_name": "P リング 呪いの7日間3 JSG②",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "P 貞子 FMD③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "170",
+              "machine_name": "P 貞子 FMD③",
+              "games": 333,
               "bb": 3,
-              "rb": 3,
-              "diff": -310
+              "rb": 0,
+              "diff": -2100
             }
           ]
         },
         {
-          "machine_name": "S ゴーゴージャグラー3 KA",
+          "machine_name": "P ゴジラ対エヴァンゲリオン L③",
           "count": 1,
           "stands": [
             {
-              "rack_no": "518",
-              "machine_name": "S ゴーゴージャグラー3 KA",
-              "games": 2324,
+              "rack_no": "171",
+              "machine_name": "P ゴジラ対エヴァンゲリオン L③",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "P うまい棒2 V3③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "172",
+              "machine_name": "P うまい棒2 V3③",
+              "games": 7,
+              "bb": 0,
+              "rb": 0,
+              "diff": -1250
+            }
+          ]
+        },
+        {
+          "machine_name": "P 新世紀エヴァンゲリオン15 F④",
+          "count": 4,
+          "stands": [
+            {
+              "rack_no": "173",
+              "machine_name": "P 新世紀エヴァンゲリオン15 F④",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "175",
+              "machine_name": "P 新世紀エヴァンゲリオン15 F④",
+              "games": 142,
+              "bb": 0,
+              "rb": 0,
+              "diff": -2470
+            },
+            {
+              "rack_no": "183",
+              "machine_name": "P 新世紀エヴァンゲリオン15 F④",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "185",
+              "machine_name": "P 新世紀エヴァンゲリオン15 F④",
+              "games": 330,
+              "bb": 1,
+              "rb": 0,
+              "diff": -3510
+            }
+          ]
+        },
+        {
+          "machine_name": "P シンエヴァンゲリオン レイ X④",
+          "count": 4,
+          "stands": [
+            {
+              "rack_no": "176",
+              "machine_name": "P シンエヴァンゲリオン レイ X④",
+              "games": 342,
+              "bb": 2,
+              "rb": 0,
+              "diff": -2100
+            },
+            {
+              "rack_no": "177",
+              "machine_name": "P シンエヴァンゲリオン レイ X④",
+              "games": 53,
+              "bb": 0,
+              "rb": 0,
+              "diff": -840
+            },
+            {
+              "rack_no": "181",
+              "machine_name": "P シンエヴァンゲリオン レイ X④",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "182",
+              "machine_name": "P シンエヴァンゲリオン レイ X④",
+              "games": 196,
+              "bb": 1,
+              "rb": 0,
+              "diff": -1300
+            }
+          ]
+        },
+        {
+          "machine_name": "P新世紀エヴァンゲリオン15①2",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "178",
+              "machine_name": "P新世紀エヴァンゲリオン15①2",
+              "games": 242,
+              "bb": 4,
+              "rb": 0,
+              "diff": 3670
+            },
+            {
+              "rack_no": "180",
+              "machine_name": "P新世紀エヴァンゲリオン15①2",
+              "games": 10,
+              "bb": 0,
+              "rb": 0,
+              "diff": -210
+            }
+          ]
+        },
+        {
+          "machine_name": "PReゼロから始める異世界生活M08③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "186",
+              "machine_name": "PReゼロから始める異世界生活M08③",
+              "games": 602,
+              "bb": 0,
+              "rb": 0,
+              "diff": -9540
+            }
+          ]
+        },
+        {
+          "machine_name": "P 交響詩篇エウレカセブン SFPA③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "187",
+              "machine_name": "P 交響詩篇エウレカセブン SFPA③",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "P 牙狼11〜冴島大河〜XX MU③",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "188",
+              "machine_name": "P 牙狼11〜冴島大河〜XX MU③",
+              "games": 424,
+              "bb": 3,
+              "rb": 0,
+              "diff": 1150
+            }
+          ]
+        },
+        {
+          "machine_name": "P 野生の王国GO M2−K YT596C②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "200",
+              "machine_name": "P 野生の王国GO M2−K YT596C②",
+              "games": 59,
+              "bb": 0,
+              "rb": 0,
+              "diff": -1030
+            }
+          ]
+        },
+        {
+          "machine_name": "Pいくさの子戦極最強ドデカGRPJ②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "201",
+              "machine_name": "Pいくさの子戦極最強ドデカGRPJ②",
+              "games": 760,
+              "bb": 8,
+              "rb": 0,
+              "diff": -1220
+            }
+          ]
+        },
+        {
+          "machine_name": "P フィーバークィーンRUSH Y②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "202",
+              "machine_name": "P フィーバークィーンRUSH Y②",
+              "games": 39,
+              "bb": 0,
+              "rb": 0,
+              "diff": -520
+            }
+          ]
+        },
+        {
+          "machine_name": "P バイオハザード RE：2 L9YZ4②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "203",
+              "machine_name": "P バイオハザード RE：2 L9YZ4②",
+              "games": 106,
+              "bb": 0,
+              "rb": 0,
+              "diff": -1580
+            }
+          ]
+        },
+        {
+          "machine_name": "P ゾンビランドサガ SCPC②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "205",
+              "machine_name": "P ゾンビランドサガ SCPC②",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "P ベルセルク無双 N−Z②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "206",
+              "machine_name": "P ベルセルク無双 N−Z②",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "P うる星やつら2 N2−K②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "207",
+              "machine_name": "P うる星やつら2 N2−K②",
+              "games": 5,
+              "bb": 0,
+              "rb": 0,
+              "diff": -100
+            }
+          ]
+        },
+        {
+          "machine_name": "P F炎炎ノ消防隊 YR②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "208",
+              "machine_name": "P F炎炎ノ消防隊 YR②",
+              "games": 55,
+              "bb": 0,
+              "rb": 0,
+              "diff": -1050
+            }
+          ]
+        },
+        {
+          "machine_name": "P シン・エヴァンゲリオン MV②",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "210",
+              "machine_name": "P シン・エヴァンゲリオン MV②",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "e 源外伝 EHLG",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "211",
+              "machine_name": "e 源外伝 EHLG",
+              "games": 705,
+              "bb": 1,
+              "rb": 0,
+              "diff": -5580
+            }
+          ]
+        },
+        {
+          "machine_name": "e ゴッドイーター TRIPLE BURST MJ",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "212",
+              "machine_name": "e ゴッドイーター TRIPLE BURST MJ",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "e フィーバーもののがたり F",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "213",
+              "machine_name": "e フィーバーもののがたり F",
+              "games": 57,
+              "bb": 0,
+              "rb": 0,
+              "diff": -1060
+            },
+            {
+              "rack_no": "260",
+              "machine_name": "e フィーバーもののがたり F",
+              "games": 18,
+              "bb": 0,
+              "rb": 0,
+              "diff": -360
+            }
+          ]
+        },
+        {
+          "machine_name": "e ソードアート・オンライン K7",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "215",
+              "machine_name": "e ソードアート・オンライン K7",
+              "games": 1342,
+              "bb": 32,
+              "rb": 0,
+              "diff": 26860
+            }
+          ]
+        },
+        {
+          "machine_name": "e F戦姫絶唱シンフォギア4 F",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "216",
+              "machine_name": "e F戦姫絶唱シンフォギア4 F",
+              "games": 37,
+              "bb": 1,
+              "rb": 0,
+              "diff": 930
+            }
+          ]
+        },
+        {
+          "machine_name": "e マギアレコード KRJ1",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "217",
+              "machine_name": "e マギアレコード KRJ1",
+              "games": 70,
+              "bb": 1,
+              "rb": 0,
+              "diff": -210
+            }
+          ]
+        },
+        {
+          "machine_name": "e 吉宗 極乗3000ver． L06",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "218",
+              "machine_name": "e 吉宗 極乗3000ver． L06",
+              "games": 39,
+              "bb": 1,
+              "rb": 0,
+              "diff": -180
+            }
+          ]
+        },
+        {
+          "machine_name": "e 蒼天の拳 羅龍 SREN",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "220",
+              "machine_name": "e 蒼天の拳 羅龍 SREN",
+              "games": 35,
+              "bb": 0,
+              "rb": 0,
+              "diff": -600
+            }
+          ]
+        },
+        {
+          "machine_name": "e F炎炎ノ消防隊2 MS",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "221",
+              "machine_name": "e F炎炎ノ消防隊2 MS",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "e Fマクロスフロンティア5 V",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "222",
+              "machine_name": "e Fマクロスフロンティア5 V",
+              "games": 34,
+              "bb": 0,
+              "rb": 0,
+              "diff": -530
+            }
+          ]
+        },
+        {
+          "machine_name": "eReゼロから始める異世界2M13③",
+          "count": 3,
+          "stands": [
+            {
+              "rack_no": "223",
+              "machine_name": "eReゼロから始める異世界2M13③",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "225",
+              "machine_name": "eReゼロから始める異世界2M13③",
+              "games": 11,
+              "bb": 0,
+              "rb": 0,
+              "diff": -170
+            },
+            {
+              "rack_no": "226",
+              "machine_name": "eReゼロから始める異世界2M13③",
+              "games": 79,
+              "bb": 0,
+              "rb": 0,
+              "diff": -1400
+            }
+          ]
+        },
+        {
+          "machine_name": "e 東京リベンジャーズ GFEC③",
+          "count": 3,
+          "stands": [
+            {
+              "rack_no": "227",
+              "machine_name": "e 東京リベンジャーズ GFEC③",
+              "games": 239,
+              "bb": 0,
+              "rb": 0,
+              "diff": -3950
+            },
+            {
+              "rack_no": "228",
+              "machine_name": "e 東京リベンジャーズ GFEC③",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "230",
+              "machine_name": "e 東京リベンジャーズ GFEC③",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "e リコリス・リコイル M3",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "231",
+              "machine_name": "e リコリス・リコイル M3",
+              "games": 913,
+              "bb": 2,
+              "rb": 0,
+              "diff": -9070
+            }
+          ]
+        },
+        {
+          "machine_name": "e東京喰種超デカ超一撃 ver．MW",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "232",
+              "machine_name": "e東京喰種超デカ超一撃 ver．MW",
+              "games": 3174,
               "bb": 14,
-              "rb": 3,
-              "diff": 616
+              "rb": 0,
+              "diff": -16260
             }
           ]
         },
         {
-          "machine_name": "S ファンキージャグラー2 KT",
+          "machine_name": "e 東京喰種 W②",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "233",
+              "machine_name": "e 東京喰種 W②",
+              "games": 1794,
+              "bb": 7,
+              "rb": 0,
+              "diff": -19490
+            },
+            {
+              "rack_no": "235",
+              "machine_name": "e 東京喰種 W②",
+              "games": 371,
+              "bb": 2,
+              "rb": 0,
+              "diff": -5430
+            }
+          ]
+        },
+        {
+          "machine_name": "e 新世紀エヴァンゲリオン R",
           "count": 1,
           "stands": [
             {
-              "rack_no": "520",
-              "machine_name": "S ファンキージャグラー2 KT",
-              "games": 949,
-              "bb": 3,
-              "rb": 3,
-              "diff": -124
+              "rack_no": "236",
+              "machine_name": "e 新世紀エヴァンゲリオン R",
+              "games": 162,
+              "bb": 0,
+              "rb": 0,
+              "diff": -3140
+            }
+          ]
+        },
+        {
+          "machine_name": "e Fからくりサーカス2 魔王 R",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "237",
+              "machine_name": "e Fからくりサーカス2 魔王 R",
+              "games": 122,
+              "bb": 0,
+              "rb": 0,
+              "diff": -2480
+            }
+          ]
+        },
+        {
+          "machine_name": "e フィーバーブルーロック MZ③",
+          "count": 3,
+          "stands": [
+            {
+              "rack_no": "238",
+              "machine_name": "e フィーバーブルーロック MZ③",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "250",
+              "machine_name": "e フィーバーブルーロック MZ③",
+              "games": 338,
+              "bb": 0,
+              "rb": 0,
+              "diff": -5180
+            },
+            {
+              "rack_no": "251",
+              "machine_name": "e フィーバーブルーロック MZ③",
+              "games": 78,
+              "bb": 1,
+              "rb": 0,
+              "diff": 100
+            }
+          ]
+        },
+        {
+          "machine_name": "eF機動戦士ガンダムユニコーン2R",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "252",
+              "machine_name": "eF機動戦士ガンダムユニコーン2R",
+              "games": 1377,
+              "bb": 2,
+              "rb": 0,
+              "diff": -13110
+            }
+          ]
+        },
+        {
+          "machine_name": "e 黄門ちゃま寿限無 LLサイズ HC3",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "253",
+              "machine_name": "e 黄門ちゃま寿限無 LLサイズ HC3",
+              "games": 228,
+              "bb": 1,
+              "rb": 0,
+              "diff": -1400
+            }
+          ]
+        },
+        {
+          "machine_name": "e 仮面ライダー電王 K2",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "255",
+              "machine_name": "e 仮面ライダー電王 K2",
+              "games": 37,
+              "bb": 0,
+              "rb": 0,
+              "diff": -410
+            }
+          ]
+        },
+        {
+          "machine_name": "e 閃乱カグラ LTM−JF",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "256",
+              "machine_name": "e 閃乱カグラ LTM−JF",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "e 範馬刃牙 XAM2",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "257",
+              "machine_name": "e 範馬刃牙 XAM2",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "e シャーマンキング MH",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "258",
+              "machine_name": "e シャーマンキング MH",
+              "games": 113,
+              "bb": 0,
+              "rb": 0,
+              "diff": -2000
+            }
+          ]
+        },
+        {
+          "machine_name": "e 冴えない彼女の育てかた LX04",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "261",
+              "machine_name": "e 冴えない彼女の育てかた LX04",
+              "games": 61,
+              "bb": 0,
+              "rb": 0,
+              "diff": -1110
+            }
+          ]
+        },
+        {
+          "machine_name": "e 牙狼神速神撃3000LT RB",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "262",
+              "machine_name": "e 牙狼神速神撃3000LT RB",
+              "games": 52,
+              "bb": 0,
+              "rb": 0,
+              "diff": -870
             }
           ]
         }
