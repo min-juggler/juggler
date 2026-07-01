@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-07-01T14:47:51.690Z",
+  "fetched_at": "2026-07-01T14:48:08.428Z",
   "stores": {
     "yonezawa": {
       "name": "アイランド米沢店",
@@ -1872,10 +1872,10 @@
             {
               "rack_no": "1",
               "machine_name": "P リング 呪いの7日間2 FWA①",
-              "games": 112,
-              "bb": 0,
+              "games": 230,
+              "bb": 1,
               "rb": 0,
-              "diff": -1640
+              "diff": -3170
             }
           ]
         },
@@ -1886,10 +1886,10 @@
             {
               "rack_no": "2",
               "machine_name": "PAシン・エヴァンゲリオン Y①",
-              "games": 203,
-              "bb": 0,
+              "games": 310,
+              "bb": 2,
               "rb": 0,
-              "diff": -4130
+              "diff": -3230
             }
           ]
         },
@@ -1914,10 +1914,10 @@
             {
               "rack_no": "5",
               "machine_name": "P 江頭2：50inナナシーLT V3①",
-              "games": 199,
+              "games": 102,
               "bb": 1,
               "rb": 0,
-              "diff": -3620
+              "diff": -1410
             }
           ]
         },
@@ -1928,10 +1928,10 @@
             {
               "rack_no": "6",
               "machine_name": "P魔法少女まどかマギカ A5①",
-              "games": 171,
-              "bb": 3,
+              "games": 647,
+              "bb": 4,
               "rb": 0,
-              "diff": -500
+              "diff": -7640
             }
           ]
         },
@@ -1942,10 +1942,10 @@
             {
               "rack_no": "7",
               "machine_name": "PF戦姫絶唱シンフォギア2 YR①",
-              "games": 349,
-              "bb": 17,
+              "games": 103,
+              "bb": 2,
               "rb": 0,
-              "diff": 1290
+              "diff": -1230
             }
           ]
         },
@@ -1956,10 +1956,10 @@
             {
               "rack_no": "8",
               "machine_name": "PAダンまち2 YG①",
-              "games": 56,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -620
+              "diff": 0
             }
           ]
         },
@@ -1970,10 +1970,10 @@
             {
               "rack_no": "10",
               "machine_name": "P ギルティクラウン2 SB①",
-              "games": 158,
-              "bb": 4,
+              "games": 79,
+              "bb": 0,
               "rb": 0,
-              "diff": 450
+              "diff": -1400
             }
           ]
         },
@@ -1984,18 +1984,18 @@
             {
               "rack_no": "11",
               "machine_name": "P とある科学の超電磁砲 RVZ①2",
-              "games": 0,
+              "games": 35,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": -530
             },
             {
               "rack_no": "32",
               "machine_name": "P とある科学の超電磁砲 RVZ①2",
-              "games": 105,
-              "bb": 13,
+              "games": 0,
+              "bb": 0,
               "rb": 0,
-              "diff": 1470
+              "diff": 0
             }
           ]
         },
@@ -2006,10 +2006,10 @@
             {
               "rack_no": "12",
               "machine_name": "P F機動戦士ガンダムSEED YZ②",
-              "games": 18,
-              "bb": 0,
+              "games": 238,
+              "bb": 6,
               "rb": 0,
-              "diff": -350
+              "diff": 4310
             }
           ]
         },
@@ -2020,18 +2020,18 @@
             {
               "rack_no": "13",
               "machine_name": "PA機動戦士ガンダムユニコーンbY②",
-              "games": 299,
-              "bb": 25,
+              "games": 193,
+              "bb": 2,
               "rb": 0,
-              "diff": 5360
+              "diff": -2420
             },
             {
               "rack_no": "15",
               "machine_name": "PA機動戦士ガンダムユニコーンbY②",
-              "games": 569,
-              "bb": 12,
+              "games": 90,
+              "bb": 2,
               "rb": 0,
-              "diff": -3940
+              "diff": -700
             }
           ]
         },
@@ -2042,10 +2042,10 @@
             {
               "rack_no": "16",
               "machine_name": "PA 花の慶次 裂 99ver． N3−VY②",
-              "games": 926,
-              "bb": 8,
+              "games": 517,
+              "bb": 12,
               "rb": 0,
-              "diff": -3380
+              "diff": 4330
             }
           ]
         },
@@ -2056,10 +2056,10 @@
             {
               "rack_no": "17",
               "machine_name": "PA 真・花の慶次2 漆黒 N2−X1②",
-              "games": 599,
-              "bb": 3,
+              "games": 591,
+              "bb": 5,
               "rb": 0,
-              "diff": -6130
+              "diff": -2130
             }
           ]
         },
@@ -2070,18 +2070,18 @@
             {
               "rack_no": "18",
               "machine_name": "P 真・花の慶次3 N−K②2",
-              "games": 228,
-              "bb": 2,
+              "games": 1201,
+              "bb": 18,
               "rb": 0,
-              "diff": -1740
+              "diff": 2010
             },
             {
               "rack_no": "20",
               "machine_name": "P 真・花の慶次3 N−K②2",
-              "games": 736,
-              "bb": 7,
+              "games": 0,
+              "bb": 0,
               "rb": 0,
-              "diff": -4820
+              "diff": 0
             }
           ]
         },
@@ -2092,10 +2092,10 @@
             {
               "rack_no": "21",
               "machine_name": "PA 花の慶次〜傾奇一転 87verN②",
-              "games": 1612,
-              "bb": 15,
+              "games": 2914,
+              "bb": 41,
               "rb": 0,
-              "diff": -4330
+              "diff": 6580
             }
           ]
         },
@@ -2106,10 +2106,10 @@
             {
               "rack_no": "22",
               "machine_name": "PAコマコマ倶楽部坂本冬美LOOP1②",
-              "games": 487,
-              "bb": 13,
+              "games": 413,
+              "bb": 10,
               "rb": 0,
-              "diff": 2300
+              "diff": -90
             }
           ]
         },
@@ -2120,26 +2120,26 @@
             {
               "rack_no": "23",
               "machine_name": "PAコマコマ倶楽部坂本冬美 V1②3",
-              "games": 624,
-              "bb": 10,
+              "games": 125,
+              "bb": 2,
               "rb": 0,
-              "diff": 770
+              "diff": -400
             },
             {
               "rack_no": "25",
               "machine_name": "PAコマコマ倶楽部坂本冬美 V1②3",
-              "games": 27,
-              "bb": 0,
+              "games": 323,
+              "bb": 4,
               "rb": 0,
-              "diff": -440
+              "diff": -1750
             },
             {
               "rack_no": "26",
               "machine_name": "PAコマコマ倶楽部坂本冬美 V1②3",
-              "games": 31,
-              "bb": 0,
+              "games": 207,
+              "bb": 1,
               "rb": 0,
-              "diff": -390
+              "diff": -2870
             }
           ]
         },
@@ -2150,18 +2150,18 @@
             {
               "rack_no": "27",
               "machine_name": "P 激デジ 真・牙狼 RBY4②2",
-              "games": 194,
-              "bb": 1,
+              "games": 0,
+              "bb": 0,
               "rb": 0,
-              "diff": -2750
+              "diff": 0
             },
             {
               "rack_no": "28",
               "machine_name": "P 激デジ 真・牙狼 RBY4②2",
-              "games": 7,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -170
+              "diff": 0
             }
           ]
         },
@@ -2172,18 +2172,18 @@
             {
               "rack_no": "30",
               "machine_name": "PA 激デジ牙狼月虹ノ旅人 RL②2",
-              "games": 726,
-              "bb": 12,
+              "games": 334,
+              "bb": 4,
               "rb": 0,
-              "diff": 1290
+              "diff": -520
             },
             {
               "rack_no": "31",
               "machine_name": "PA 激デジ牙狼月虹ノ旅人 RL②2",
-              "games": 594,
-              "bb": 11,
+              "games": 103,
+              "bb": 1,
               "rb": 0,
-              "diff": 2480
+              "diff": -730
             }
           ]
         },
@@ -2194,10 +2194,10 @@
             {
               "rack_no": "33",
               "machine_name": "Pモンスターハンターライズ GSPB①",
-              "games": 303,
-              "bb": 12,
+              "games": 72,
+              "bb": 7,
               "rb": 0,
-              "diff": -930
+              "diff": 1110
             }
           ]
         },
@@ -2208,10 +2208,10 @@
             {
               "rack_no": "35",
               "machine_name": "P Fからくりサーカス Y①",
-              "games": 155,
-              "bb": 4,
+              "games": 163,
+              "bb": 0,
               "rb": 0,
-              "diff": 1840
+              "diff": -2510
             }
           ]
         },
@@ -2222,10 +2222,10 @@
             {
               "rack_no": "36",
               "machine_name": "PA Fからくりサーカス2 YF①",
-              "games": 349,
-              "bb": 3,
+              "games": 89,
+              "bb": 1,
               "rb": 0,
-              "diff": -1670
+              "diff": -720
             }
           ]
         },
@@ -2236,10 +2236,10 @@
             {
               "rack_no": "37",
               "machine_name": "P F戦姫絶唱シンフォギア3 YR①",
-              "games": 41,
-              "bb": 17,
+              "games": 0,
+              "bb": 0,
               "rb": 0,
-              "diff": 3530
+              "diff": 0
             }
           ]
         },
@@ -2250,10 +2250,10 @@
             {
               "rack_no": "38",
               "machine_name": "PA Fうたわれるもの LT Y①",
-              "games": 0,
-              "bb": 0,
+              "games": 143,
+              "bb": 15,
               "rb": 0,
-              "diff": 0
+              "diff": 7250
             }
           ]
         },
@@ -2278,10 +2278,10 @@
             {
               "rack_no": "51",
               "machine_name": "P 地獄少女 Light FVB①",
-              "games": 0,
+              "games": 44,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": -880
             }
           ]
         },
@@ -2292,10 +2292,10 @@
             {
               "rack_no": "52",
               "machine_name": "P ルパン三世 THE FIRST 9YS1Y①",
-              "games": 1275,
-              "bb": 16,
+              "games": 1192,
+              "bb": 11,
               "rb": 0,
-              "diff": 80
+              "diff": -3740
             }
           ]
         },
@@ -2306,10 +2306,10 @@
             {
               "rack_no": "53",
               "machine_name": "PハネモノファミリースタジアムMD",
-              "games": 75,
-              "bb": 1,
+              "games": 58,
+              "bb": 0,
               "rb": 0,
-              "diff": -1260
+              "diff": -1340
             }
           ]
         },
@@ -2320,10 +2320,10 @@
             {
               "rack_no": "55",
               "machine_name": "P はねものファインプレー H3③",
-              "games": 36,
-              "bb": 0,
+              "games": 77,
+              "bb": 2,
               "rb": 0,
-              "diff": -1070
+              "diff": -230
             }
           ]
         },
@@ -2334,10 +2334,10 @@
             {
               "rack_no": "56",
               "machine_name": "P 北斗の拳 強敵 LT SSPA③",
-              "games": 625,
-              "bb": 10,
+              "games": 3,
+              "bb": 0,
               "rb": 0,
-              "diff": -3260
+              "diff": -180
             }
           ]
         },
@@ -2348,10 +2348,10 @@
             {
               "rack_no": "57",
               "machine_name": "P 宇宙戦艦ヤマト2202 bH③",
-              "games": 1071,
-              "bb": 29,
+              "games": 0,
+              "bb": 0,
               "rb": 0,
-              "diff": 6260
+              "diff": 0
             }
           ]
         },
@@ -2362,10 +2362,10 @@
             {
               "rack_no": "58",
               "machine_name": "PA F戦姫絶唱シンフォギア4 AR③",
-              "games": 62,
-              "bb": 1,
+              "games": 154,
+              "bb": 4,
               "rb": 0,
-              "diff": -700
+              "diff": 650
             }
           ]
         },
@@ -2376,10 +2376,10 @@
             {
               "rack_no": "60",
               "machine_name": "PA Fかぐや様は告らせたい YG③",
-              "games": 1419,
-              "bb": 38,
+              "games": 160,
+              "bb": 7,
               "rb": 0,
-              "diff": 16630
+              "diff": 2740
             }
           ]
         },
@@ -2390,10 +2390,10 @@
             {
               "rack_no": "61",
               "machine_name": "P 真・黄門ちゃま 甘デジ 9YU1Y③",
-              "games": 494,
-              "bb": 6,
+              "games": 33,
+              "bb": 0,
               "rb": 0,
-              "diff": -780
+              "diff": -580
             }
           ]
         },
@@ -2404,10 +2404,10 @@
             {
               "rack_no": "62",
               "machine_name": "P ビッグドリーム3 77ver． SSPH③",
-              "games": 182,
-              "bb": 2,
+              "games": 40,
+              "bb": 1,
               "rb": 0,
-              "diff": -2070
+              "diff": -660
             }
           ]
         },
@@ -2418,10 +2418,10 @@
             {
               "rack_no": "63",
               "machine_name": "P 戦国乙女5 甘デジ 9AU1③2",
-              "games": 419,
-              "bb": 1,
+              "games": 398,
+              "bb": 7,
               "rb": 0,
-              "diff": -6300
+              "diff": 430
             }
           ]
         },
@@ -2432,10 +2432,10 @@
             {
               "rack_no": "65",
               "machine_name": "P 009 RE：CYBORG N3−K④",
-              "games": 113,
+              "games": 291,
               "bb": 3,
               "rb": 0,
-              "diff": 580
+              "diff": -1040
             }
           ]
         },
@@ -2446,10 +2446,10 @@
             {
               "rack_no": "66",
               "machine_name": "PA フィーバー真花月2 夜桜 Y④",
-              "games": 1102,
-              "bb": 12,
+              "games": 279,
+              "bb": 9,
               "rb": 0,
-              "diff": -2120
+              "diff": 1830
             }
           ]
         },
@@ -2460,18 +2460,18 @@
             {
               "rack_no": "67",
               "machine_name": "P 花満開 月光 GCA④2",
-              "games": 0,
-              "bb": 0,
+              "games": 480,
+              "bb": 8,
               "rb": 0,
-              "diff": 0
+              "diff": -2090
             },
             {
               "rack_no": "81",
               "machine_name": "P 花満開 月光 GCA④2",
-              "games": 25,
-              "bb": 0,
+              "games": 112,
+              "bb": 3,
               "rb": 0,
-              "diff": -400
+              "diff": 10
             }
           ]
         },
@@ -2482,34 +2482,34 @@
             {
               "rack_no": "68",
               "machine_name": "PA フィーバーパワフル R④4",
-              "games": 271,
-              "bb": 0,
+              "games": 539,
+              "bb": 25,
               "rb": 0,
-              "diff": -4460
+              "diff": 4790
             },
             {
               "rack_no": "70",
               "machine_name": "PA フィーバーパワフル R④4",
-              "games": 39,
-              "bb": 0,
+              "games": 819,
+              "bb": 19,
               "rb": 0,
-              "diff": -750
+              "diff": 2620
             },
             {
               "rack_no": "78",
               "machine_name": "PA フィーバーパワフル R④4",
-              "games": 235,
-              "bb": 3,
+              "games": 505,
+              "bb": 11,
               "rb": 0,
-              "diff": -410
+              "diff": 1440
             },
             {
               "rack_no": "80",
               "machine_name": "PA フィーバーパワフル R④4",
-              "games": 258,
-              "bb": 2,
+              "games": 1500,
+              "bb": 16,
               "rb": 0,
-              "diff": -2620
+              "diff": 4300
             }
           ]
         },
@@ -2520,26 +2520,26 @@
             {
               "rack_no": "71",
               "machine_name": "PA フィーバークィーンⅡ YS④3",
-              "games": 393,
-              "bb": 3,
+              "games": 261,
+              "bb": 0,
               "rb": 0,
-              "diff": -1890
+              "diff": -3900
             },
             {
               "rack_no": "72",
               "machine_name": "PA フィーバークィーンⅡ YS④3",
-              "games": 276,
+              "games": 161,
               "bb": 2,
               "rb": 0,
-              "diff": -2370
+              "diff": -990
             },
             {
               "rack_no": "76",
               "machine_name": "PA フィーバークィーンⅡ YS④3",
-              "games": 536,
-              "bb": 10,
+              "games": 1560,
+              "bb": 20,
               "rb": 0,
-              "diff": -200
+              "diff": -6250
             }
           ]
         },
@@ -2550,18 +2550,18 @@
             {
               "rack_no": "73",
               "machine_name": "P フィーバークィーンⅡ V④2",
-              "games": 3,
+              "games": 186,
               "bb": 0,
               "rb": 0,
-              "diff": -70
+              "diff": -3170
             },
             {
               "rack_no": "75",
               "machine_name": "P フィーバークィーンⅡ V④2",
-              "games": 0,
-              "bb": 0,
+              "games": 337,
+              "bb": 6,
               "rb": 0,
-              "diff": 0
+              "diff": -280
             }
           ]
         },
@@ -2572,10 +2572,10 @@
             {
               "rack_no": "77",
               "machine_name": "P フィーバークィーンⅡ④",
-              "games": 186,
-              "bb": 7,
+              "games": 377,
+              "bb": 11,
               "rb": 0,
-              "diff": 1000
+              "diff": 1370
             }
           ]
         },
@@ -2586,10 +2586,10 @@
             {
               "rack_no": "82",
               "machine_name": "PA わんわんパラダイス AGBD④",
-              "games": 1094,
-              "bb": 19,
+              "games": 522,
+              "bb": 5,
               "rb": 0,
-              "diff": 300
+              "diff": -3730
             }
           ]
         },
@@ -2600,10 +2600,10 @@
             {
               "rack_no": "83",
               "machine_name": "PA 野生の王国Ⅵ N2④",
-              "games": 354,
-              "bb": 4,
+              "games": 0,
+              "bb": 0,
               "rb": 0,
-              "diff": -30
+              "diff": 0
             }
           ]
         },
@@ -2614,10 +2614,10 @@
             {
               "rack_no": "85",
               "machine_name": "P 超甘LT華牌RR AX5③",
-              "games": 5,
-              "bb": 0,
+              "games": 644,
+              "bb": 89,
               "rb": 0,
-              "diff": -120
+              "diff": 21390
             }
           ]
         },
@@ -2628,10 +2628,10 @@
             {
               "rack_no": "86",
               "machine_name": "PAリングバースデイ呪いの始FWC③",
-              "games": 275,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -4850
+              "diff": 0
             }
           ]
         },
@@ -2642,10 +2642,10 @@
             {
               "rack_no": "87",
               "machine_name": "P 戦国乙女 LEGEND BATTLE 9YU1Y③",
-              "games": 503,
-              "bb": 7,
+              "games": 495,
+              "bb": 5,
               "rb": 0,
-              "diff": -1930
+              "diff": -5260
             }
           ]
         },
@@ -2656,10 +2656,10 @@
             {
               "rack_no": "88",
               "machine_name": "P聖戦士ダンバイン2 SSPB③",
-              "games": 174,
-              "bb": 0,
+              "games": 68,
+              "bb": 2,
               "rb": 0,
-              "diff": -2870
+              "diff": -400
             }
           ]
         },
@@ -2670,10 +2670,10 @@
             {
               "rack_no": "100",
               "machine_name": "P Re：ゼロ 鬼がかり A03③",
-              "games": 1516,
-              "bb": 24,
+              "games": 287,
+              "bb": 5,
               "rb": 0,
-              "diff": 5930
+              "diff": -3110
             }
           ]
         },
@@ -2684,10 +2684,10 @@
             {
               "rack_no": "101",
               "machine_name": "PA 冬のソナタ MA1③",
-              "games": 615,
-              "bb": 9,
+              "games": 741,
+              "bb": 14,
               "rb": 0,
-              "diff": -4170
+              "diff": 2700
             }
           ]
         },
@@ -2698,10 +2698,10 @@
             {
               "rack_no": "102",
               "machine_name": "P 南国育ち デカパト 9AU2③",
-              "games": 92,
-              "bb": 0,
+              "games": 482,
+              "bb": 6,
               "rb": 0,
-              "diff": -1320
+              "diff": -300
             }
           ]
         },
@@ -2726,10 +2726,10 @@
             {
               "rack_no": "105",
               "machine_name": "PA シン・エヴァンゲリオン Y③",
-              "games": 671,
-              "bb": 8,
+              "games": 508,
+              "bb": 5,
               "rb": 0,
-              "diff": -2060
+              "diff": -2590
             }
           ]
         },
@@ -2740,10 +2740,10 @@
             {
               "rack_no": "106",
               "machine_name": "PA 大海物語5 アグネスARBC",
-              "games": 1044,
-              "bb": 18,
+              "games": 1023,
+              "bb": 10,
               "rb": 0,
-              "diff": 1850
+              "diff": -3350
             }
           ]
         },
@@ -2754,34 +2754,34 @@
             {
               "rack_no": "107",
               "machine_name": "PAスーパー海物語IN地中海2HLA④",
-              "games": 1022,
-              "bb": 19,
+              "games": 710,
+              "bb": 15,
               "rb": 0,
-              "diff": -1590
+              "diff": -310
             },
             {
               "rack_no": "108",
               "machine_name": "PAスーパー海物語IN地中海2HLA④",
-              "games": 198,
-              "bb": 3,
+              "games": 912,
+              "bb": 10,
               "rb": 0,
-              "diff": -920
+              "diff": -6060
             },
             {
               "rack_no": "155",
               "machine_name": "PAスーパー海物語IN地中海2HLA④",
-              "games": 2,
-              "bb": 0,
+              "games": 254,
+              "bb": 7,
               "rb": 0,
-              "diff": -90
+              "diff": 840
             },
             {
               "rack_no": "156",
               "machine_name": "PAスーパー海物語IN地中海2HLA④",
-              "games": 254,
-              "bb": 2,
+              "games": 359,
+              "bb": 5,
               "rb": 0,
-              "diff": -2470
+              "diff": -2060
             }
           ]
         },
@@ -2792,34 +2792,34 @@
             {
               "rack_no": "110",
               "machine_name": "PA 新海物語 AR BB④",
-              "games": 774,
-              "bb": 13,
+              "games": 1267,
+              "bb": 25,
               "rb": 0,
-              "diff": -2450
+              "diff": 2590
             },
             {
               "rack_no": "111",
               "machine_name": "PA 新海物語 AR BB④",
-              "games": 309,
+              "games": 659,
               "bb": 6,
               "rb": 0,
-              "diff": -730
+              "diff": -4470
             },
             {
               "rack_no": "152",
               "machine_name": "PA 新海物語 AR BB④",
-              "games": 315,
-              "bb": 2,
+              "games": 1806,
+              "bb": 30,
               "rb": 0,
-              "diff": -3150
+              "diff": 3840
             },
             {
               "rack_no": "153",
               "machine_name": "PA 新海物語 AR BB④",
-              "games": 879,
-              "bb": 9,
+              "games": 451,
+              "bb": 4,
               "rb": 0,
-              "diff": -4900
+              "diff": -3380
             }
           ]
         },
@@ -2830,42 +2830,42 @@
             {
               "rack_no": "112",
               "machine_name": "PA 海物語3R3 LBA⑤",
-              "games": 789,
-              "bb": 17,
+              "games": 652,
+              "bb": 4,
               "rb": 0,
-              "diff": 1510
+              "diff": -6790
             },
             {
               "rack_no": "113",
               "machine_name": "PA 海物語3R3 LBA⑤",
-              "games": 185,
-              "bb": 2,
+              "games": 611,
+              "bb": 14,
               "rb": 0,
-              "diff": -950
+              "diff": 580
             },
             {
               "rack_no": "115",
               "machine_name": "PA 海物語3R3 LBA⑤",
-              "games": 1042,
-              "bb": 18,
+              "games": 565,
+              "bb": 13,
               "rb": 0,
-              "diff": -720
+              "diff": 2260
             },
             {
               "rack_no": "150",
               "machine_name": "PA 海物語3R3 LBA⑤",
-              "games": 133,
-              "bb": 0,
+              "games": 2025,
+              "bb": 30,
               "rb": 0,
-              "diff": -1730
+              "diff": -4380
             },
             {
               "rack_no": "151",
               "machine_name": "PA 海物語3R3 LBA⑤",
-              "games": 295,
-              "bb": 2,
+              "games": 123,
+              "bb": 0,
               "rb": 0,
-              "diff": -2110
+              "diff": -1720
             }
           ]
         },
@@ -2876,18 +2876,18 @@
             {
               "rack_no": "116",
               "machine_name": "PA ギンギラパラダイス 夢幻 HBA②",
-              "games": 149,
-              "bb": 5,
+              "games": 1335,
+              "bb": 27,
               "rb": 0,
-              "diff": 1250
+              "diff": 5960
             },
             {
               "rack_no": "137",
               "machine_name": "PA ギンギラパラダイス 夢幻 HBA②",
-              "games": 783,
-              "bb": 24,
+              "games": 1078,
+              "bb": 20,
               "rb": 0,
-              "diff": 7840
+              "diff": -970
             }
           ]
         },
@@ -2898,26 +2898,26 @@
             {
               "rack_no": "117",
               "machine_name": "PAスーパー海物語IN沖縄6RBD③",
-              "games": 83,
-              "bb": 1,
+              "games": 624,
+              "bb": 10,
               "rb": 0,
-              "diff": -550
+              "diff": 100
             },
             {
               "rack_no": "118",
               "machine_name": "PAスーパー海物語IN沖縄6RBD③",
-              "games": 1390,
-              "bb": 16,
+              "games": 533,
+              "bb": 4,
               "rb": 0,
-              "diff": -4420
+              "diff": -4010
             },
             {
               "rack_no": "135",
               "machine_name": "PAスーパー海物語IN沖縄6RBD③",
-              "games": 976,
-              "bb": 23,
+              "games": 721,
+              "bb": 17,
               "rb": 0,
-              "diff": 8020
+              "diff": 4910
             }
           ]
         },
@@ -2928,34 +2928,34 @@
             {
               "rack_no": "120",
               "machine_name": "P大海物語4スペシャルBLACK SCA④",
-              "games": 39,
+              "games": 10,
               "bb": 0,
               "rb": 0,
-              "diff": -530
+              "diff": -250
             },
             {
               "rack_no": "121",
               "machine_name": "P大海物語4スペシャルBLACK SCA④",
-              "games": 143,
+              "games": 435,
               "bb": 1,
               "rb": 0,
-              "diff": -780
+              "diff": -4880
             },
             {
               "rack_no": "132",
               "machine_name": "P大海物語4スペシャルBLACK SCA④",
-              "games": 153,
-              "bb": 2,
+              "games": 235,
+              "bb": 0,
               "rb": 0,
-              "diff": 890
+              "diff": -3060
             },
             {
               "rack_no": "133",
               "machine_name": "P大海物語4スペシャルBLACK SCA④",
-              "games": 104,
-              "bb": 0,
+              "games": 429,
+              "bb": 2,
               "rb": 0,
-              "diff": -1270
+              "diff": -2540
             }
           ]
         },
@@ -2966,18 +2966,18 @@
             {
               "rack_no": "122",
               "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
-              "games": 56,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -820
+              "diff": 0
             },
             {
               "rack_no": "123",
               "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
-              "games": 33,
+              "games": 13,
               "bb": 0,
               "rb": 0,
-              "diff": -580
+              "diff": -80
             },
             {
               "rack_no": "125",
@@ -2990,13 +2990,29 @@
             {
               "rack_no": "126",
               "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
-              "games": 421,
-              "bb": 0,
+              "games": 928,
+              "bb": 3,
               "rb": 0,
-              "diff": -6020
+              "diff": -6430
             },
             {
               "rack_no": "127",
+              "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
+              "games": 28,
+              "bb": 0,
+              "rb": 0,
+              "diff": -360
+            },
+            {
+              "rack_no": "128",
+              "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
+              "games": 186,
+              "bb": 0,
+              "rb": 0,
+              "diff": -2570
+            },
+            {
+              "rack_no": "130",
               "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
               "games": 0,
               "bb": 0,
@@ -3004,28 +3020,12 @@
               "diff": 0
             },
             {
-              "rack_no": "128",
-              "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
-              "games": 757,
-              "bb": 6,
-              "rb": 0,
-              "diff": 950
-            },
-            {
-              "rack_no": "130",
-              "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
-              "games": 31,
-              "bb": 0,
-              "rb": 0,
-              "diff": -390
-            },
-            {
               "rack_no": "131",
               "machine_name": "P スーパー海物語IN沖縄6 LTP⑧",
-              "games": 373,
-              "bb": 2,
+              "games": 66,
+              "bb": 0,
               "rb": 0,
-              "diff": -350
+              "diff": -840
             }
           ]
         },
@@ -3036,10 +3036,10 @@
             {
               "rack_no": "136",
               "machine_name": "PA スーパー海物語 IN 沖縄5SBA",
-              "games": 331,
-              "bb": 7,
+              "games": 265,
+              "bb": 3,
               "rb": 0,
-              "diff": 920
+              "diff": -1360
             }
           ]
         },
@@ -3050,10 +3050,10 @@
             {
               "rack_no": "138",
               "machine_name": "PA 海物語3R2スペシャル MBA",
-              "games": 378,
-              "bb": 2,
+              "games": 267,
+              "bb": 13,
               "rb": 0,
-              "diff": -5270
+              "diff": 150
             }
           ]
         },
@@ -3064,10 +3064,10 @@
             {
               "rack_no": "157",
               "machine_name": "PA 元祖ギンギラパラダイス HBC",
-              "games": 0,
-              "bb": 0,
+              "games": 44,
+              "bb": 1,
               "rb": 0,
-              "diff": 0
+              "diff": -420
             }
           ]
         },
@@ -3078,10 +3078,10 @@
             {
               "rack_no": "158",
               "machine_name": "P 新世紀エヴァンゲリオン咆哮 Y②",
-              "games": 22,
-              "bb": 0,
+              "games": 231,
+              "bb": 1,
               "rb": 0,
-              "diff": -410
+              "diff": -2950
             }
           ]
         },
@@ -3092,10 +3092,10 @@
             {
               "rack_no": "160",
               "machine_name": "P ラブ嬢3 L2YR3②",
-              "games": 52,
-              "bb": 0,
+              "games": 331,
+              "bb": 3,
               "rb": 0,
-              "diff": -1050
+              "diff": -3990
             }
           ]
         },
@@ -3106,10 +3106,10 @@
             {
               "rack_no": "161",
               "machine_name": "P 咲Saki全国編テンパイHBB②",
-              "games": 174,
-              "bb": 28,
+              "games": 4,
+              "bb": 0,
               "rb": 0,
-              "diff": 2780
+              "diff": -180
             }
           ]
         },
@@ -3120,10 +3120,10 @@
             {
               "rack_no": "162",
               "machine_name": "P 天才バカボン LTH−JH②",
-              "games": 697,
+              "games": 23,
               "bb": 1,
               "rb": 0,
-              "diff": -10970
+              "diff": -180
             }
           ]
         },
@@ -3134,10 +3134,10 @@
             {
               "rack_no": "163",
               "machine_name": "P 攻殻機動隊SAC＿2045 LTH−TS②",
-              "games": 143,
-              "bb": 2,
+              "games": 10,
+              "bb": 0,
               "rb": 0,
-              "diff": 840
+              "diff": -180
             }
           ]
         },
@@ -3148,10 +3148,10 @@
             {
               "rack_no": "165",
               "machine_name": "P戦国乙女LEGEND BATTLE M2AZ1Y②",
-              "games": 150,
-              "bb": 4,
+              "games": 36,
+              "bb": 0,
               "rb": 0,
-              "diff": 1490
+              "diff": -530
             }
           ]
         },
@@ -3162,10 +3162,10 @@
             {
               "rack_no": "166",
               "machine_name": "P J−RUSH5 RSJ S②",
-              "games": 542,
-              "bb": 10,
+              "games": 706,
+              "bb": 3,
               "rb": 0,
-              "diff": 1710
+              "diff": -3000
             }
           ]
         },
@@ -3176,10 +3176,10 @@
             {
               "rack_no": "167",
               "machine_name": "P GO！GO！マリン 3000 HCD②",
-              "games": 367,
-              "bb": 0,
+              "games": 126,
+              "bb": 1,
               "rb": 0,
-              "diff": -6720
+              "diff": -1480
             }
           ]
         },
@@ -3190,10 +3190,10 @@
             {
               "rack_no": "168",
               "machine_name": "P リング 呪いの7日間3 JSG②",
-              "games": 0,
-              "bb": 0,
+              "games": 175,
+              "bb": 4,
               "rb": 0,
-              "diff": 0
+              "diff": 1170
             }
           ]
         },
@@ -3204,10 +3204,10 @@
             {
               "rack_no": "170",
               "machine_name": "P 貞子 FMD③",
-              "games": 333,
-              "bb": 3,
+              "games": 394,
+              "bb": 2,
               "rb": 0,
-              "diff": -2100
+              "diff": -2840
             }
           ]
         },
@@ -3218,10 +3218,10 @@
             {
               "rack_no": "171",
               "machine_name": "P ゴジラ対エヴァンゲリオン L③",
-              "games": 0,
-              "bb": 0,
+              "games": 332,
+              "bb": 1,
               "rb": 0,
-              "diff": 0
+              "diff": -4550
             }
           ]
         },
@@ -3235,7 +3235,7 @@
               "games": 7,
               "bb": 0,
               "rb": 0,
-              "diff": -1250
+              "diff": -1760
             }
           ]
         },
@@ -3246,34 +3246,34 @@
             {
               "rack_no": "173",
               "machine_name": "P 新世紀エヴァンゲリオン15 F④",
-              "games": 0,
+              "games": 59,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": -1160
             },
             {
               "rack_no": "175",
               "machine_name": "P 新世紀エヴァンゲリオン15 F④",
-              "games": 142,
+              "games": 62,
               "bb": 0,
               "rb": 0,
-              "diff": -2470
+              "diff": -1170
             },
             {
               "rack_no": "183",
               "machine_name": "P 新世紀エヴァンゲリオン15 F④",
-              "games": 0,
-              "bb": 0,
+              "games": 437,
+              "bb": 5,
               "rb": 0,
-              "diff": 0
+              "diff": 2690
             },
             {
               "rack_no": "185",
               "machine_name": "P 新世紀エヴァンゲリオン15 F④",
-              "games": 330,
-              "bb": 1,
+              "games": 54,
+              "bb": 0,
               "rb": 0,
-              "diff": -3510
+              "diff": -1230
             }
           ]
         },
@@ -3284,18 +3284,18 @@
             {
               "rack_no": "176",
               "machine_name": "P シンエヴァンゲリオン レイ X④",
-              "games": 342,
-              "bb": 2,
+              "games": 191,
+              "bb": 0,
               "rb": 0,
-              "diff": -2100
+              "diff": -3310
             },
             {
               "rack_no": "177",
               "machine_name": "P シンエヴァンゲリオン レイ X④",
-              "games": 53,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -840
+              "diff": 0
             },
             {
               "rack_no": "181",
@@ -3308,10 +3308,10 @@
             {
               "rack_no": "182",
               "machine_name": "P シンエヴァンゲリオン レイ X④",
-              "games": 196,
+              "games": 398,
               "bb": 1,
               "rb": 0,
-              "diff": -1300
+              "diff": -4500
             }
           ]
         },
@@ -3322,18 +3322,18 @@
             {
               "rack_no": "178",
               "machine_name": "P新世紀エヴァンゲリオン15①2",
-              "games": 242,
-              "bb": 4,
+              "games": 452,
+              "bb": 3,
               "rb": 0,
-              "diff": 3670
+              "diff": -640
             },
             {
               "rack_no": "180",
               "machine_name": "P新世紀エヴァンゲリオン15①2",
-              "games": 10,
+              "games": 75,
               "bb": 0,
               "rb": 0,
-              "diff": -210
+              "diff": -1410
             }
           ]
         },
@@ -3344,10 +3344,10 @@
             {
               "rack_no": "186",
               "machine_name": "PReゼロから始める異世界生活M08③",
-              "games": 602,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -9540
+              "diff": 0
             }
           ]
         },
@@ -3358,10 +3358,10 @@
             {
               "rack_no": "187",
               "machine_name": "P 交響詩篇エウレカセブン SFPA③",
-              "games": 0,
-              "bb": 0,
+              "games": 281,
+              "bb": 6,
               "rb": 0,
-              "diff": 0
+              "diff": 6090
             }
           ]
         },
@@ -3372,10 +3372,10 @@
             {
               "rack_no": "188",
               "machine_name": "P 牙狼11〜冴島大河〜XX MU③",
-              "games": 424,
-              "bb": 3,
+              "games": 124,
+              "bb": 0,
               "rb": 0,
-              "diff": 1150
+              "diff": -2290
             }
           ]
         },
@@ -3386,10 +3386,10 @@
             {
               "rack_no": "200",
               "machine_name": "P 野生の王国GO M2−K YT596C②",
-              "games": 59,
+              "games": 3,
               "bb": 0,
               "rb": 0,
-              "diff": -1030
+              "diff": -100
             }
           ]
         },
@@ -3400,10 +3400,10 @@
             {
               "rack_no": "201",
               "machine_name": "Pいくさの子戦極最強ドデカGRPJ②",
-              "games": 760,
-              "bb": 8,
+              "games": 641,
+              "bb": 2,
               "rb": 0,
-              "diff": -1220
+              "diff": -5400
             }
           ]
         },
@@ -3414,10 +3414,10 @@
             {
               "rack_no": "202",
               "machine_name": "P フィーバークィーンRUSH Y②",
-              "games": 39,
-              "bb": 0,
+              "games": 533,
+              "bb": 7,
               "rb": 0,
-              "diff": -520
+              "diff": -1670
             }
           ]
         },
@@ -3428,10 +3428,10 @@
             {
               "rack_no": "203",
               "machine_name": "P バイオハザード RE：2 L9YZ4②",
-              "games": 106,
-              "bb": 0,
+              "games": 112,
+              "bb": 1,
               "rb": 0,
-              "diff": -1580
+              "diff": -1490
             }
           ]
         },
@@ -3442,10 +3442,10 @@
             {
               "rack_no": "205",
               "machine_name": "P ゾンビランドサガ SCPC②",
-              "games": 0,
+              "games": 8,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": -170
             }
           ]
         },
@@ -3456,10 +3456,10 @@
             {
               "rack_no": "206",
               "machine_name": "P ベルセルク無双 N−Z②",
-              "games": 0,
+              "games": 20,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": -290
             }
           ]
         },
@@ -3470,10 +3470,10 @@
             {
               "rack_no": "207",
               "machine_name": "P うる星やつら2 N2−K②",
-              "games": 5,
+              "games": 78,
               "bb": 0,
               "rb": 0,
-              "diff": -100
+              "diff": -1230
             }
           ]
         },
@@ -3484,10 +3484,10 @@
             {
               "rack_no": "208",
               "machine_name": "P F炎炎ノ消防隊 YR②",
-              "games": 55,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -1050
+              "diff": 0
             }
           ]
         },
@@ -3498,10 +3498,10 @@
             {
               "rack_no": "210",
               "machine_name": "P シン・エヴァンゲリオン MV②",
-              "games": 0,
+              "games": 15,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": -360
             }
           ]
         },
@@ -3512,10 +3512,10 @@
             {
               "rack_no": "211",
               "machine_name": "e 源外伝 EHLG",
-              "games": 705,
-              "bb": 1,
+              "games": 0,
+              "bb": 0,
               "rb": 0,
-              "diff": -5580
+              "diff": 0
             }
           ]
         },
@@ -3540,18 +3540,18 @@
             {
               "rack_no": "213",
               "machine_name": "e フィーバーもののがたり F",
-              "games": 57,
-              "bb": 0,
+              "games": 90,
+              "bb": 2,
               "rb": 0,
-              "diff": -1060
+              "diff": -940
             },
             {
               "rack_no": "260",
               "machine_name": "e フィーバーもののがたり F",
-              "games": 18,
+              "games": 34,
               "bb": 0,
               "rb": 0,
-              "diff": -360
+              "diff": -530
             }
           ]
         },
@@ -3562,10 +3562,10 @@
             {
               "rack_no": "215",
               "machine_name": "e ソードアート・オンライン K7",
-              "games": 1342,
-              "bb": 32,
+              "games": 417,
+              "bb": 2,
               "rb": 0,
-              "diff": 26860
+              "diff": -3940
             }
           ]
         },
@@ -3576,10 +3576,10 @@
             {
               "rack_no": "216",
               "machine_name": "e F戦姫絶唱シンフォギア4 F",
-              "games": 37,
-              "bb": 1,
+              "games": 19,
+              "bb": 0,
               "rb": 0,
-              "diff": 930
+              "diff": -230
             }
           ]
         },
@@ -3590,10 +3590,10 @@
             {
               "rack_no": "217",
               "machine_name": "e マギアレコード KRJ1",
-              "games": 70,
-              "bb": 1,
+              "games": 20,
+              "bb": 0,
               "rb": 0,
-              "diff": -210
+              "diff": -350
             }
           ]
         },
@@ -3604,10 +3604,10 @@
             {
               "rack_no": "218",
               "machine_name": "e 吉宗 極乗3000ver． L06",
-              "games": 39,
-              "bb": 1,
+              "games": 0,
+              "bb": 0,
               "rb": 0,
-              "diff": -180
+              "diff": 0
             }
           ]
         },
@@ -3618,10 +3618,10 @@
             {
               "rack_no": "220",
               "machine_name": "e 蒼天の拳 羅龍 SREN",
-              "games": 35,
+              "games": 22,
               "bb": 0,
               "rb": 0,
-              "diff": -600
+              "diff": -530
             }
           ]
         },
@@ -3632,10 +3632,10 @@
             {
               "rack_no": "221",
               "machine_name": "e F炎炎ノ消防隊2 MS",
-              "games": 0,
+              "games": 122,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": -2290
             }
           ]
         },
@@ -3646,10 +3646,10 @@
             {
               "rack_no": "222",
               "machine_name": "e Fマクロスフロンティア5 V",
-              "games": 34,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -530
+              "diff": 0
             }
           ]
         },
@@ -3660,26 +3660,26 @@
             {
               "rack_no": "223",
               "machine_name": "eReゼロから始める異世界2M13③",
-              "games": 0,
-              "bb": 0,
+              "games": 365,
+              "bb": 3,
               "rb": 0,
-              "diff": 0
+              "diff": 70
             },
             {
               "rack_no": "225",
               "machine_name": "eReゼロから始める異世界2M13③",
-              "games": 11,
+              "games": 39,
               "bb": 0,
               "rb": 0,
-              "diff": -170
+              "diff": -580
             },
             {
               "rack_no": "226",
               "machine_name": "eReゼロから始める異世界2M13③",
-              "games": 79,
+              "games": 11,
               "bb": 0,
               "rb": 0,
-              "diff": -1400
+              "diff": -200
             }
           ]
         },
@@ -3690,10 +3690,10 @@
             {
               "rack_no": "227",
               "machine_name": "e 東京リベンジャーズ GFEC③",
-              "games": 239,
-              "bb": 0,
+              "games": 623,
+              "bb": 8,
               "rb": 0,
-              "diff": -3950
+              "diff": 4270
             },
             {
               "rack_no": "228",
@@ -3706,10 +3706,10 @@
             {
               "rack_no": "230",
               "machine_name": "e 東京リベンジャーズ GFEC③",
-              "games": 0,
+              "games": 124,
               "bb": 0,
               "rb": 0,
-              "diff": 0
+              "diff": -1800
             }
           ]
         },
@@ -3720,10 +3720,10 @@
             {
               "rack_no": "231",
               "machine_name": "e リコリス・リコイル M3",
-              "games": 913,
-              "bb": 2,
+              "games": 626,
+              "bb": 21,
               "rb": 0,
-              "diff": -9070
+              "diff": 7840
             }
           ]
         },
@@ -3734,10 +3734,10 @@
             {
               "rack_no": "232",
               "machine_name": "e東京喰種超デカ超一撃 ver．MW",
-              "games": 3174,
-              "bb": 14,
+              "games": 1673,
+              "bb": 24,
               "rb": 0,
-              "diff": -16260
+              "diff": 18520
             }
           ]
         },
@@ -3748,18 +3748,18 @@
             {
               "rack_no": "233",
               "machine_name": "e 東京喰種 W②",
-              "games": 1794,
-              "bb": 7,
+              "games": 425,
+              "bb": 1,
               "rb": 0,
-              "diff": -19490
+              "diff": -5520
             },
             {
               "rack_no": "235",
               "machine_name": "e 東京喰種 W②",
-              "games": 371,
-              "bb": 2,
+              "games": 603,
+              "bb": 9,
               "rb": 0,
-              "diff": -5430
+              "diff": 17970
             }
           ]
         },
@@ -3770,10 +3770,10 @@
             {
               "rack_no": "236",
               "machine_name": "e 新世紀エヴァンゲリオン R",
-              "games": 162,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -3140
+              "diff": 0
             }
           ]
         },
@@ -3784,10 +3784,10 @@
             {
               "rack_no": "237",
               "machine_name": "e Fからくりサーカス2 魔王 R",
-              "games": 122,
-              "bb": 0,
+              "games": 400,
+              "bb": 1,
               "rb": 0,
-              "diff": -2480
+              "diff": -6870
             }
           ]
         },
@@ -3806,18 +3806,18 @@
             {
               "rack_no": "250",
               "machine_name": "e フィーバーブルーロック MZ③",
-              "games": 338,
+              "games": 42,
               "bb": 0,
               "rb": 0,
-              "diff": -5180
+              "diff": -700
             },
             {
               "rack_no": "251",
               "machine_name": "e フィーバーブルーロック MZ③",
-              "games": 78,
-              "bb": 1,
+              "games": 121,
+              "bb": 0,
               "rb": 0,
-              "diff": 100
+              "diff": -1820
             }
           ]
         },
@@ -3828,10 +3828,10 @@
             {
               "rack_no": "252",
               "machine_name": "eF機動戦士ガンダムユニコーン2R",
-              "games": 1377,
-              "bb": 2,
+              "games": 7,
+              "bb": 0,
               "rb": 0,
-              "diff": -13110
+              "diff": -110
             }
           ]
         },
@@ -3842,10 +3842,10 @@
             {
               "rack_no": "253",
               "machine_name": "e 黄門ちゃま寿限無 LLサイズ HC3",
-              "games": 228,
-              "bb": 1,
+              "games": 0,
+              "bb": 0,
               "rb": 0,
-              "diff": -1400
+              "diff": 0
             }
           ]
         },
@@ -3856,10 +3856,10 @@
             {
               "rack_no": "255",
               "machine_name": "e 仮面ライダー電王 K2",
-              "games": 37,
-              "bb": 0,
+              "games": 378,
+              "bb": 3,
               "rb": 0,
-              "diff": -410
+              "diff": -1150
             }
           ]
         },
@@ -3870,10 +3870,10 @@
             {
               "rack_no": "256",
               "machine_name": "e 閃乱カグラ LTM−JF",
-              "games": 0,
-              "bb": 0,
+              "games": 114,
+              "bb": 1,
               "rb": 0,
-              "diff": 0
+              "diff": -1580
             }
           ]
         },
@@ -3884,10 +3884,10 @@
             {
               "rack_no": "257",
               "machine_name": "e 範馬刃牙 XAM2",
-              "games": 0,
-              "bb": 0,
+              "games": 41,
+              "bb": 12,
               "rb": 0,
-              "diff": 0
+              "diff": 16040
             }
           ]
         },
@@ -3898,10 +3898,10 @@
             {
               "rack_no": "258",
               "machine_name": "e シャーマンキング MH",
-              "games": 113,
+              "games": 91,
               "bb": 0,
               "rb": 0,
-              "diff": -2000
+              "diff": -1760
             }
           ]
         },
@@ -3912,7 +3912,7 @@
             {
               "rack_no": "261",
               "machine_name": "e 冴えない彼女の育てかた LX04",
-              "games": 61,
+              "games": 63,
               "bb": 0,
               "rb": 0,
               "diff": -1110
@@ -3926,10 +3926,10 @@
             {
               "rack_no": "262",
               "machine_name": "e 牙狼神速神撃3000LT RB",
-              "games": 52,
+              "games": 21,
               "bb": 0,
               "rb": 0,
-              "diff": -870
+              "diff": -350
             }
           ]
         }
