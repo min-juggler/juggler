@@ -493,13 +493,6 @@ try{
   });
   var result={name:sname,machines:[]};
   for(var[mn2,sts2]of Object.entries(mmap))result.machines.push({machine_name:mn2,count:sts2.length,stands:sts2});
-  // デバッグ: 最初のstand生データのキーを表示
-  if(allStands.length>0){
-    var fs=allStands[0];
-    var fsKeys=Object.keys(fs).join(',');
-    var fsVals=JSON.stringify(fs).slice(0,100);
-    setTimeout(()=>{bar.textContent='🔍 stand例: '+fsVals;},3000);
-  }
   bar.textContent='✅ '+allStands.length+'台(試行'+machineNames.length+'機種) GitHub送信中...';
   // iOSショートカットのタイムアウト回避: 送信前にcompletion()を呼ぶ
   // (ページは生きたままなので送信は裏で完走する)
