@@ -100,24 +100,35 @@ function jsonUnescape(s){
 // GitHub APIでファイルを読み書きするヘルパー
 // ※ Contents APIは1MB超のファイルでcontentが空になるため、その場合はraw URLから取得
 async function ghGet(path){
+  var sha=null,data=null;
   var r=await fetch('https://api.github.com/repos/'+R+'/contents/'+path,{headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json'}});
-  if(!r.ok)return{sha:null,data:null};
-  var j=await r.json();
-  var data=null;
-  try{
-    if(j.content){
-      var b64=j.content.replace(/\n/g,'');
-      var bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
-      data=JSON.parse(new TextDecoder('utf-8').decode(bytes));
-    }
-  }catch(e){data=null;}
-  if(data===null){ // 1MB超でcontentが空 → raw URLから取得
+  if(r.ok){
+    var j=await r.json();
+    sha=j.sha;
+    try{
+      if(j.content){
+        var b64=j.content.replace(/\n/g,'');
+        var bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+        data=JSON.parse(new TextDecoder('utf-8').decode(bytes));
+      }
+    }catch(e){data=null;}
+  }
+  // 1MB超だとContents APIは403でsha未取得 → ディレクトリ一覧からshaを取得
+  if(sha===null){
+    try{
+      var parts=path.split('/'),fname=parts.pop(),dir=parts.join('/');
+      var dr=await fetch('https://api.github.com/repos/'+R+'/contents/'+dir,{headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json'}});
+      if(dr.ok){var arr=await dr.json();if(Array.isArray(arr)){var f=arr.find(function(x){return x.name===fname;});if(f)sha=f.sha;}}
+    }catch(e){}
+  }
+  // contentが空(1MB超) → raw URLから本体を取得
+  if(data===null){
     try{
       var rr=await fetch('https://raw.githubusercontent.com/'+R+'/main/'+path+'?_='+Date.now(),{cache:'no-store'});
       if(rr.ok){var tx=await rr.text();if(tx)data=JSON.parse(tx);}
     }catch(e){}
   }
-  return{sha:j.sha,data:data};
+  return{sha:sha,data:data};
 }
 async function ghPut(path,sha,data,msg){
   var js=path.indexOf('history')>=0?JSON.stringify(data):JSON.stringify(data,null,2); // historyは圧縮
