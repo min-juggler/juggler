@@ -121,7 +121,22 @@ async function ghGet(path){
       if(dr.ok){var arr=await dr.json();if(Array.isArray(arr)){var f=arr.find(function(x){return x.name===fname;});if(f)sha=f.sha;}}
     }catch(e){}
   }
-  // contentが空(1MB超) → raw URLから本体を取得
+  // contentが空(1MB超) → git blobs APIでshaから本体を取得
+  // ※rawはCDNで最大5分キャッシュされ古いデータを返すため使わない（連続実行時の上書き事故の原因）
+  if(data===null&&sha){
+    try{
+      var br=await fetch('https://api.github.com/repos/'+R+'/git/blobs/'+sha,{headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json'}});
+      if(br.ok){
+        var bj=await br.json();
+        if(bj.content){
+          var bb=bj.content.replace(/\n/g,'');
+          var by=Uint8Array.from(atob(bb),c=>c.charCodeAt(0));
+          data=JSON.parse(new TextDecoder('utf-8').decode(by));
+        }
+      }
+    }catch(e){}
+  }
+  // 最終フォールバック: raw（キャッシュで古い可能性あり）
   if(data===null){
     try{
       var rr=await fetch('https://raw.githubusercontent.com/'+R+'/main/'+path+'?_='+Date.now(),{cache:'no-store'});
