@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-07-10T06:33:37.269Z",
+  "fetched_at": "2026-07-10T07:31:45.518Z",
   "stores": {
     "yonezawa": {
       "name": "アイランド米沢店",
@@ -1904,10 +1904,10 @@
             {
               "rack_no": "502",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 309,
-              "bb": 3,
-              "rb": 0,
-              "diff": 190
+              "games": 644,
+              "bb": 6,
+              "rb": 2,
+              "diff": 954
             },
             {
               "rack_no": "503",
@@ -1920,10 +1920,10 @@
             {
               "rack_no": "505",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 13,
+              "games": 39,
               "bb": 0,
               "rb": 0,
-              "diff": -20
+              "diff": -67
             },
             {
               "rack_no": "506",
@@ -1936,10 +1936,10 @@
             {
               "rack_no": "507",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 5,
+              "games": 66,
               "bb": 0,
               "rb": 0,
-              "diff": -6
+              "diff": -67
             },
             {
               "rack_no": "508",
@@ -1960,34 +1960,34 @@
             {
               "rack_no": "521",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 76,
+              "games": 111,
               "bb": 0,
               "rb": 0,
-              "diff": -61
+              "diff": -107
             },
             {
               "rack_no": "522",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 803,
+              "games": 824,
               "bb": 3,
               "rb": 5,
-              "diff": 259
+              "diff": 213
             },
             {
               "rack_no": "523",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 35,
+              "games": 55,
               "bb": 0,
               "rb": 0,
-              "diff": -48
+              "diff": -81
             },
             {
               "rack_no": "525",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 29,
-              "bb": 0,
+              "games": 219,
+              "bb": 2,
               "rb": 0,
-              "diff": -46
+              "diff": 256
             },
             {
               "rack_no": "526",
@@ -2000,10 +2000,10 @@
             {
               "rack_no": "527",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 606,
-              "bb": 7,
-              "rb": 1,
-              "diff": 1191
+              "games": 1251,
+              "bb": 8,
+              "rb": 4,
+              "diff": 864
             },
             {
               "rack_no": "528",
@@ -2024,18 +2024,18 @@
             {
               "rack_no": "531",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 273,
+              "games": 320,
               "bb": 1,
               "rb": 0,
-              "diff": -17
+              "diff": -64
             },
             {
               "rack_no": "532",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 667,
+              "games": 721,
               "bb": 1,
               "rb": 1,
-              "diff": -467
+              "diff": -537
             }
           ]
         },
@@ -2082,10 +2082,10 @@
             {
               "rack_no": "515",
               "machine_name": "SウルトラミラクルジャグラーKT④",
-              "games": 1438,
+              "games": 1565,
               "bb": 5,
               "rb": 3,
-              "diff": -254
+              "diff": -401
             },
             {
               "rack_no": "516",
@@ -2106,10 +2106,10 @@
             {
               "rack_no": "518",
               "machine_name": "SウルトラミラクルジャグラーKT④",
-              "games": 1901,
+              "games": 1990,
               "bb": 4,
               "rb": 4,
-              "diff": -1064
+              "diff": -1157
             }
           ]
         },
