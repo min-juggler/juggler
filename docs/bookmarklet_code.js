@@ -146,13 +146,17 @@ async function push(result,_sid,_sname){
   var msg='データ更新 '+new Date().toLocaleString('ja')+(__OFF?' (対象日:'+today+')':'');
 
   // ① stores.json（当日データ）を更新
-  bar.textContent='📡 stores.json 送信中...('+total+'台)';
-  var s1=await ghGet('docs/data/stores.json');
-  var cur=s1.data||{fetched_at:null,stores:{}};
-  if(!cur.stores)cur.stores={};
-  cur.fetched_at=new Date().toISOString();
-  cur.stores[_s]=result;
-  var ok1=await ghPut('docs/data/stores.json',s1.sha,cur,msg);
+  // ※過去日(__OFF!==0)の取得では「今日のスナップショット」を汚さないよう更新しない
+  var ok1=true;
+  if(!__OFF){
+    bar.textContent='📡 stores.json 送信中...('+total+'台)';
+    var s1=await ghGet('docs/data/stores.json');
+    var cur=s1.data||{fetched_at:null,stores:{}};
+    if(!cur.stores)cur.stores={};
+    cur.fetched_at=new Date().toISOString();
+    cur.stores[_s]=result;
+    ok1=await ghPut('docs/data/stores.json',s1.sha,cur,msg);
+  }
 
   // ② history.json（日別蓄積）に当日分を追記
   bar.textContent='📡 history.json 追記中...';
@@ -167,9 +171,10 @@ async function push(result,_sid,_sname){
   }
   var ok2=realStands>0?await ghPut('docs/data/history.json',s2.sha,hist,msg):true;
 
-  if(ok1&&ok2){bar.style.background='#2d6a4f';bar.textContent='✅ '+_n+' '+total+'台 送信完了！(履歴も保存)';}
-  else if(ok1){bar.style.background='#2d6a4f';bar.textContent='✅ '+_n+' '+total+'台 送信完了 (履歴保存失敗)';}
-  else{bar.style.background='#888';bar.textContent='⚠️ 送信失敗';}
+  var dlabel=__OFF?('['+today+'] '):'';
+  if(ok1&&ok2){bar.style.background='#2d6a4f';bar.textContent='✅ '+dlabel+_n+' '+total+'台 送信完了！(履歴も保存)';}
+  else if(ok1){bar.style.background='#2d6a4f';bar.textContent='✅ '+dlabel+_n+' '+total+'台 送信完了 (履歴保存失敗)';}
+  else{bar.style.background='#888';bar.textContent='⚠️ '+dlabel+'送信失敗';}
 }
 
 try{

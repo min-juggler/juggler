@@ -1309,6 +1309,22 @@ try{
 })();`;
 }
 
+// 1クリックで直近3日分（今日・昨日・一昨日）を取得。既存日は上書きなので重複しない＝穴埋め用。
+function buildInline3DayBookmarklet(token, repo, days = 3) {
+  return `(async function(){
+var T='${token}',R='${repo}';
+try{
+  var r=await fetch('https://raw.githubusercontent.com/'+R+'/main/docs/bookmarklet_code.js?_='+Date.now(),{cache:'no-store'});
+  if(!r.ok){alert('コード取得失敗 '+r.status);return;}
+  var code=(await r.text()).replace(/__TOKEN__/g,T).replace(/__REPO__/g,R);
+  for(var o=0;o>-${days};o--){
+    window.__JUG_DAYOFF__=o;
+    try{ await eval(code); }catch(e){ console.log('day',o,e); }
+  }
+}catch(e){alert('ローダーエラー: '+e.message);}
+})();`;
+}
+
 // ===== （旧）直接埋め込み版（参考のため残す） =====
 function _buildInlineBookmarkletOld(token, repo) {
   return `(async function(){
@@ -1458,18 +1474,19 @@ function buildBookmarklet() {
     return;
   }
 
+  // メイン: 1クリックで直近3日分を取得（穴埋め・自動リカバリ）
   const el = document.getElementById('bookmarklet-link');
   if (el) {
-    el.href = 'javascript:' + encodeURIComponent(buildInlineBookmarklet(token, repo, 0));
-    el.textContent = '🎰 ジャグラーデータ取得';
+    el.href = 'javascript:' + encodeURIComponent(buildInline3DayBookmarklet(token, repo, 3));
+    el.textContent = '🎰 データ取得（直近3日分）';
     el.style.background = '#e63946';
   }
 
-  // 昨日のデータ取得用（取り忘れた日のリカバリ）
+  // サブ: 今日だけを軽く取得（急ぎ・時短用）
   const elY = document.getElementById('bookmarklet-link-yesterday');
   if (elY) {
-    elY.href = 'javascript:' + encodeURIComponent(buildInlineBookmarklet(token, repo, -1));
-    elY.textContent = '📅 昨日のデータ取得';
+    elY.href = 'javascript:' + encodeURIComponent(buildInlineBookmarklet(token, repo, 0));
+    elY.textContent = '⚡ 今日だけ取得（時短）';
     elY.style.background = '#457b9d';
   }
 }

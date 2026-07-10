@@ -163,6 +163,19 @@ function wrapForShortcut(code, token, repo) {
     .replace(/\}\)\(\);\s*$/, '})().then(r=>completion("done")).catch(e=>completion("error:"+e.message));');
 }
 
+// iOS用: 1回の実行で直近N日分（今日・昨日・…）を取得するラッパー
+// ※スクリプト内部の completion('done') はローカルで無効化し、全日終了後に本物を呼ぶ
+function wrapForShortcut3Day(code, token, repo, days) {
+  const body = code
+    .replace(/__TOKEN__/g, token)
+    .replace(/__REPO__/g, repo)
+    .replace(/^\(async function\(\)\{/, 'async function __jugRun(){var completion=function(){};')
+    .replace(/\}\)\(\);\s*$/, '}');
+  return body +
+    '\nvar __realDone=(typeof completion==="function")?completion:function(){};' +
+    '(async function(){for(var o=0;o>-' + days + ';o--){window.__JUG_DAYOFF__=o;try{await __jugRun();}catch(e){}}__realDone("done");})();';
+}
+
 async function fetchScript(filename) {
   const r = await fetch(GITHUB_BASE + filename + '?_=' + Date.now(), {cache:'no-store'});
   return await r.text();
@@ -197,8 +210,8 @@ async function updateUI() {
     const teramoba = await fetchScript('bookmarklet_code.js');
     const dynamCode = await fetchScript('bookmarklet_dynam.js');
 
-    document.getElementById('code-yonezawa').textContent  = wrapForShortcut(teramoba, token, REPO);
-    document.getElementById('code-kaminoyama').textContent = wrapForShortcut(teramoba, token, REPO);
+    document.getElementById('code-yonezawa').textContent  = wrapForShortcut3Day(teramoba, token, REPO, 3);
+    document.getElementById('code-kaminoyama').textContent = wrapForShortcut3Day(teramoba, token, REPO, 3);
     document.getElementById('code-dynam').textContent     = wrapForShortcut(dynamCode, token, REPO);
     document.getElementById('code-dynam-tendo').textContent = wrapForShortcut(dynamCode, token, REPO);
   } catch(e) {
