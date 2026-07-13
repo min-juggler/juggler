@@ -339,6 +339,11 @@ try{
     '/n-api/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name=__MN__&target_date=__DATE__&disp=1',
     '/n-api/rack_info/machine_list?hall_id='+hid+'&kind_code='+urlKindCode+'&machine_name=__MN__&target_date=__DATE__&disp=2&place=&history_day=3',
   ];
+  // ベガス等でkind_codeが未指定(Zに落ちる)の場合に備え、21(1000円47枚スロット)も候補に追加
+  if(urlKindCode!=='21'){
+    mlUrlBases.push('/n-api/rack_info/machine_list?hall_id='+hid+'&kind_code=21&machine_name=__MN__&target_date=__DATE__&disp=1');
+    mlUrlBases.push('/n-api/rack_info/machine_list?hall_id='+hid+'&kind_code=21&machine_name=__MN__&target_date=__DATE__&disp=2&place=&history_day=3');
+  }
   // performanceエントリに実際のURLがあれば先頭に追加
   var mlPerfEntry=performance.getEntriesByType('resource').map(function(e){return e.name;}).find(function(u){return u.includes('machine_list');});
   if(mlPerfEntry){try{var mlU=new URL(mlPerfEntry);var bp=new URLSearchParams(mlU.search);bp.set('machine_name','__MN__');bp.set('target_date','__DATE__');mlUrlBases.unshift(mlU.pathname+'?'+bp.toString());}catch(e){}}
@@ -403,7 +408,7 @@ try{
   var allStands=[];
   var dbgOk=0,dbgDec=0,dbgSample='';
   var bulkDone=false;
-  for(var kc of [urlKindCode,'S','Z','P']){
+  for(var kc of [urlKindCode,'21','S','Z','P']){
     if(bulkDone)break;
     for(var dp of [1,2,3]){
       var bUrl='/n-api/rack_info/machine_list?hall_id='+hid+'&kind_code='+kc+'&machine_name=&target_date='+today+'&disp='+dp;
