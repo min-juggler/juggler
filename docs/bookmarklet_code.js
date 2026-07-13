@@ -73,7 +73,8 @@ var sid=(location.href.includes('vegasmobile')&&location.href.includes('hl-105')
 if(!sid){alert('店舗サイトで実行してください');return;}
 var sname={yonezawa:'アイランド米沢店',kaminoyama:'1円劇場上山店',vegas_yonezawa:'ベガスベガス米沢店'}[sid];
 // hall_idはページのpropsから自動検出される（下記propsHid）。ここは検出失敗時のフォールバック値。
-var hid={yonezawa:292,kaminoyama:1303,vegas_yonezawa:105}[sid];
+// ベガス米沢のテラモバ内部hall_id=435（hall_informations.hall_id）。propsからも自動検出される。
+var hid={yonezawa:292,kaminoyama:1303,vegas_yonezawa:435}[sid];
 // standlist_slotフォールバック用のURLパスセグメント（ベガスはテラモバ上のパスがhl-105）
 var pathSeg={yonezawa:'yonezawa',kaminoyama:'kaminoyama',vegas_yonezawa:'hl-105'}[sid];
 var bar=document.createElement('div');
@@ -231,7 +232,7 @@ try{
       var decoded=decodeDP(dpEl.getAttribute('data-page'));
       var props=JSON.parse(decoded).props||{};
       var data=props.data||{};
-      var propsHid=props.hall_id||props.hallId||data.hall_id;
+      var propsHid=props.hall_id||props.hallId||data.hall_id||(props.hall_informations&&props.hall_informations.hall_id);
       if(propsHid)hid=parseInt(propsHid);
       // dataの全配列フィールドをスキャン（ネスト含む）
       function scanForMachineNames(obj,depth){
@@ -291,7 +292,7 @@ try{
       var sp=JSON.parse(decodeDP(sm2[1])).props||{};
       if(sp.data&&sp.data.key){
         encKey=sp.data.key;encIv=sp.data.iv;
-        var propsHid2=sp.hall_id||sp.hallId||(sp.data&&sp.data.hall_id);
+        var propsHid2=sp.hall_id||sp.hallId||(sp.data&&sp.data.hall_id)||(sp.hall_informations&&sp.hall_informations.hall_id);
         if(propsHid2)hid=parseInt(propsHid2);
         break;
       } else {
