@@ -1279,6 +1279,7 @@ function loadDemoData() {
 const STORE_AUTH_URLS = [
   { name: 'アイランド米沢店',  url: 'https://island.pt.teramoba2.com/yonezawa/standlist_slot?kind_code=Z' },
   { name: '1円劇場上山店', url: 'https://island.pt.teramoba2.com/kaminoyama/standlist_slot?kind_code=Z' },
+  { name: 'ベガスベガス米沢店', url: 'https://vegasmobile.pt.teramoba2.com/hl-105/rack_info_kt?kind_code=21' },
   { name: 'ダイナム米沢店', url: 'https://www.dynam-data.jp/h/a725254/cgi-bin/nc-v13-001.php?cd_ps=2' },
   { name: 'ダイナム天童店', url: 'https://www.dynam-data.jp/h/a736724/cgi-bin/nc-v13-001.php?cd_ps=2' },
 ];

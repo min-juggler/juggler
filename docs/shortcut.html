@@ -99,6 +99,19 @@
 
   <div class="flow-arrow">↓</div>
 
+  <!-- ベガスベガス米沢 -->
+  <div class="store-card">
+    <h3>🏪 ベガスベガス米沢</h3>
+    <div class="step-desc" style="margin-bottom:8px">「<strong>URLを開く</strong>」アクション追加 → URLを貼り付け</div>
+    <div class="code-block" id="url-vegas">https://vegasmobile.pt.teramoba2.com/hl-105/rack_info_kt?kind_code=21</div>
+    <button class="btn btn-copy" onclick="copyText('url-vegas',this)">📋 URLをコピー</button>
+    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け</div>
+    <div class="code-block" id="code-vegas">⏳ 生成中...</div>
+    <button class="btn btn-copy" onclick="copyText('code-vegas',this)">📋 スクリプトをコピー</button>
+  </div>
+
+  <div class="flow-arrow">↓</div>
+
   <!-- ダイナム米沢 -->
   <div class="store-card">
     <h3>🏪 ダイナム米沢</h3>
@@ -212,10 +225,11 @@ async function updateUI() {
 
     document.getElementById('code-yonezawa').textContent  = wrapForShortcut3Day(teramoba, token, REPO, 3);
     document.getElementById('code-kaminoyama').textContent = wrapForShortcut3Day(teramoba, token, REPO, 3);
+    document.getElementById('code-vegas').textContent     = wrapForShortcut3Day(teramoba, token, REPO, 3);
     document.getElementById('code-dynam').textContent     = wrapForShortcut(dynamCode, token, REPO);
     document.getElementById('code-dynam-tendo').textContent = wrapForShortcut(dynamCode, token, REPO);
   } catch(e) {
-    ['yonezawa','kaminoyama','dynam','dynam-tendo'].forEach(id => {
+    ['yonezawa','kaminoyama','vegas','dynam','dynam-tendo'].forEach(id => {
       document.getElementById('code-' + id).textContent = '❌ 生成失敗: ' + e.message;
     });
   }
