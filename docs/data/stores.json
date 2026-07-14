@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-07-13T21:50:58.483Z",
+  "fetched_at": "2026-07-14T11:06:35.972Z",
   "stores": {
     "yonezawa": {
       "name": "アイランド米沢店",
@@ -3148,6 +3148,1775 @@
               "total_bonus": 0,
               "combined_prob": 0,
               "combined_only": true
+            }
+          ]
+        }
+      ]
+    },
+    "vegas_yonezawa": {
+      "name": "ベガスベガス米沢店",
+      "machines": [
+        {
+          "machine_name": "⑳L ｽﾏｽﾛ北斗の拳 転生の章2 MW",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "451",
+              "machine_name": "⑳L ｽﾏｽﾛ北斗の拳 転生の章2 MW",
+              "games": 1716,
+              "bb": 15,
+              "rb": 4,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L ﾊﾟﾁｽﾛ北斗の拳AD XR",
+          "count": 5,
+          "stands": [
+            {
+              "rack_no": "452",
+              "machine_name": "⑳L ﾊﾟﾁｽﾛ北斗の拳AD XR",
+              "games": 23,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "453",
+              "machine_name": "⑳L ﾊﾟﾁｽﾛ北斗の拳AD XR",
+              "games": 79,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "454",
+              "machine_name": "⑳L ﾊﾟﾁｽﾛ北斗の拳AD XR",
+              "games": 1292,
+              "bb": 2,
+              "rb": 2,
+              "diff": 0
+            },
+            {
+              "rack_no": "455",
+              "machine_name": "⑳L ﾊﾟﾁｽﾛ北斗の拳AD XR",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "456",
+              "machine_name": "⑳L ﾊﾟﾁｽﾛ北斗の拳AD XR",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L ｽﾏｽﾛ東京ﾘﾍﾞﾝｼﾞｬｰｽﾞ ZF",
+          "count": 3,
+          "stands": [
+            {
+              "rack_no": "457",
+              "machine_name": "⑳L ｽﾏｽﾛ東京ﾘﾍﾞﾝｼﾞｬｰｽﾞ ZF",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "458",
+              "machine_name": "⑳L ｽﾏｽﾛ東京ﾘﾍﾞﾝｼﾞｬｰｽﾞ ZF",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "459",
+              "machine_name": "⑳L ｽﾏｽﾛ東京ﾘﾍﾞﾝｼﾞｬｰｽﾞ ZF",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Lかぐや様は告らせたいjA",
+          "count": 3,
+          "stands": [
+            {
+              "rack_no": "460",
+              "machine_name": "⑳Lかぐや様は告らせたいjA",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "461",
+              "machine_name": "⑳Lかぐや様は告らせたいjA",
+              "games": 554,
+              "bb": 5,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "462",
+              "machine_name": "⑳Lかぐや様は告らせたいjA",
+              "games": 411,
+              "bb": 5,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳LからくりｻｰｶｽG",
+          "count": 6,
+          "stands": [
+            {
+              "rack_no": "463",
+              "machine_name": "⑳LからくりｻｰｶｽG",
+              "games": 64,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "464",
+              "machine_name": "⑳LからくりｻｰｶｽG",
+              "games": 63,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "465",
+              "machine_name": "⑳LからくりｻｰｶｽG",
+              "games": 89,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "466",
+              "machine_name": "⑳LからくりｻｰｶｽG",
+              "games": 134,
+              "bb": 2,
+              "rb": 1,
+              "diff": 0
+            },
+            {
+              "rack_no": "467",
+              "machine_name": "⑳LからくりｻｰｶｽG",
+              "games": 48,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "468",
+              "machine_name": "⑳LからくりｻｰｶｽG",
+              "games": 1320,
+              "bb": 5,
+              "rb": 2,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L戦国乙女4S3",
+          "count": 3,
+          "stands": [
+            {
+              "rack_no": "469",
+              "machine_name": "⑳L戦国乙女4S3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "470",
+              "machine_name": "⑳L戦国乙女4S3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "471",
+              "machine_name": "⑳L戦国乙女4S3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L新鬼武者3SA",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "472",
+              "machine_name": "⑳L新鬼武者3SA",
+              "games": 160,
+              "bb": 1,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "473",
+              "machine_name": "⑳L新鬼武者3SA",
+              "games": 351,
+              "bb": 1,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳LﾊﾟﾁｽﾛｺﾞｯﾄﾞｲｰﾀｰﾘｻﾞﾚｸｼｮﾝSLED",
+          "count": 3,
+          "stands": [
+            {
+              "rack_no": "474",
+              "machine_name": "⑳LﾊﾟﾁｽﾛｺﾞｯﾄﾞｲｰﾀｰﾘｻﾞﾚｸｼｮﾝSLED",
+              "games": 133,
+              "bb": 1,
+              "rb": 1,
+              "diff": 0
+            },
+            {
+              "rack_no": "475",
+              "machine_name": "⑳LﾊﾟﾁｽﾛｺﾞｯﾄﾞｲｰﾀｰﾘｻﾞﾚｸｼｮﾝSLED",
+              "games": 53,
+              "bb": 1,
+              "rb": 1,
+              "diff": 0
+            },
+            {
+              "rack_no": "476",
+              "machine_name": "⑳LﾊﾟﾁｽﾛｺﾞｯﾄﾞｲｰﾀｰﾘｻﾞﾚｸｼｮﾝSLED",
+              "games": 142,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Lﾓﾝｷｰﾀｰﾝ5CE",
+          "count": 4,
+          "stands": [
+            {
+              "rack_no": "477",
+              "machine_name": "⑳Lﾓﾝｷｰﾀｰﾝ5CE",
+              "games": 117,
+              "bb": 4,
+              "rb": 1,
+              "diff": 0
+            },
+            {
+              "rack_no": "478",
+              "machine_name": "⑳Lﾓﾝｷｰﾀｰﾝ5CE",
+              "games": 208,
+              "bb": 1,
+              "rb": 1,
+              "diff": 0
+            },
+            {
+              "rack_no": "479",
+              "machine_name": "⑳Lﾓﾝｷｰﾀｰﾝ5CE",
+              "games": 116,
+              "bb": 1,
+              "rb": 1,
+              "diff": 0
+            },
+            {
+              "rack_no": "480",
+              "machine_name": "⑳Lﾓﾝｷｰﾀｰﾝ5CE",
+              "games": 183,
+              "bb": 8,
+              "rb": 1,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L東京喰種CT",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "481",
+              "machine_name": "⑳L東京喰種CT",
+              "games": 929,
+              "bb": 7,
+              "rb": 5,
+              "diff": 0
+            },
+            {
+              "rack_no": "482",
+              "machine_name": "⑳L東京喰種CT",
+              "games": 991,
+              "bb": 3,
+              "rb": 3,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L銭形5L2",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "483",
+              "machine_name": "⑳L銭形5L2",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L七つの魔剣が支配するPU",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "484",
+              "machine_name": "⑳L七つの魔剣が支配するPU",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L 甲鉄城のｶﾊﾞﾈﾘ 海門決戦 XX",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "485",
+              "machine_name": "⑳L 甲鉄城のｶﾊﾞﾈﾘ 海門決戦 XX",
+              "games": 1135,
+              "bb": 15,
+              "rb": 4,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L革命機ｳﾞｧﾙｳﾞﾚｲｳﾞ2jF",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "486",
+              "machine_name": "⑳L革命機ｳﾞｧﾙｳﾞﾚｲｳﾞ2jF",
+              "games": 558,
+              "bb": 1,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Lとある科学の超電磁砲2FV",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "487",
+              "machine_name": "⑳Lとある科学の超電磁砲2FV",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L戦姫絶唱ｼﾝﾌｫｷﾞｱ 正義の歌jA",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "488",
+              "machine_name": "⑳L戦姫絶唱ｼﾝﾌｫｷﾞｱ 正義の歌jA",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L/ﾖｼﾑﾈS/SC2",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "489",
+              "machine_name": "⑳L/ﾖｼﾑﾈS/SC2",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "490",
+              "machine_name": "⑳L/ﾖｼﾑﾈS/SC2",
+              "games": 408,
+              "bb": 0,
+              "rb": 1,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L 防振り FN",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "491",
+              "machine_name": "⑳L 防振り FN",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "492",
+              "machine_name": "⑳L 防振り FN",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L/ﾊﾞｼﾞﾘｽｸ絆2~天膳~/ZN",
+          "count": 3,
+          "stands": [
+            {
+              "rack_no": "493",
+              "machine_name": "⑳L/ﾊﾞｼﾞﾘｽｸ絆2~天膳~/ZN",
+              "games": 117,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "494",
+              "machine_name": "⑳L/ﾊﾞｼﾞﾘｽｸ絆2~天膳~/ZN",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "495",
+              "machine_name": "⑳L/ﾊﾞｼﾞﾘｽｸ絆2~天膳~/ZN",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L炎炎ﾉ消防隊jG",
+          "count": 3,
+          "stands": [
+            {
+              "rack_no": "496",
+              "machine_name": "⑳L炎炎ﾉ消防隊jG",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "497",
+              "machine_name": "⑳L炎炎ﾉ消防隊jG",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "498",
+              "machine_name": "⑳L炎炎ﾉ消防隊jG",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Lﾊﾞｲｵﾊｻﾞｰﾄﾞ5ZE",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "499",
+              "machine_name": "⑳Lﾊﾞｲｵﾊｻﾞｰﾄﾞ5ZE",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "500",
+              "machine_name": "⑳Lﾊﾞｲｵﾊｻﾞｰﾄﾞ5ZE",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Lｽﾛｯﾄ ｿﾞﾝﾋﾞﾗﾝﾄﾞｻｶﾞA1",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "501",
+              "machine_name": "⑳Lｽﾛｯﾄ ｿﾞﾝﾋﾞﾗﾝﾄﾞｻｶﾞA1",
+              "games": 137,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "502",
+              "machine_name": "⑳Lｽﾛｯﾄ ｿﾞﾝﾋﾞﾗﾝﾄﾞｻｶﾞA1",
+              "games": 145,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳LｱｽﾞｰﾙﾚｰﾝTHE ANIMATION KN",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "503",
+              "machine_name": "⑳LｱｽﾞｰﾙﾚｰﾝTHE ANIMATION KN",
+              "games": 193,
+              "bb": 7,
+              "rb": 1,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳LﾓﾝｽﾀｰﾊﾝﾀｰﾗｲｽﾞXA",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "504",
+              "machine_name": "⑳LﾓﾝｽﾀｰﾊﾝﾀｰﾗｲｽﾞXA",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳LｽｰﾊﾟｰﾌﾞﾗｯｸｼﾞｬｯｸSLDC",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "505",
+              "machine_name": "⑳LｽｰﾊﾟｰﾌﾞﾗｯｸｼﾞｬｯｸSLDC",
+              "games": 141,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Lありふれた職業で世界最強jA",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "506",
+              "machine_name": "⑳Lありふれた職業で世界最強jA",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L範馬刃牙L5",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "507",
+              "machine_name": "⑳L範馬刃牙L5",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L戦国乙女5L8",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "508",
+              "machine_name": "⑳L戦国乙女5L8",
+              "games": 1455,
+              "bb": 6,
+              "rb": 1,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳LToLOVEるﾀﾞｰｸﾈｽS8",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "509",
+              "machine_name": "⑳LToLOVEるﾀﾞｰｸﾈｽS8",
+              "games": 48,
+              "bb": 1,
+              "rb": 1,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Lからくりｻｰｶｽ2jG",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "510",
+              "machine_name": "⑳Lからくりｻｰｶｽ2jG",
+              "games": 1978,
+              "bb": 23,
+              "rb": 6,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳S炎炎ﾉ消防隊jS",
+          "count": 4,
+          "stands": [
+            {
+              "rack_no": "511",
+              "machine_name": "⑳S炎炎ﾉ消防隊jS",
+              "games": 227,
+              "bb": 0,
+              "rb": 1,
+              "diff": 0
+            },
+            {
+              "rack_no": "512",
+              "machine_name": "⑳S炎炎ﾉ消防隊jS",
+              "games": 115,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "513",
+              "machine_name": "⑳S炎炎ﾉ消防隊jS",
+              "games": 4,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "514",
+              "machine_name": "⑳S炎炎ﾉ消防隊jS",
+              "games": 108,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳S押忍!番長ZERO PC1",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "515",
+              "machine_name": "⑳S押忍!番長ZERO PC1",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "536",
+              "machine_name": "⑳S押忍!番長ZERO PC1",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳S新鬼武者2 ZC",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "516",
+              "machine_name": "⑳S新鬼武者2 ZC",
+              "games": 199,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "517",
+              "machine_name": "⑳S新鬼武者2 ZC",
+              "games": 33,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L聖闘士星矢海皇覚醒ED",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "518",
+              "machine_name": "⑳L聖闘士星矢海皇覚醒ED",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Lﾏｼﾞｶﾙﾊﾛｳｨﾝ8FE",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "519",
+              "machine_name": "⑳Lﾏｼﾞｶﾙﾊﾛｳｨﾝ8FE",
+              "games": 1774,
+              "bb": 10,
+              "rb": 22,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Lﾗﾌﾞ嬢3M4",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "520",
+              "machine_name": "⑳Lﾗﾌﾞ嬢3M4",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L押忍!番長4 A3",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "521",
+              "machine_name": "⑳L押忍!番長4 A3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L/ｷﾞﾙﾃｨｸﾗｳﾝ2/XF",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "522",
+              "machine_name": "⑳L/ｷﾞﾙﾃｨｸﾗｳﾝ2/XF",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L麻雀格闘倶楽部覚醒KM",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "523",
+              "machine_name": "⑳L麻雀格闘倶楽部覚醒KM",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Lﾃﾞﾋﾞﾙﾒｲｸﾗｲ5ST XA",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "524",
+              "machine_name": "⑳Lﾃﾞﾋﾞﾙﾒｲｸﾗｲ5ST XA",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Lｺﾞｼﾞﾗ対ｴｳﾞｧﾝｹﾞﾘｵﾝjA",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "525",
+              "machine_name": "⑳Lｺﾞｼﾞﾗ対ｴｳﾞｧﾝｹﾞﾘｵﾝjA",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳LB/ｸﾚｱの秘宝伝ﾎﾞｰﾅｽﾄﾘｶﾞｰVER.",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "526",
+              "machine_name": "⑳LB/ｸﾚｱの秘宝伝ﾎﾞｰﾅｽﾄﾘｶﾞｰVER.",
+              "games": 2327,
+              "bb": 13,
+              "rb": 8,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳LﾈｵﾌﾟﾗﾈｯﾄSLED",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "527",
+              "machine_name": "⑳LﾈｵﾌﾟﾗﾈｯﾄSLED",
+              "games": 1014,
+              "bb": 3,
+              "rb": 3,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Lﾄﾞﾙｱｰｶﾞの塔ZA",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "528",
+              "machine_name": "⑳Lﾄﾞﾙｱｰｶﾞの塔ZA",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳LBｴｳﾞｧﾝｹﾞﾘｵﾝsR",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "529",
+              "machine_name": "⑳LBｴｳﾞｧﾝｹﾞﾘｵﾝsR",
+              "games": 377,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L/SHAMANKING/SS",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "530",
+              "machine_name": "⑳L/SHAMANKING/SS",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L咲-Saki-頂上決戦YR",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "531",
+              "machine_name": "⑳L咲-Saki-頂上決戦YR",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Lﾊﾟﾁｽﾛ真･一騎当千V",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "532",
+              "machine_name": "⑳Lﾊﾟﾁｽﾛ真･一騎当千V",
+              "games": 490,
+              "bb": 8,
+              "rb": 2,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳SｸﾞﾗﾝﾍﾞﾙﾑZXZ",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "533",
+              "machine_name": "⑳SｸﾞﾗﾝﾍﾞﾙﾑZXZ",
+              "games": 540,
+              "bb": 2,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳SﾊﾞｲｵﾊｻﾞｰﾄﾞRE:2 XB",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "534",
+              "machine_name": "⑳SﾊﾞｲｵﾊｻﾞｰﾄﾞRE:2 XB",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Sﾊﾟﾁｽﾛ頭文字D XR",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "535",
+              "machine_name": "⑳Sﾊﾟﾁｽﾛ頭文字D XR",
+              "games": 74,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Sﾊﾟﾁｽﾛ甲鉄城のｶﾊﾞﾈﾘZR",
+          "count": 4,
+          "stands": [
+            {
+              "rack_no": "537",
+              "machine_name": "⑳Sﾊﾟﾁｽﾛ甲鉄城のｶﾊﾞﾈﾘZR",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "538",
+              "machine_name": "⑳Sﾊﾟﾁｽﾛ甲鉄城のｶﾊﾞﾈﾘZR",
+              "games": 113,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "539",
+              "machine_name": "⑳Sﾊﾟﾁｽﾛ甲鉄城のｶﾊﾞﾈﾘZR",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "540",
+              "machine_name": "⑳Sﾊﾟﾁｽﾛ甲鉄城のｶﾊﾞﾈﾘZR",
+              "games": 124,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳SﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰV III EA",
+          "count": 4,
+          "stands": [
+            {
+              "rack_no": "541",
+              "machine_name": "⑳SﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰV III EA",
+              "games": 515,
+              "bb": 2,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "542",
+              "machine_name": "⑳SﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰV III EA",
+              "games": 1891,
+              "bb": 8,
+              "rb": 5,
+              "diff": 0
+            },
+            {
+              "rack_no": "543",
+              "machine_name": "⑳SﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰV III EA",
+              "games": 628,
+              "bb": 3,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "544",
+              "machine_name": "⑳SﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰV III EA",
+              "games": 1003,
+              "bb": 3,
+              "rb": 2,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳SﾆｭｰﾊﾟﾙｻｰSP4SLE8",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "545",
+              "machine_name": "⑳SﾆｭｰﾊﾟﾙｻｰSP4SLE8",
+              "games": 880,
+              "bb": 2,
+              "rb": 4,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Sうまい棒M7",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "546",
+              "machine_name": "⑳Sうまい棒M7",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳S ﾃﾞｨｽｸｱｯﾌﾟ2 ZF",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "547",
+              "machine_name": "⑳S ﾃﾞｨｽｸｱｯﾌﾟ2 ZF",
+              "games": 996,
+              "bb": 1,
+              "rb": 4,
+              "diff": 0
+            },
+            {
+              "rack_no": "548",
+              "machine_name": "⑳S ﾃﾞｨｽｸｱｯﾌﾟ2 ZF",
+              "games": 1311,
+              "bb": 5,
+              "rb": 1,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳S/ｻﾝﾀﾞｰVﾗｲﾄﾆﾝｸﾞ/TH",
+          "count": 3,
+          "stands": [
+            {
+              "rack_no": "549",
+              "machine_name": "⑳S/ｻﾝﾀﾞｰVﾗｲﾄﾆﾝｸﾞ/TH",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "550",
+              "machine_name": "⑳S/ｻﾝﾀﾞｰVﾗｲﾄﾆﾝｸﾞ/TH",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "551",
+              "machine_name": "⑳S/ｻﾝﾀﾞｰVﾗｲﾄﾆﾝｸﾞ/TH",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳S/ｸﾗﾝｷｰｸﾚｽﾄ/CR",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "552",
+              "machine_name": "⑳S/ｸﾗﾝｷｰｸﾚｽﾄ/CR",
+              "games": 475,
+              "bb": 0,
+              "rb": 1,
+              "diff": 0
+            },
+            {
+              "rack_no": "553",
+              "machine_name": "⑳S/ｸﾗﾝｷｰｸﾚｽﾄ/CR",
+              "games": 639,
+              "bb": 5,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳S ｴｳﾚｶｾﾌﾞﾝHIEVO XS",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "554",
+              "machine_name": "⑳S ｴｳﾚｶｾﾌﾞﾝHIEVO XS",
+              "games": 332,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "555",
+              "machine_name": "⑳S ｴｳﾚｶｾﾌﾞﾝHIEVO XS",
+              "games": 184,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳S/新ﾊﾅﾋﾞR/HA",
+          "count": 6,
+          "stands": [
+            {
+              "rack_no": "556",
+              "machine_name": "⑳S/新ﾊﾅﾋﾞR/HA",
+              "games": 1184,
+              "bb": 5,
+              "rb": 4,
+              "diff": 0
+            },
+            {
+              "rack_no": "557",
+              "machine_name": "⑳S/新ﾊﾅﾋﾞR/HA",
+              "games": 36,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "558",
+              "machine_name": "⑳S/新ﾊﾅﾋﾞR/HA",
+              "games": 225,
+              "bb": 0,
+              "rb": 1,
+              "diff": 0
+            },
+            {
+              "rack_no": "559",
+              "machine_name": "⑳S/新ﾊﾅﾋﾞR/HA",
+              "games": 79,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "560",
+              "machine_name": "⑳S/新ﾊﾅﾋﾞR/HA",
+              "games": 445,
+              "bb": 2,
+              "rb": 1,
+              "diff": 0
+            },
+            {
+              "rack_no": "561",
+              "machine_name": "⑳S/新ﾊﾅﾋﾞR/HA",
+              "games": 41,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳S/ﾊﾞｰｻｽﾘｳﾞｧｲｽﾞ/HS",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "562",
+              "machine_name": "⑳S/ﾊﾞｰｻｽﾘｳﾞｧｲｽﾞ/HS",
+              "games": 921,
+              "bb": 1,
+              "rb": 2,
+              "diff": 0
+            },
+            {
+              "rack_no": "563",
+              "machine_name": "⑳S/ﾊﾞｰｻｽﾘｳﾞｧｲｽﾞ/HS",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳SﾊｲﾊﾟｰﾗｯｼｭSLC8",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "564",
+              "machine_name": "⑳SﾊｲﾊﾟｰﾗｯｼｭSLC8",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳S/ﾆｭｰｹﾞｯﾀｰﾏｳｽ/CG",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "565",
+              "machine_name": "⑳S/ﾆｭｰｹﾞｯﾀｰﾏｳｽ/CG",
+              "games": 2047,
+              "bb": 9,
+              "rb": 12,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳S/ﾜｰﾄﾞｵﾌﾞﾗｲﾂⅡ/WF",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "566",
+              "machine_name": "⑳S/ﾜｰﾄﾞｵﾌﾞﾗｲﾂⅡ/WF",
+              "games": 2286,
+              "bb": 12,
+              "rb": 5,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Sﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
+          "count": 4,
+          "stands": [
+            {
+              "rack_no": "567",
+              "machine_name": "⑳Sﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
+              "games": 222,
+              "bb": 1,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "568",
+              "machine_name": "⑳Sﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
+              "games": 3528,
+              "bb": 10,
+              "rb": 8,
+              "diff": 0
+            },
+            {
+              "rack_no": "569",
+              "machine_name": "⑳Sﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
+              "games": 979,
+              "bb": 3,
+              "rb": 1,
+              "diff": 0
+            },
+            {
+              "rack_no": "570",
+              "machine_name": "⑳Sﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
+              "games": 1078,
+              "bb": 5,
+              "rb": 2,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Sｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3KA",
+          "count": 6,
+          "stands": [
+            {
+              "rack_no": "571",
+              "machine_name": "⑳Sｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3KA",
+              "games": 2371,
+              "bb": 7,
+              "rb": 4,
+              "diff": 0
+            },
+            {
+              "rack_no": "572",
+              "machine_name": "⑳Sｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3KA",
+              "games": 326,
+              "bb": 1,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "573",
+              "machine_name": "⑳Sｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3KA",
+              "games": 1314,
+              "bb": 2,
+              "rb": 2,
+              "diff": 0
+            },
+            {
+              "rack_no": "574",
+              "machine_name": "⑳Sｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3KA",
+              "games": 1962,
+              "bb": 5,
+              "rb": 7,
+              "diff": 0
+            },
+            {
+              "rack_no": "575",
+              "machine_name": "⑳Sｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3KA",
+              "games": 817,
+              "bb": 4,
+              "rb": 2,
+              "diff": 0
+            },
+            {
+              "rack_no": "576",
+              "machine_name": "⑳Sｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3KA",
+              "games": 739,
+              "bb": 6,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳SｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS-KH",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "577",
+              "machine_name": "⑳SｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS-KH",
+              "games": 1484,
+              "bb": 6,
+              "rb": 6,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+          "count": 18,
+          "stands": [
+            {
+              "rack_no": "578",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 972,
+              "bb": 9,
+              "rb": 3,
+              "diff": 0
+            },
+            {
+              "rack_no": "579",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 1049,
+              "bb": 5,
+              "rb": 1,
+              "diff": 0
+            },
+            {
+              "rack_no": "580",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 1621,
+              "bb": 8,
+              "rb": 6,
+              "diff": 0
+            },
+            {
+              "rack_no": "581",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 719,
+              "bb": 4,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "582",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 635,
+              "bb": 1,
+              "rb": 3,
+              "diff": 0
+            },
+            {
+              "rack_no": "583",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 1388,
+              "bb": 7,
+              "rb": 3,
+              "diff": 0
+            },
+            {
+              "rack_no": "584",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 2398,
+              "bb": 10,
+              "rb": 6,
+              "diff": 0
+            },
+            {
+              "rack_no": "585",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 373,
+              "bb": 1,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "586",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 1544,
+              "bb": 5,
+              "rb": 6,
+              "diff": 0
+            },
+            {
+              "rack_no": "587",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 1380,
+              "bb": 8,
+              "rb": 6,
+              "diff": 0
+            },
+            {
+              "rack_no": "588",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 345,
+              "bb": 2,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "589",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 13,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "590",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 1203,
+              "bb": 10,
+              "rb": 6,
+              "diff": 0
+            },
+            {
+              "rack_no": "591",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 380,
+              "bb": 1,
+              "rb": 3,
+              "diff": 0
+            },
+            {
+              "rack_no": "592",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 413,
+              "bb": 1,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "593",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 286,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "594",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 140,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "595",
+              "machine_name": "⑳SｱｲﾑｼﾞｬｸﾞﾗｰEX-TP",
+              "games": 296,
+              "bb": 2,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳SﾏｲｼﾞｬｸﾞﾗｰⅤKD",
+          "count": 5,
+          "stands": [
+            {
+              "rack_no": "596",
+              "machine_name": "⑳SﾏｲｼﾞｬｸﾞﾗｰⅤKD",
+              "games": 1428,
+              "bb": 5,
+              "rb": 4,
+              "diff": 0
+            },
+            {
+              "rack_no": "597",
+              "machine_name": "⑳SﾏｲｼﾞｬｸﾞﾗｰⅤKD",
+              "games": 4241,
+              "bb": 17,
+              "rb": 12,
+              "diff": 0
+            },
+            {
+              "rack_no": "598",
+              "machine_name": "⑳SﾏｲｼﾞｬｸﾞﾗｰⅤKD",
+              "games": 243,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "599",
+              "machine_name": "⑳SﾏｲｼﾞｬｸﾞﾗｰⅤKD",
+              "games": 2212,
+              "bb": 8,
+              "rb": 4,
+              "diff": 0
+            },
+            {
+              "rack_no": "600",
+              "machine_name": "⑳SﾏｲｼﾞｬｸﾞﾗｰⅤKD",
+              "games": 1559,
+              "bb": 4,
+              "rb": 2,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Sﾊﾅﾊﾅﾎｳｵｳ~天翔~LX",
+          "count": 4,
+          "stands": [
+            {
+              "rack_no": "616",
+              "machine_name": "⑳Sﾊﾅﾊﾅﾎｳｵｳ~天翔~LX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "617",
+              "machine_name": "⑳Sﾊﾅﾊﾅﾎｳｵｳ~天翔~LX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "618",
+              "machine_name": "⑳Sﾊﾅﾊﾅﾎｳｵｳ~天翔~LX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "619",
+              "machine_name": "⑳Sﾊﾅﾊﾅﾎｳｵｳ~天翔~LX",
+              "games": 332,
+              "bb": 2,
+              "rb": 1,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳Lﾁﾊﾞﾘﾖ2ZB",
+          "count": 4,
+          "stands": [
+            {
+              "rack_no": "620",
+              "machine_name": "⑳Lﾁﾊﾞﾘﾖ2ZB",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "621",
+              "machine_name": "⑳Lﾁﾊﾞﾘﾖ2ZB",
+              "games": 28,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "622",
+              "machine_name": "⑳Lﾁﾊﾞﾘﾖ2ZB",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "623",
+              "machine_name": "⑳Lﾁﾊﾞﾘﾖ2ZB",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳L/ｵｷﾄﾞｷﾃﾞｭｵ2/FR",
+          "count": 1,
+          "stands": [
+            {
+              "rack_no": "624",
+              "machine_name": "⑳L/ｵｷﾄﾞｷﾃﾞｭｵ2/FR",
+              "games": 59,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳S/沖ﾄﾞｷ!GOLD/GS",
+          "count": 4,
+          "stands": [
+            {
+              "rack_no": "625",
+              "machine_name": "⑳S/沖ﾄﾞｷ!GOLD/GS",
+              "games": 940,
+              "bb": 3,
+              "rb": 2,
+              "diff": 0
+            },
+            {
+              "rack_no": "626",
+              "machine_name": "⑳S/沖ﾄﾞｷ!GOLD/GS",
+              "games": 59,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "627",
+              "machine_name": "⑳S/沖ﾄﾞｷ!GOLD/GS",
+              "games": 1077,
+              "bb": 14,
+              "rb": 9,
+              "diff": 0
+            },
+            {
+              "rack_no": "628",
+              "machine_name": "⑳S/沖ﾄﾞｷ!GOLD/GS",
+              "games": 182,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
+            }
+          ]
+        },
+        {
+          "machine_name": "⑳S/沖ﾄﾞｷ!DUO/DH",
+          "count": 2,
+          "stands": [
+            {
+              "rack_no": "629",
+              "machine_name": "⑳S/沖ﾄﾞｷ!DUO/DH",
+              "games": 711,
+              "bb": 1,
+              "rb": 0,
+              "diff": 0
+            },
+            {
+              "rack_no": "630",
+              "machine_name": "⑳S/沖ﾄﾞｷ!DUO/DH",
+              "games": 304,
+              "bb": 5,
+              "rb": 4,
+              "diff": 0
             }
           ]
         }
