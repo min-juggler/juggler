@@ -531,15 +531,6 @@ try{
     }catch(e){}
   }
 
-  // ── デバッグ(一時): 1台分の全フィールドを1回だけダンプ（埋め込み履歴フィールド調査用）──
-  if(typeof window!=='undefined'&&!window.__JUG_DUMPED__&&allStands.length>0){
-    window.__JUG_DUMPED__=true;
-    var dumpS=allStands.find(function(s){return (parseInt(s.all_game_count||s.games||0)||0)>0;})||allStands[0];
-    var dumpTxt='keys='+Object.keys(dumpS).join(',')+'\n\n'+JSON.stringify(dumpS,null,1);
-    console.log('🔍JUG_DEBUG stand=',dumpS);
-    try{prompt('1台分の全フィールド（全部コピーして送って）',dumpTxt);}catch(e){}
-  }
-
   if(allStands.length===0){
     bar.textContent='❌ 全台データ取得失敗 ok='+dbgOk+' dec='+dbgDec;
     if(dbgSample)setTimeout(()=>{bar.textContent='🔍 dec例: '+dbgSample;},4000);
