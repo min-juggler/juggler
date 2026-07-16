@@ -1321,6 +1321,7 @@ try{
   for(var o=0;o>-${days};o--){
     window.__JUG_DAYOFF__=o;
     try{ await eval(code); }catch(e){ console.log('day',o,e); }
+    if(o>-${days}+1)await new Promise(r=>setTimeout(r,2500)); // 連続PUTのsha競合回避
   }
 }catch(e){alert('ローダーエラー: '+e.message);}
 })();`;

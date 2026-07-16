@@ -185,7 +185,24 @@ async function push(result,_sid,_sname){
   if(realStands>0){
     if(!hist[today])hist[today]={stores:{}};
     if(!hist[today].stores)hist[today].stores={};
-    hist[today].stores[_s]=result;
+    // 既存の同日データがあれば台番号でマージし、G数が大きい方（=より完全なスナップショット）を採用。
+    // 部分取得(例:150/190)が既存の完全データ(190/190)を上書きして壊すのを防ぐ。
+    var prev=hist[today].stores[_s];
+    if(prev&&prev.machines){
+      var byRack={};
+      function collect(res){res.machines.forEach(function(m){m.stands.forEach(function(s){
+        var k=String(s.rack_no);var ex=byRack[k];
+        if(!ex||(parseInt(s.games)||0)>=(parseInt(ex.games)||0))byRack[k]=s;
+      });});}
+      collect(prev);collect(result); // resultを後にして同G数なら新しい方を優先
+      var mmap2={};
+      Object.keys(byRack).forEach(function(k){var s=byRack[k];var mn=s.machine_name||'不明';if(!mmap2[mn])mmap2[mn]=[];mmap2[mn].push(s);});
+      var merged={name:result.name,machines:[]};
+      for(var mn2 in mmap2)merged.machines.push({machine_name:mn2,count:mmap2[mn2].length,stands:mmap2[mn2]});
+      hist[today].stores[_s]=merged;
+    }else{
+      hist[today].stores[_s]=result;
+    }
     hist[today].fetched_at=new Date().toISOString();
   }
   var ok2=realStands>0?await ghPut('docs/data/history.json',s2.sha,hist,msg):true;
@@ -411,7 +428,8 @@ try{
   for(var kc of [urlKindCode,'21','S','Z','P']){
     if(bulkDone)break;
     for(var dp of [1,2,3]){
-      var bUrl='/n-api/rack_info/machine_list?hall_id='+hid+'&kind_code='+kc+'&machine_name=&target_date='+today+'&disp='+dp;
+      // history_day=3 を付けると過去日(target_date)でもサーバが履歴を返しやすい
+      var bUrl='/n-api/rack_info/machine_list?hall_id='+hid+'&kind_code='+kc+'&machine_name=&target_date='+today+'&disp='+dp+'&place=&history_day=3';
       try{
         var bR=await fetch(bUrl,{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json, text/plain, */*'}});
         if(!bR.ok)continue;
