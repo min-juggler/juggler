@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-07-16T05:47:04.795Z",
+  "fetched_at": "2026-07-16T05:47:21.137Z",
   "stores": {
     "yonezawa": {
       "name": "アイランド米沢店",
@@ -11,18 +11,18 @@
             {
               "rack_no": "285",
               "machine_name": "L吉宗",
-              "games": 1317,
+              "games": 4,
               "bb": 0,
-              "rb": 2,
-              "diff": -1852
+              "rb": 0,
+              "diff": -2
             },
             {
               "rack_no": "286",
               "machine_name": "L吉宗",
-              "games": 2720,
-              "bb": 6,
-              "rb": 2,
-              "diff": 344
+              "games": 278,
+              "bb": 0,
+              "rb": 1,
+              "diff": -321
             }
           ]
         },
@@ -41,10 +41,10 @@
             {
               "rack_no": "288",
               "machine_name": "Lかぐや様は告らせたい",
-              "games": 337,
+              "games": 50,
               "bb": 0,
-              "rb": 1,
-              "diff": -448
+              "rb": 0,
+              "diff": -78
             },
             {
               "rack_no": "300",
@@ -63,26 +63,26 @@
             {
               "rack_no": "301",
               "machine_name": "Lからくりｻｰｶｽ",
-              "games": 981,
+              "games": 249,
               "bb": 0,
-              "rb": 2,
-              "diff": -1194
+              "rb": 1,
+              "diff": -382
             },
             {
               "rack_no": "302",
               "machine_name": "Lからくりｻｰｶｽ",
-              "games": 1251,
+              "games": 86,
               "bb": 0,
-              "rb": 2,
-              "diff": 722
+              "rb": 0,
+              "diff": -146
             },
             {
               "rack_no": "303",
               "machine_name": "Lからくりｻｰｶｽ",
-              "games": 68,
+              "games": 87,
               "bb": 0,
               "rb": 0,
-              "diff": -108
+              "diff": -124
             }
           ]
         },
@@ -93,58 +93,58 @@
             {
               "rack_no": "305",
               "machine_name": "Lﾐﾘｵﾝｺﾞｯﾄﾞ神々の軌跡",
-              "games": 2074,
-              "bb": 4,
+              "games": 222,
+              "bb": 0,
               "rb": 0,
-              "diff": 4758
+              "diff": -370
             },
             {
               "rack_no": "306",
               "machine_name": "Lﾐﾘｵﾝｺﾞｯﾄﾞ神々の軌跡",
-              "games": 3441,
+              "games": 1310,
               "bb": 0,
               "rb": 0,
-              "diff": -2524
+              "diff": -1199
             },
             {
               "rack_no": "307",
               "machine_name": "Lﾐﾘｵﾝｺﾞｯﾄﾞ神々の軌跡",
-              "games": 4080,
+              "games": 771,
               "bb": 0,
               "rb": 0,
-              "diff": 1132
+              "diff": 114
             },
             {
               "rack_no": "308",
               "machine_name": "Lﾐﾘｵﾝｺﾞｯﾄﾞ神々の軌跡",
-              "games": 2551,
+              "games": 1963,
               "bb": 0,
               "rb": 0,
-              "diff": -1148
+              "diff": -349
             },
             {
               "rack_no": "310",
               "machine_name": "Lﾐﾘｵﾝｺﾞｯﾄﾞ神々の軌跡",
-              "games": 2824,
+              "games": 1131,
               "bb": 0,
               "rb": 0,
-              "diff": -1531
+              "diff": -1472
             },
             {
               "rack_no": "311",
               "machine_name": "Lﾐﾘｵﾝｺﾞｯﾄﾞ神々の軌跡",
-              "games": 1435,
-              "bb": 0,
+              "games": 581,
+              "bb": 3,
               "rb": 0,
-              "diff": -712
+              "diff": 145
             },
             {
               "rack_no": "312",
               "machine_name": "Lﾐﾘｵﾝｺﾞｯﾄﾞ神々の軌跡",
-              "games": 2868,
+              "games": 1270,
               "bb": 0,
               "rb": 0,
-              "diff": -2072
+              "diff": -1039
             }
           ]
         },
@@ -155,66 +155,66 @@
             {
               "rack_no": "313",
               "machine_name": "L東京喰種",
-              "games": 3285,
+              "games": 1255,
               "bb": 0,
-              "rb": 12,
-              "diff": -2940
+              "rb": 5,
+              "diff": -1638
             },
             {
               "rack_no": "315",
               "machine_name": "L東京喰種",
-              "games": 2221,
+              "games": 3895,
               "bb": 0,
-              "rb": 5,
-              "diff": 4525
+              "rb": 9,
+              "diff": 3076
             },
             {
               "rack_no": "316",
               "machine_name": "L東京喰種",
-              "games": 2125,
+              "games": 3326,
               "bb": 0,
-              "rb": 7,
-              "diff": -1088
+              "rb": 10,
+              "diff": 432
             },
             {
               "rack_no": "317",
               "machine_name": "L東京喰種",
-              "games": 5686,
+              "games": 1500,
               "bb": 0,
-              "rb": 9,
-              "diff": 11159
+              "rb": 5,
+              "diff": -1640
             },
             {
               "rack_no": "318",
               "machine_name": "L東京喰種",
-              "games": 3234,
+              "games": 3406,
               "bb": 0,
-              "rb": 11,
-              "diff": -656
+              "rb": 13,
+              "diff": -1844
             },
             {
               "rack_no": "320",
               "machine_name": "L東京喰種",
-              "games": 1638,
+              "games": 3921,
               "bb": 0,
-              "rb": 5,
-              "diff": -1799
+              "rb": 7,
+              "diff": 2051
             },
             {
               "rack_no": "321",
               "machine_name": "L東京喰種",
-              "games": 1033,
+              "games": 1849,
               "bb": 0,
-              "rb": 2,
-              "diff": -188
+              "rb": 5,
+              "diff": -2022
             },
             {
               "rack_no": "322",
               "machine_name": "L東京喰種",
-              "games": 5870,
+              "games": 2613,
               "bb": 0,
-              "rb": 16,
-              "diff": -1888
+              "rb": 11,
+              "diff": -1778
             }
           ]
         },
@@ -241,18 +241,18 @@
             {
               "rack_no": "326",
               "machine_name": "L革命機ｳﾞｧﾙｳﾞﾚｲｳﾞ2",
-              "games": 918,
-              "bb": 4,
-              "rb": 2,
-              "diff": -541
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
             },
             {
               "rack_no": "327",
               "machine_name": "L革命機ｳﾞｧﾙｳﾞﾚｲｳﾞ2",
-              "games": 144,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -215
+              "diff": 0
             },
             {
               "rack_no": "328",
@@ -279,18 +279,18 @@
             {
               "rack_no": "375",
               "machine_name": "L化物語",
-              "games": 1163,
-              "bb": 0,
-              "rb": 3,
-              "diff": -866
-            },
-            {
-              "rack_no": "376",
-              "machine_name": "L化物語",
               "games": 0,
               "bb": 0,
               "rb": 0,
               "diff": 0
+            },
+            {
+              "rack_no": "376",
+              "machine_name": "L化物語",
+              "games": 606,
+              "bb": 0,
+              "rb": 2,
+              "diff": 438
             },
             {
               "rack_no": "377",
@@ -303,10 +303,10 @@
             {
               "rack_no": "378",
               "machine_name": "L化物語",
-              "games": 1151,
+              "games": 0,
               "bb": 0,
-              "rb": 2,
-              "diff": -175
+              "rb": 0,
+              "diff": 0
             }
           ]
         },
@@ -317,34 +317,34 @@
             {
               "rack_no": "380",
               "machine_name": "Lﾏｷﾞｱﾚｺｰﾄﾞ",
-              "games": 1205,
-              "bb": 2,
+              "games": 483,
+              "bb": 1,
               "rb": 0,
-              "diff": 784
+              "diff": -709
             },
             {
               "rack_no": "381",
               "machine_name": "Lﾏｷﾞｱﾚｺｰﾄﾞ",
-              "games": 1156,
-              "bb": 3,
+              "games": 517,
+              "bb": 1,
               "rb": 0,
-              "diff": 869
+              "diff": -254
             },
             {
               "rack_no": "382",
               "machine_name": "Lﾏｷﾞｱﾚｺｰﾄﾞ",
-              "games": 294,
-              "bb": 1,
+              "games": 1466,
+              "bb": 4,
               "rb": 0,
-              "diff": -367
+              "diff": -1430
             },
             {
               "rack_no": "383",
               "machine_name": "Lﾏｷﾞｱﾚｺｰﾄﾞ",
-              "games": 0,
-              "bb": 0,
+              "games": 422,
+              "bb": 1,
               "rb": 0,
-              "diff": 0
+              "diff": -645
             }
           ]
         },
@@ -355,50 +355,50 @@
             {
               "rack_no": "385",
               "machine_name": "L戦国乙女5",
-              "games": 5324,
+              "games": 3350,
               "bb": 0,
-              "rb": 19,
-              "diff": 4535
+              "rb": 3,
+              "diff": -3271
             },
             {
               "rack_no": "386",
               "machine_name": "L戦国乙女5",
-              "games": 9158,
+              "games": 2946,
               "bb": 0,
-              "rb": 24,
-              "diff": 9993
+              "rb": 4,
+              "diff": -1225
             },
             {
               "rack_no": "387",
               "machine_name": "L戦国乙女5",
-              "games": 4277,
+              "games": 2160,
               "bb": 0,
-              "rb": 12,
-              "diff": 971
+              "rb": 8,
+              "diff": -171
             },
             {
               "rack_no": "388",
               "machine_name": "L戦国乙女5",
-              "games": 5510,
+              "games": 1215,
               "bb": 0,
-              "rb": 9,
-              "diff": -4037
+              "rb": 1,
+              "diff": -1134
             },
             {
               "rack_no": "500",
               "machine_name": "L戦国乙女5",
-              "games": 7882,
+              "games": 1625,
               "bb": 0,
-              "rb": 17,
-              "diff": -2053
+              "rb": 10,
+              "diff": 6998
             },
             {
               "rack_no": "501",
               "machine_name": "L戦国乙女5",
-              "games": 6473,
+              "games": 919,
               "bb": 0,
-              "rb": 18,
-              "diff": 1943
+              "rb": 2,
+              "diff": -47
             }
           ]
         },
@@ -409,34 +409,34 @@
             {
               "rack_no": "502",
               "machine_name": "L新鬼武者3",
-              "games": 3073,
+              "games": 0,
               "bb": 0,
-              "rb": 2,
-              "diff": -818
+              "rb": 0,
+              "diff": 0
             },
             {
               "rack_no": "503",
               "machine_name": "L新鬼武者3",
-              "games": 997,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -422
+              "diff": 0
             },
             {
               "rack_no": "505",
               "machine_name": "L新鬼武者3",
-              "games": 1975,
+              "games": 0,
               "bb": 0,
-              "rb": 5,
-              "diff": 1749
+              "rb": 0,
+              "diff": 0
             },
             {
               "rack_no": "506",
               "machine_name": "L新鬼武者3",
-              "games": 313,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -251
+              "diff": 0
             }
           ]
         },
@@ -447,58 +447,58 @@
             {
               "rack_no": "507",
               "machine_name": "LﾓﾝｷｰﾀｰﾝV",
-              "games": 6809,
+              "games": 2925,
               "bb": 0,
-              "rb": 15,
-              "diff": 942
+              "rb": 6,
+              "diff": -1459
             },
             {
               "rack_no": "508",
               "machine_name": "LﾓﾝｷｰﾀｰﾝV",
-              "games": 1519,
+              "games": 742,
               "bb": 0,
-              "rb": 3,
-              "diff": -652
+              "rb": 2,
+              "diff": -13
             },
             {
               "rack_no": "510",
               "machine_name": "LﾓﾝｷｰﾀｰﾝV",
-              "games": 1476,
+              "games": 3021,
               "bb": 0,
-              "rb": 5,
-              "diff": -473
+              "rb": 6,
+              "diff": 96
             },
             {
               "rack_no": "511",
               "machine_name": "LﾓﾝｷｰﾀｰﾝV",
-              "games": 9238,
+              "games": 3831,
               "bb": 0,
-              "rb": 21,
-              "diff": -887
+              "rb": 9,
+              "diff": -155
             },
             {
               "rack_no": "512",
               "machine_name": "LﾓﾝｷｰﾀｰﾝV",
-              "games": 6387,
+              "games": 3002,
               "bb": 0,
-              "rb": 16,
-              "diff": -530
+              "rb": 8,
+              "diff": -436
             },
             {
               "rack_no": "513",
               "machine_name": "LﾓﾝｷｰﾀｰﾝV",
-              "games": 3480,
+              "games": 3999,
               "bb": 0,
-              "rb": 7,
-              "diff": 1909
+              "rb": 8,
+              "diff": -1183
             },
             {
               "rack_no": "515",
               "machine_name": "LﾓﾝｷｰﾀｰﾝV",
-              "games": 2689,
+              "games": 3914,
               "bb": 0,
-              "rb": 9,
-              "diff": -1729
+              "rb": 7,
+              "diff": 1581
             }
           ]
         },
@@ -509,50 +509,50 @@
             {
               "rack_no": "520",
               "machine_name": "L北斗 転生の章2",
-              "games": 623,
+              "games": 221,
               "bb": 0,
-              "rb": 2,
-              "diff": -180
+              "rb": 1,
+              "diff": 104
             },
             {
               "rack_no": "521",
               "machine_name": "L北斗 転生の章2",
-              "games": 2402,
+              "games": 1621,
               "bb": 0,
-              "rb": 5,
-              "diff": -115
+              "rb": 3,
+              "diff": -695
             },
             {
               "rack_no": "522",
               "machine_name": "L北斗 転生の章2",
-              "games": 1116,
+              "games": 480,
               "bb": 0,
               "rb": 1,
-              "diff": 1072
+              "diff": 577
             },
             {
               "rack_no": "523",
               "machine_name": "L北斗 転生の章2",
-              "games": 121,
+              "games": 45,
               "bb": 0,
               "rb": 0,
-              "diff": -184
+              "diff": -78
             },
             {
               "rack_no": "525",
               "machine_name": "L北斗 転生の章2",
-              "games": 2848,
+              "games": 1222,
               "bb": 0,
-              "rb": 6,
-              "diff": -1500
+              "rb": 3,
+              "diff": 155
             },
             {
               "rack_no": "526",
               "machine_name": "L北斗 転生の章2",
-              "games": 147,
+              "games": 47,
               "bb": 0,
-              "rb": 1,
-              "diff": -31
+              "rb": 0,
+              "diff": -75
             }
           ]
         },
@@ -563,50 +563,50 @@
             {
               "rack_no": "527",
               "machine_name": "L甲鉄城のｶﾊﾞﾈﾘ海門決戦",
-              "games": 1430,
+              "games": 0,
               "bb": 0,
-              "rb": 4,
-              "diff": -1279
+              "rb": 0,
+              "diff": 0
             },
             {
               "rack_no": "528",
               "machine_name": "L甲鉄城のｶﾊﾞﾈﾘ海門決戦",
-              "games": 1373,
+              "games": 872,
               "bb": 0,
-              "rb": 5,
-              "diff": -731
+              "rb": 2,
+              "diff": -835
             },
             {
               "rack_no": "530",
               "machine_name": "L甲鉄城のｶﾊﾞﾈﾘ海門決戦",
-              "games": 4280,
+              "games": 354,
               "bb": 0,
-              "rb": 15,
-              "diff": -504
+              "rb": 1,
+              "diff": -550
             },
             {
               "rack_no": "531",
               "machine_name": "L甲鉄城のｶﾊﾞﾈﾘ海門決戦",
-              "games": 1173,
+              "games": 0,
               "bb": 0,
-              "rb": 3,
-              "diff": -819
+              "rb": 0,
+              "diff": 0
             },
             {
               "rack_no": "532",
               "machine_name": "L甲鉄城のｶﾊﾞﾈﾘ海門決戦",
-              "games": 4478,
+              "games": 2303,
               "bb": 0,
-              "rb": 8,
-              "diff": -3277
+              "rb": 6,
+              "diff": -271
             },
             {
               "rack_no": "533",
               "machine_name": "L甲鉄城のｶﾊﾞﾈﾘ海門決戦",
-              "games": 5310,
+              "games": 640,
               "bb": 0,
-              "rb": 12,
-              "diff": -1552
+              "rb": 1,
+              "diff": 224
             }
           ]
         },
@@ -617,82 +617,82 @@
             {
               "rack_no": "535",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 3308,
-              "bb": 22,
-              "rb": 10,
-              "diff": 2126
+              "games": 3754,
+              "bb": 13,
+              "rb": 16,
+              "diff": 612
             },
             {
               "rack_no": "536",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 4762,
-              "bb": 21,
-              "rb": 20,
-              "diff": 956
+              "games": 1071,
+              "bb": 3,
+              "rb": 6,
+              "diff": 176
             },
             {
               "rack_no": "537",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 1226,
-              "bb": 3,
-              "rb": 4,
-              "diff": -464
+              "games": 323,
+              "bb": 1,
+              "rb": 0,
+              "diff": -183
             },
             {
               "rack_no": "538",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 5367,
-              "bb": 21,
-              "rb": 17,
-              "diff": 18
+              "games": 1040,
+              "bb": 2,
+              "rb": 3,
+              "diff": -463
             },
             {
               "rack_no": "550",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 1640,
-              "bb": 3,
-              "rb": 6,
-              "diff": -820
+              "games": 2870,
+              "bb": 11,
+              "rb": 11,
+              "diff": 290
             },
             {
               "rack_no": "551",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 1661,
-              "bb": 3,
-              "rb": 9,
-              "diff": -426
+              "games": 321,
+              "bb": 1,
+              "rb": 0,
+              "diff": -260
             },
             {
               "rack_no": "552",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 4647,
-              "bb": 21,
-              "rb": 17,
-              "diff": 726
+              "games": 451,
+              "bb": 0,
+              "rb": 2,
+              "diff": -453
             },
             {
               "rack_no": "553",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 1225,
-              "bb": 2,
-              "rb": 4,
-              "diff": -925
+              "games": 1908,
+              "bb": 7,
+              "rb": 6,
+              "diff": -230
             },
             {
               "rack_no": "555",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 1399,
-              "bb": 5,
-              "rb": 4,
-              "diff": -198
+              "games": 200,
+              "bb": 0,
+              "rb": 0,
+              "diff": -172
             },
             {
               "rack_no": "556",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 3972,
-              "bb": 15,
-              "rb": 17,
-              "diff": 487
+              "games": 1442,
+              "bb": 5,
+              "rb": 5,
+              "diff": 66
             }
           ]
         },
@@ -703,90 +703,90 @@
             {
               "rack_no": "557",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 1651,
-              "bb": 6,
-              "rb": 2,
-              "diff": -381
+              "games": 1173,
+              "bb": 4,
+              "rb": 5,
+              "diff": 4
             },
             {
               "rack_no": "558",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 1877,
-              "bb": 0,
-              "rb": 9,
-              "diff": -1257
+              "games": 1819,
+              "bb": 8,
+              "rb": 4,
+              "diff": 568
             },
             {
               "rack_no": "560",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 751,
-              "bb": 3,
-              "rb": 1,
-              "diff": -41
+              "games": 1156,
+              "bb": 5,
+              "rb": 2,
+              "diff": 354
             },
             {
               "rack_no": "561",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 7192,
-              "bb": 28,
-              "rb": 29,
-              "diff": 1164
+              "games": 1337,
+              "bb": 5,
+              "rb": 4,
+              "diff": 10
             },
             {
               "rack_no": "562",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 4951,
-              "bb": 23,
-              "rb": 16,
-              "diff": 1413
+              "games": 450,
+              "bb": 0,
+              "rb": 2,
+              "diff": -390
             },
             {
               "rack_no": "563",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 167,
-              "bb": 0,
-              "rb": 0,
-              "diff": -230
+              "games": 897,
+              "bb": 1,
+              "rb": 3,
+              "diff": -537
             },
             {
               "rack_no": "565",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 1171,
-              "bb": 1,
-              "rb": 2,
-              "diff": -969
+              "games": 2486,
+              "bb": 11,
+              "rb": 8,
+              "diff": 516
             },
             {
               "rack_no": "566",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 2195,
-              "bb": 4,
-              "rb": 6,
-              "diff": -1018
+              "games": 34,
+              "bb": 0,
+              "rb": 0,
+              "diff": -46
             },
             {
               "rack_no": "567",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 3901,
-              "bb": 17,
-              "rb": 14,
-              "diff": 632
+              "games": 1334,
+              "bb": 8,
+              "rb": 5,
+              "diff": 815
             },
             {
               "rack_no": "568",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 547,
+              "games": 410,
               "bb": 0,
-              "rb": 2,
-              "diff": -495
+              "rb": 1,
+              "diff": -504
             },
             {
               "rack_no": "570",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 2272,
-              "bb": 11,
-              "rb": 7,
-              "diff": 752
+              "games": 1270,
+              "bb": 7,
+              "rb": 3,
+              "diff": 615
             }
           ]
         },
@@ -797,26 +797,26 @@
             {
               "rack_no": "571",
               "machine_name": "LﾊﾞｲｵﾊｻﾞｰﾄﾞRE：3",
-              "games": 494,
+              "games": 0,
               "bb": 0,
-              "rb": 3,
-              "diff": -535
+              "rb": 0,
+              "diff": 0
             },
             {
               "rack_no": "572",
               "machine_name": "LﾊﾞｲｵﾊｻﾞｰﾄﾞRE：3",
-              "games": 1015,
+              "games": 863,
               "bb": 0,
-              "rb": 10,
-              "diff": 467
+              "rb": 5,
+              "diff": -1072
             },
             {
               "rack_no": "573",
               "machine_name": "LﾊﾞｲｵﾊｻﾞｰﾄﾞRE：3",
-              "games": 700,
+              "games": 367,
               "bb": 0,
-              "rb": 8,
-              "diff": -422
+              "rb": 4,
+              "diff": -464
             }
           ]
         },
@@ -827,26 +827,26 @@
             {
               "rack_no": "575",
               "machine_name": "L東京ﾘﾍﾞﾝｼﾞｬｰｽﾞ",
-              "games": 1315,
+              "games": 0,
               "bb": 0,
-              "rb": 5,
-              "diff": 1195
+              "rb": 0,
+              "diff": 0
             },
             {
               "rack_no": "576",
               "machine_name": "L東京ﾘﾍﾞﾝｼﾞｬｰｽﾞ",
-              "games": 3665,
+              "games": 783,
               "bb": 0,
-              "rb": 7,
-              "diff": 3862
+              "rb": 2,
+              "diff": -238
             },
             {
               "rack_no": "577",
               "machine_name": "L東京ﾘﾍﾞﾝｼﾞｬｰｽﾞ",
-              "games": 143,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -252
+              "diff": 0
             }
           ]
         },
@@ -857,26 +857,26 @@
             {
               "rack_no": "578",
               "machine_name": "Lいざ!番長",
-              "games": 807,
+              "games": 897,
               "bb": 0,
-              "rb": 1,
-              "diff": -929
+              "rb": 2,
+              "diff": -442
             },
             {
               "rack_no": "580",
               "machine_name": "Lいざ!番長",
-              "games": 866,
+              "games": 1067,
               "bb": 0,
               "rb": 1,
-              "diff": -664
+              "diff": -1277
             },
             {
               "rack_no": "581",
               "machine_name": "Lいざ!番長",
-              "games": 4045,
+              "games": 1418,
               "bb": 0,
-              "rb": 18,
-              "diff": 4032
+              "rb": 3,
+              "diff": 474
             }
           ]
         },
@@ -887,18 +887,18 @@
             {
               "rack_no": "582",
               "machine_name": "L炎炎ﾉ消防隊2",
-              "games": 5894,
+              "games": 500,
               "bb": 0,
-              "rb": 15,
-              "diff": 59
+              "rb": 2,
+              "diff": -112
             },
             {
               "rack_no": "583",
               "machine_name": "L炎炎ﾉ消防隊2",
-              "games": 3142,
+              "games": 1366,
               "bb": 0,
-              "rb": 5,
-              "diff": 99
+              "rb": 3,
+              "diff": -1242
             }
           ]
         },
@@ -909,18 +909,18 @@
             {
               "rack_no": "585",
               "machine_name": "L戦国ｺﾚｸｼｮﾝ6",
-              "games": 3518,
+              "games": 3268,
               "bb": 0,
-              "rb": 6,
-              "diff": -1543
+              "rb": 5,
+              "diff": -1755
             },
             {
               "rack_no": "586",
               "machine_name": "L戦国ｺﾚｸｼｮﾝ6",
-              "games": 6187,
+              "games": 3803,
               "bb": 0,
-              "rb": 15,
-              "diff": 529
+              "rb": 6,
+              "diff": -2558
             }
           ]
         },
@@ -931,10 +931,10 @@
             {
               "rack_no": "587",
               "machine_name": "Lｽｰﾊﾟｰﾘｵｴｰｽ2",
-              "games": 2651,
+              "games": 0,
               "bb": 0,
-              "rb": 9,
-              "diff": 371
+              "rb": 0,
+              "diff": 0
             }
           ]
         },
@@ -945,10 +945,10 @@
             {
               "rack_no": "588",
               "machine_name": "Lｽｰﾊﾟｰﾌﾞﾗｯｸｼﾞｬｯｸ",
-              "games": 15,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -28
+              "diff": 0
             }
           ]
         },
@@ -959,10 +959,10 @@
             {
               "rack_no": "600",
               "machine_name": "Lとある魔術の禁書目録2",
-              "games": 720,
-              "bb": 1,
-              "rb": 0,
-              "diff": -979
+              "games": 1050,
+              "bb": 3,
+              "rb": 1,
+              "diff": -1148
             }
           ]
         },
@@ -973,10 +973,10 @@
             {
               "rack_no": "601",
               "machine_name": "Lﾀｸﾄｵｰﾊﾟｽ ﾃﾞｽﾃｨﾆｰ",
-              "games": 3382,
+              "games": 0,
               "bb": 0,
-              "rb": 12,
-              "diff": -2231
+              "rb": 0,
+              "diff": 0
             }
           ]
         },
@@ -987,10 +987,10 @@
             {
               "rack_no": "602",
               "machine_name": "L虚構推理",
-              "games": 1419,
+              "games": 1045,
               "bb": 0,
-              "rb": 0,
-              "diff": -140
+              "rb": 4,
+              "diff": 1291
             }
           ]
         },
@@ -1001,10 +1001,10 @@
             {
               "rack_no": "603",
               "machine_name": "L戦国乙女4",
-              "games": 6243,
-              "bb": 28,
+              "games": 0,
+              "bb": 0,
               "rb": 0,
-              "diff": 3461
+              "diff": 0
             }
           ]
         },
@@ -1015,10 +1015,10 @@
             {
               "rack_no": "605",
               "machine_name": "L防振り",
-              "games": 1204,
-              "bb": 8,
-              "rb": 10,
-              "diff": 915
+              "games": 421,
+              "bb": 0,
+              "rb": 0,
+              "diff": -629
             }
           ]
         },
@@ -1029,10 +1029,10 @@
             {
               "rack_no": "606",
               "machine_name": "L攻殻機動隊",
-              "games": 3359,
+              "games": 900,
               "bb": 0,
-              "rb": 8,
-              "diff": 372
+              "rb": 4,
+              "diff": -1187
             }
           ]
         },
@@ -1043,10 +1043,10 @@
             {
               "rack_no": "607",
               "machine_name": "L七つの魔剣が支配する",
-              "games": 897,
+              "games": 0,
               "bb": 0,
-              "rb": 3,
-              "diff": -907
+              "rb": 0,
+              "diff": 0
             }
           ]
         },
@@ -1057,10 +1057,10 @@
             {
               "rack_no": "608",
               "machine_name": "L少女☆歌劇ﾚｳﾞｭｰｽﾀｧﾗｲﾄ",
-              "games": 88,
-              "bb": 1,
+              "games": 1568,
+              "bb": 10,
               "rb": 0,
-              "diff": -30
+              "diff": -78
             }
           ]
         },
@@ -1071,10 +1071,10 @@
             {
               "rack_no": "610",
               "machine_name": "Lｼｬｰﾏﾝｷﾝｸﾞ",
-              "games": 1660,
-              "bb": 2,
+              "games": 0,
+              "bb": 0,
               "rb": 0,
-              "diff": -672
+              "diff": 0
             }
           ]
         },
@@ -1085,10 +1085,10 @@
             {
               "rack_no": "611",
               "machine_name": "LｱｽﾞｰﾙﾚｰﾝTHE ANIMATION",
-              "games": 734,
+              "games": 782,
               "bb": 0,
               "rb": 2,
-              "diff": 204
+              "diff": -1118
             }
           ]
         },
@@ -1099,10 +1099,10 @@
             {
               "rack_no": "612",
               "machine_name": "Lｿｰﾄﾞｱｰﾄ･ｵﾝﾗｲﾝII",
-              "games": 8823,
+              "games": 2832,
               "bb": 0,
               "rb": 0,
-              "diff": -7256
+              "diff": -815
             }
           ]
         },
@@ -1113,10 +1113,10 @@
             {
               "rack_no": "613",
               "machine_name": "ﾆｭｰﾊﾟﾙｻｰSP4 太鼓の達人",
-              "games": 1237,
-              "bb": 2,
-              "rb": 3,
-              "diff": -666
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
             }
           ]
         },
@@ -1127,10 +1127,10 @@
             {
               "rack_no": "615",
               "machine_name": "ｸﾗﾝｷｰｸﾚｽﾄ",
-              "games": 2938,
-              "bb": 13,
-              "rb": 6,
-              "diff": 549
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
             }
           ]
         },
@@ -1141,18 +1141,18 @@
             {
               "rack_no": "616",
               "machine_name": "新ﾊﾅﾋﾞ",
-              "games": 5456,
-              "bb": 25,
-              "rb": 19,
-              "diff": 1937
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
             },
             {
               "rack_no": "617",
               "machine_name": "新ﾊﾅﾋﾞ",
-              "games": 1765,
-              "bb": 4,
-              "rb": 5,
-              "diff": -379
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
             }
           ]
         },
@@ -1163,50 +1163,50 @@
             {
               "rack_no": "618",
               "machine_name": "沖ﾄﾞｷ!GOLD",
-              "games": 1313,
+              "games": 1393,
               "bb": 1,
-              "rb": 4,
-              "diff": -1487
+              "rb": 2,
+              "diff": -1780
             },
             {
               "rack_no": "620",
               "machine_name": "沖ﾄﾞｷ!GOLD",
-              "games": 1380,
-              "bb": 3,
-              "rb": 4,
-              "diff": -1112
+              "games": 300,
+              "bb": 0,
+              "rb": 1,
+              "diff": -355
             },
             {
               "rack_no": "621",
               "machine_name": "沖ﾄﾞｷ!GOLD",
-              "games": 3548,
-              "bb": 12,
-              "rb": 5,
-              "diff": -2649
+              "games": 459,
+              "bb": 4,
+              "rb": 3,
+              "diff": 412
             },
             {
               "rack_no": "622",
               "machine_name": "沖ﾄﾞｷ!GOLD",
-              "games": 241,
+              "games": 168,
               "bb": 0,
               "rb": 0,
-              "diff": -350
+              "diff": -275
             },
             {
               "rack_no": "623",
               "machine_name": "沖ﾄﾞｷ!GOLD",
-              "games": 231,
-              "bb": 0,
-              "rb": 0,
-              "diff": -358
+              "games": 908,
+              "bb": 10,
+              "rb": 2,
+              "diff": 852
             },
             {
               "rack_no": "625",
               "machine_name": "沖ﾄﾞｷ!GOLD",
-              "games": 376,
+              "games": 140,
               "bb": 0,
               "rb": 0,
-              "diff": -576
+              "diff": -181
             }
           ]
         },
@@ -1217,10 +1217,10 @@
             {
               "rack_no": "626",
               "machine_name": "L沖ﾄﾞｷ!DUO ｱﾝｺｰﾙ",
-              "games": 32,
-              "bb": 0,
-              "rb": 0,
-              "diff": -51
+              "games": 933,
+              "bb": 3,
+              "rb": 1,
+              "diff": -994
             },
             {
               "rack_no": "627",
@@ -1228,23 +1228,23 @@
               "games": 32,
               "bb": 0,
               "rb": 0,
-              "diff": -73
+              "diff": -70
             },
             {
               "rack_no": "628",
               "machine_name": "L沖ﾄﾞｷ!DUO ｱﾝｺｰﾙ",
-              "games": 81,
+              "games": 410,
               "bb": 0,
               "rb": 0,
-              "diff": -160
+              "diff": -341
             },
             {
               "rack_no": "630",
               "machine_name": "L沖ﾄﾞｷ!DUO ｱﾝｺｰﾙ",
-              "games": 516,
-              "bb": 6,
-              "rb": 3,
-              "diff": 486
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
             }
           ]
         },
@@ -1255,10 +1255,10 @@
             {
               "rack_no": "631",
               "machine_name": "L南国育ちSPECIAL",
-              "games": 3853,
-              "bb": 19,
-              "rb": 9,
-              "diff": -1008
+              "games": 1891,
+              "bb": 7,
+              "rb": 4,
+              "diff": -1020
             }
           ]
         },
@@ -1269,10 +1269,10 @@
             {
               "rack_no": "632",
               "machine_name": "Lﾋﾞｯｸﾞﾄﾞﾘｰﾑ",
-              "games": 5566,
+              "games": 0,
               "bb": 0,
-              "rb": 10,
-              "diff": 1590
+              "rb": 0,
+              "diff": 0
             }
           ]
         },
@@ -1283,10 +1283,10 @@
             {
               "rack_no": "633",
               "machine_name": "Lﾈｵﾌﾟﾗﾈｯﾄ",
-              "games": 80,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -136
+              "diff": 0
             }
           ]
         },
@@ -1297,10 +1297,10 @@
             {
               "rack_no": "635",
               "machine_name": "L BIRDIE WING",
-              "games": 1516,
+              "games": 0,
               "bb": 0,
-              "rb": 10,
-              "diff": -906
+              "rb": 0,
+              "diff": 0
             }
           ]
         },
@@ -1325,10 +1325,10 @@
             {
               "rack_no": "637",
               "machine_name": "L鉄拳6",
-              "games": 1459,
-              "bb": 8,
-              "rb": 8,
-              "diff": -654
+              "games": 395,
+              "bb": 4,
+              "rb": 5,
+              "diff": 957
             }
           ]
         },
@@ -1339,10 +1339,10 @@
             {
               "rack_no": "638",
               "machine_name": "Lﾓﾝｽﾀｰﾊﾝﾀｰﾗｲｽﾞ",
-              "games": 710,
+              "games": 2120,
               "bb": 0,
-              "rb": 3,
-              "diff": 127
+              "rb": 8,
+              "diff": -485
             }
           ]
         },
@@ -1353,18 +1353,18 @@
             {
               "rack_no": "650",
               "machine_name": "L秘宝伝",
-              "games": 1895,
-              "bb": 6,
-              "rb": 3,
-              "diff": -1003
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
             },
             {
               "rack_no": "651",
               "machine_name": "L秘宝伝",
-              "games": 1139,
-              "bb": 3,
-              "rb": 3,
-              "diff": -771
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
             }
           ]
         },
@@ -1375,34 +1375,34 @@
             {
               "rack_no": "652",
               "machine_name": "Lｺﾞｯﾄﾞｲｰﾀｰ ﾘｻﾞﾚｸｼｮﾝ",
-              "games": 3998,
+              "games": 438,
               "bb": 0,
-              "rb": 11,
-              "diff": 401
+              "rb": 2,
+              "diff": -142
             },
             {
               "rack_no": "653",
               "machine_name": "Lｺﾞｯﾄﾞｲｰﾀｰ ﾘｻﾞﾚｸｼｮﾝ",
-              "games": 1029,
+              "games": 0,
               "bb": 0,
-              "rb": 2,
-              "diff": -973
+              "rb": 0,
+              "diff": 0
             },
             {
               "rack_no": "655",
               "machine_name": "Lｺﾞｯﾄﾞｲｰﾀｰ ﾘｻﾞﾚｸｼｮﾝ",
-              "games": 367,
+              "games": 438,
               "bb": 0,
               "rb": 1,
-              "diff": -334
+              "diff": 470
             },
             {
               "rack_no": "656",
               "machine_name": "Lｺﾞｯﾄﾞｲｰﾀｰ ﾘｻﾞﾚｸｼｮﾝ",
-              "games": 5737,
+              "games": 218,
               "bb": 0,
-              "rb": 7,
-              "diff": 4009
+              "rb": 0,
+              "diff": -293
             }
           ]
         },
@@ -1413,26 +1413,26 @@
             {
               "rack_no": "657",
               "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ",
-              "games": 1768,
-              "bb": 5,
+              "games": 551,
+              "bb": 0,
               "rb": 3,
-              "diff": -813
+              "diff": -383
             },
             {
               "rack_no": "658",
               "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ",
-              "games": 1471,
-              "bb": 4,
-              "rb": 4,
-              "diff": -250
+              "games": 60,
+              "bb": 0,
+              "rb": 0,
+              "diff": -58
             },
             {
               "rack_no": "660",
               "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ",
-              "games": 337,
+              "games": 23,
               "bb": 0,
-              "rb": 1,
-              "diff": -275
+              "rb": 0,
+              "diff": -39
             }
           ]
         },
@@ -1443,26 +1443,26 @@
             {
               "rack_no": "661",
               "machine_name": "ｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS",
-              "games": 4106,
-              "bb": 12,
-              "rb": 13,
-              "diff": -683
+              "games": 1628,
+              "bb": 6,
+              "rb": 12,
+              "diff": 453
             },
             {
               "rack_no": "662",
               "machine_name": "ｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS",
-              "games": 675,
-              "bb": 2,
-              "rb": 3,
-              "diff": -50
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0
             },
             {
               "rack_no": "663",
               "machine_name": "ｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS",
-              "games": 3643,
-              "bb": 18,
-              "rb": 13,
-              "diff": 1270
+              "games": 63,
+              "bb": 0,
+              "rb": 0,
+              "diff": -91
             }
           ]
         },
@@ -1473,34 +1473,34 @@
             {
               "rack_no": "665",
               "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
-              "games": 1432,
-              "bb": 8,
-              "rb": 6,
-              "diff": 761
+              "games": 85,
+              "bb": 0,
+              "rb": 0,
+              "diff": -139
             },
             {
               "rack_no": "666",
               "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
-              "games": 361,
-              "bb": 1,
-              "rb": 1,
-              "diff": -166
+              "games": 62,
+              "bb": 0,
+              "rb": 0,
+              "diff": -135
             },
             {
               "rack_no": "667",
               "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
-              "games": 2806,
-              "bb": 14,
-              "rb": 5,
-              "diff": 347
+              "games": 360,
+              "bb": 0,
+              "rb": 1,
+              "diff": -378
             },
             {
               "rack_no": "668",
               "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
-              "games": 3118,
-              "bb": 13,
-              "rb": 10,
-              "diff": 385
+              "games": 394,
+              "bb": 1,
+              "rb": 2,
+              "diff": -50
             }
           ]
         },
@@ -1511,26 +1511,26 @@
             {
               "rack_no": "670",
               "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰVIII",
-              "games": 1626,
-              "bb": 5,
-              "rb": 1,
-              "diff": -535
+              "games": 87,
+              "bb": 0,
+              "rb": 0,
+              "diff": -147
             },
             {
               "rack_no": "671",
               "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰVIII",
-              "games": 782,
-              "bb": 2,
-              "rb": 0,
-              "diff": -519
+              "games": 515,
+              "bb": 0,
+              "rb": 2,
+              "diff": -338
             },
             {
               "rack_no": "672",
               "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰVIII",
-              "games": 1025,
-              "bb": 2,
-              "rb": 3,
-              "diff": -468
+              "games": 103,
+              "bb": 0,
+              "rb": 0,
+              "diff": -195
             }
           ]
         },
@@ -1541,34 +1541,34 @@
             {
               "rack_no": "673",
               "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
-              "games": 2614,
-              "bb": 10,
-              "rb": 6,
-              "diff": -144
+              "games": 227,
+              "bb": 0,
+              "rb": 1,
+              "diff": -184
             },
             {
               "rack_no": "675",
               "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
-              "games": 4571,
-              "bb": 18,
-              "rb": 12,
-              "diff": 212
+              "games": 1170,
+              "bb": 4,
+              "rb": 1,
+              "diff": -273
             },
             {
               "rack_no": "676",
               "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
-              "games": 4911,
-              "bb": 23,
-              "rb": 16,
-              "diff": 1345
+              "games": 1134,
+              "bb": 5,
+              "rb": 2,
+              "diff": 65
             },
             {
               "rack_no": "677",
               "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
-              "games": 3218,
-              "bb": 13,
-              "rb": 7,
-              "diff": -268
+              "games": 21,
+              "bb": 0,
+              "rb": 0,
+              "diff": -27
             }
           ]
         },
@@ -1579,210 +1579,210 @@
             {
               "rack_no": "678",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 7903,
-              "bb": 36,
-              "rb": 26,
-              "diff": 1491
+              "games": 1263,
+              "bb": 4,
+              "rb": 3,
+              "diff": -113
             },
             {
               "rack_no": "680",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 2221,
-              "bb": 6,
-              "rb": 5,
-              "diff": -387
+              "games": 804,
+              "bb": 1,
+              "rb": 2,
+              "diff": -695
             },
             {
               "rack_no": "681",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 2404,
-              "bb": 10,
-              "rb": 6,
-              "diff": 135
+              "games": 324,
+              "bb": 0,
+              "rb": 0,
+              "diff": -451
             },
             {
               "rack_no": "682",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 2516,
-              "bb": 7,
-              "rb": 7,
-              "diff": -557
+              "games": 2605,
+              "bb": 10,
+              "rb": 4,
+              "diff": -290
             },
             {
               "rack_no": "683",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 6106,
-              "bb": 20,
-              "rb": 20,
-              "diff": -43
+              "games": 342,
+              "bb": 0,
+              "rb": 0,
+              "diff": -444
             },
             {
               "rack_no": "685",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 1932,
-              "bb": 6,
-              "rb": 3,
-              "diff": -319
+              "games": 285,
+              "bb": 1,
+              "rb": 0,
+              "diff": -81
             },
             {
               "rack_no": "686",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 1444,
-              "bb": 3,
-              "rb": 3,
-              "diff": -786
+              "games": 2120,
+              "bb": 7,
+              "rb": 10,
+              "diff": 87
             },
             {
               "rack_no": "687",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 9462,
-              "bb": 42,
-              "rb": 36,
-              "diff": 3116
+              "games": 202,
+              "bb": 0,
+              "rb": 0,
+              "diff": -260
             },
             {
               "rack_no": "688",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 1618,
-              "bb": 5,
-              "rb": 10,
-              "diff": 164
+              "games": 1470,
+              "bb": 4,
+              "rb": 4,
+              "diff": -276
             },
             {
               "rack_no": "700",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 974,
-              "bb": 0,
-              "rb": 4,
-              "diff": -828
+              "games": 3349,
+              "bb": 11,
+              "rb": 10,
+              "diff": 131
             },
             {
               "rack_no": "701",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 7124,
-              "bb": 25,
-              "rb": 29,
-              "diff": 1000
+              "games": 1169,
+              "bb": 6,
+              "rb": 2,
+              "diff": 477
             },
             {
               "rack_no": "702",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 8000,
-              "bb": 31,
-              "rb": 36,
-              "diff": 1607
+              "games": 747,
+              "bb": 2,
+              "rb": 2,
+              "diff": -310
             },
             {
               "rack_no": "703",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 1180,
-              "bb": 3,
-              "rb": 2,
-              "diff": -356
+              "games": 2848,
+              "bb": 15,
+              "rb": 4,
+              "diff": 558
             },
             {
               "rack_no": "705",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 5729,
-              "bb": 20,
-              "rb": 15,
-              "diff": -367
+              "games": 630,
+              "bb": 1,
+              "rb": 1,
+              "diff": -303
             },
             {
               "rack_no": "706",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 1055,
-              "bb": 3,
+              "games": 202,
+              "bb": 0,
               "rb": 1,
-              "diff": -454
+              "diff": -223
             },
             {
               "rack_no": "707",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 3259,
-              "bb": 15,
-              "rb": 7,
-              "diff": 631
+              "games": 2854,
+              "bb": 18,
+              "rb": 12,
+              "diff": 1988
             },
             {
               "rack_no": "708",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 3174,
-              "bb": 7,
-              "rb": 10,
-              "diff": -1013
+              "games": 2032,
+              "bb": 11,
+              "rb": 6,
+              "diff": 807
             },
             {
               "rack_no": "710",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 3711,
-              "bb": 12,
-              "rb": 10,
-              "diff": -627
+              "games": 1237,
+              "bb": 1,
+              "rb": 2,
+              "diff": -822
             },
             {
               "rack_no": "711",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 1517,
-              "bb": 7,
-              "rb": 1,
-              "diff": 200
+              "games": 438,
+              "bb": 1,
+              "rb": 0,
+              "diff": -295
             },
             {
               "rack_no": "712",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 4157,
+              "games": 1535,
               "bb": 9,
-              "rb": 14,
-              "diff": -1700
+              "rb": 6,
+              "diff": 887
             },
             {
               "rack_no": "713",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 1650,
-              "bb": 4,
-              "rb": 1,
-              "diff": -808
+              "games": 760,
+              "bb": 0,
+              "rb": 0,
+              "diff": -492
             },
             {
               "rack_no": "715",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 5730,
-              "bb": 21,
-              "rb": 15,
-              "diff": -169
+              "games": 458,
+              "bb": 1,
+              "rb": 1,
+              "diff": -262
             },
             {
               "rack_no": "716",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 3617,
+              "games": 2847,
               "bb": 13,
-              "rb": 10,
-              "diff": -237
+              "rb": 11,
+              "diff": 987
             },
             {
               "rack_no": "717",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 2593,
+              "games": 967,
               "bb": 4,
-              "rb": 6,
-              "diff": -1092
+              "rb": 2,
+              "diff": -45
             },
             {
               "rack_no": "718",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 5513,
-              "bb": 22,
-              "rb": 15,
-              "diff": 348
+              "games": 2640,
+              "bb": 11,
+              "rb": 2,
+              "diff": 152
             },
             {
               "rack_no": "720",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 1025,
-              "bb": 1,
-              "rb": 2,
-              "diff": -791
+              "games": 848,
+              "bb": 2,
+              "rb": 3,
+              "diff": -78
             }
           ]
         },
@@ -1793,10 +1793,10 @@
             {
               "rack_no": "721",
               "machine_name": "LB不二子",
-              "games": 1957,
-              "bb": 9,
-              "rb": 5,
-              "diff": -1016
+              "games": 224,
+              "bb": 0,
+              "rb": 0,
+              "diff": -275
             }
           ]
         },
@@ -1807,10 +1807,10 @@
             {
               "rack_no": "722",
               "machine_name": "LBｴｳﾞｧﾝｹﾞﾘｦﾝ約束の扉",
-              "games": 237,
+              "games": 0,
               "bb": 0,
               "rb": 0,
-              "diff": -411
+              "diff": 0
             }
           ]
         },
@@ -1821,10 +1821,10 @@
             {
               "rack_no": "723",
               "machine_name": "LBｸﾚｱの秘宝伝",
-              "games": 1229,
+              "games": 304,
               "bb": 1,
-              "rb": 7,
-              "diff": -740
+              "rb": 0,
+              "diff": -137
             }
           ]
         },
@@ -1835,10 +1835,10 @@
             {
               "rack_no": "725",
               "machine_name": "LB異世界かるてっと",
-              "games": 1572,
-              "bb": 7,
-              "rb": 8,
-              "diff": -259
+              "games": 365,
+              "bb": 0,
+              "rb": 1,
+              "diff": -413
             }
           ]
         },
@@ -1849,10 +1849,10 @@
             {
               "rack_no": "726",
               "machine_name": "LBｹﾛｯﾄ5",
-              "games": 2775,
-              "bb": 12,
-              "rb": 12,
-              "diff": 415
+              "games": 2815,
+              "bb": 18,
+              "rb": 7,
+              "diff": 1751
             }
           ]
         },
@@ -1863,10 +1863,10 @@
             {
               "rack_no": "727",
               "machine_name": "Lﾊﾅﾋﾞ",
-              "games": 3027,
-              "bb": 10,
-              "rb": 12,
-              "diff": 72
+              "games": 454,
+              "bb": 1,
+              "rb": 0,
+              "diff": -308
             }
           ]
         },
@@ -1877,10 +1877,10 @@
             {
               "rack_no": "728",
               "machine_name": "LBｱﾚｯｸｽ ﾌﾞﾗｲﾄ",
-              "games": 2280,
-              "bb": 16,
-              "rb": 11,
-              "diff": 3897
+              "games": 2914,
+              "bb": 12,
+              "rb": 4,
+              "diff": 1004
             }
           ]
         }
