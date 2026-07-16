@@ -1114,7 +1114,7 @@ function renderTrendMachineTabs() {
 
   machineTabs.innerHTML = machines.map(mn => {
     const active = mn === trendMachine;
-    return `<button onclick="setTrendMachine('${mn.replace(/'/g,"\\'")}'')" style="padding:3px 10px;border-radius:12px;border:none;cursor:pointer;font-size:11px;font-weight:${active?'700':'400'};background:${active?'#1d3557':'#eee'};color:${active?'#fff':'#333'}">${mn}</button>`;
+    return `<button onclick="setTrendMachine('${mn.replace(/'/g,"\\'")}')" style="padding:3px 10px;border-radius:12px;border:none;cursor:pointer;font-size:11px;font-weight:${active?'700':'400'};background:${active?'#1d3557':'#eee'};color:${active?'#fff':'#333'}">${mn}</button>`;
   }).join('');
 
   renderTrendTable();
