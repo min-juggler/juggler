@@ -1137,6 +1137,31 @@ function estimateSetting(g, bb, rb) {
   return best;
 }
 
+// 合算確率のみの店（ダイナム等 combined_only）用の設定推定。
+// BB/RBの内訳が取れないため合算（総ボーナス）1/xで判定する。
+// 目安値は汎用ジャグラーのBB/RB合成: 6=1/120.5,5=1/126,4=1/137.6,3=1/149.8,2=1/164.5,1=1/174.2
+const COMBINED_SETTINGS = {1:174.2,2:164.5,3:149.8,4:137.6,5:126.1,6:120.5};
+function estimateSettingCombined(g, bonus) {
+  if (g < 1500 || bonus < 3) return null;
+  const cr = g / bonus;
+  let best = 1, bestScore = 9999;
+  for (const [s, v] of Object.entries(COMBINED_SETTINGS)) {
+    const score = Math.abs(cr - v) / v;
+    if (score < bestScore) { bestScore = score; best = parseInt(s); }
+  }
+  return best;
+}
+
+// スタンド1件から設定推定（内訳ありは通常、combined_onlyは合算で）
+function standEstimate(s) {
+  if (!s) return null;
+  const bonus = parseInt(s.total_bonus) || 0;
+  if (s.combined_only || ((parseInt(s.bb)||0) === 0 && (parseInt(s.rb)||0) === 0 && bonus > 0)) {
+    return estimateSettingCombined(s.games, bonus);
+  }
+  return estimateSetting(s.games, s.bb, s.rb);
+}
+
 const SETTING_COLORS = {
   6: '#2d6a4f', 5: '#52b788', 4: '#b7e4c7',
   3: '#ffe066', 2: '#ffa94d', 1: '#ff6b6b',
@@ -1171,7 +1196,7 @@ function renderTrendTable() {
     let consec = 0;
     for (const d of dates) {
       const s = dmap[d];
-      const est = s ? estimateSetting(s.games, s.bb, s.rb) : null;
+      const est = standEstimate(s);
       if (est && est >= 4) { consec++; if (consec >= 2) { keepRacks.add(rack); break; } }
       else consec = 0;
     }
@@ -1194,10 +1219,15 @@ function renderTrendTable() {
     for (const date of dates) {
       const s = rackMap[rack]?.[date];
       if (!s) { html += '<td style="padding:4px 6px;text-align:center;color:#ccc">-</td>'; continue; }
-      const est = estimateSetting(s.games, s.bb, s.rb);
+      const est = standEstimate(s);
       const bg = est ? SETTING_COLORS[est] : '#eee';
       const tc = est ? SETTING_TEXT_COLORS[est] : '#999';
-      const tip = s.games > 0 ? `${s.games}G BB${s.bb} RB${s.rb} 差${s.diff>=0?'+':''}${s.diff}` : '';
+      const isComb = s.combined_only || ((parseInt(s.bb)||0) === 0 && (parseInt(s.rb)||0) === 0 && (parseInt(s.total_bonus)||0) > 0);
+      const tip = s.games > 0
+        ? (isComb
+            ? `${s.games}G 合算1/${s.combined_prob || Math.round(s.games/(s.total_bonus||1))} (ボーナス${s.total_bonus||0}回)`
+            : `${s.games}G BB${s.bb} RB${s.rb} 差${s.diff>=0?'+':''}${s.diff}`)
+        : '';
       html += `<td style="padding:2px 4px;text-align:center" title="${tip}">`;
       if (est) {
         html += `<span style="display:inline-block;background:${bg};color:${tc};border-radius:4px;padding:2px 6px;font-weight:700">${est}</span>`;
