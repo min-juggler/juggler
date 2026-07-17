@@ -471,18 +471,32 @@ function buildTendencyMap() {
   }
 }
 
+// 判定に十分なサンプル(前日高設定→翌日の連続判定数)があるか。
+// 日数ではなくサンプル数が主軸。小規模店は日数が多くてもサンプルが貯まりにくい。
+function tendencyHasEnough(t) { return t && t.contTot >= 3; }
+
 // 据え置き店としての分かりやすい判定文（信頼度込み）
 function tendencyVerdict(t) {
-  if (!t || t.confidence === 'low' || t.contTot < 8) {
-    return { label: '⏳ 判定中（データ不足）', cls: 't-none',
-      note: t && t.needDays ? `あと約${t.needDays}日通えばラフ判定できます（現在${t ? t.days : 0}日分）` : 'まだ判定に十分なデータがありません' };
+  // サンプルが極端に少ない場合のみ「判定中」
+  if (!tendencyHasEnough(t)) {
+    let note;
+    if (!t) note = 'まだ判定に十分なデータがありません';
+    else if (t.days < 14) note = `あと約${Math.max(1, 14 - t.days)}日通えばラフ判定できます（現在${t.days}日分）`;
+    else note = `据え置き判定のサンプル不足（${t.days}日分あるが対象台が少ない小規模店）。3000G以上回る台が増えると判定できます。`;
+    return { label: '⏳ 判定中（データ不足）', cls: 't-none', note };
   }
-  const conf = t.confidence === 'high' ? '信頼度:高' : '信頼度:中';
-  if (t.signal === 'strong') return { label: `✅ 据え置き店`, cls: 't-strong', conf,
-    note: '前日の高設定台が翌日も残りやすい。朝イチは昨日の高設定台（🌅）が買い。' };
-  if (t.signal === 'weak') return { label: `△ やや据え置き`, cls: 't-weak', conf,
+  const ratio = t.base > 0 ? t.cont / t.base : 0;
+  // サンプルが中途半端(3〜7件) or 信頼度lowなら「参考」扱い
+  const rough = t.contTot < 8 || t.confidence === 'low';
+  const conf = t.confidence === 'high' ? '信頼度:高'
+    : rough ? `参考(サンプル${t.contTot}件)` : '信頼度:中';
+  if (t.signal === 'strong' || (rough && ratio >= 1.3)) return {
+    label: rough ? '△ 据え置き傾向あり(参考)' : '✅ 据え置き店', cls: rough ? 't-weak' : 't-strong', conf,
+    note: '前日の高設定台が翌日も残りやすい傾向。' + (rough ? 'サンプルが少ないので参考程度に。' : '朝イチは昨日の高設定台（🌅）が買い。') };
+  if (t.signal === 'weak' || (rough && ratio > 1)) return {
+    label: '△ やや据え置き', cls: 't-weak', conf,
     note: '多少の据え置き傾向あり。前日台は参考程度に。' };
-  return { label: `❌ 据え置き弱い（リセット寄り）`, cls: 't-none', conf,
+  return { label: '❌ 据え置き弱い（リセット寄り）', cls: 't-none', conf,
     note: '前日データに頼りすぎない方が無難。朝イチは博打になりやすい。' };
 }
 
@@ -499,8 +513,8 @@ function renderTendency(storeFilter) {
     const name = storeData?.stores?.[sid]?.name || sid;
     const t = analyzeStoreTendency(sid);
     const v = tendencyVerdict(t);
-    // データ不足の店は判定文だけ大きく出す
-    if (t.confidence === 'low' || t.contTot < 8) {
+    // サンプルが極端に少ない店だけ判定文を大きく出す（3件以上あれば参考として詳細表示）
+    if (!tendencyHasEnough(t)) {
       cards.push(`<div class="tendency-card">
         <div class="t-store">${name}</div>
         <div class="t-verdict ${v.cls}">${v.label}</div>
