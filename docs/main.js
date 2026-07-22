@@ -150,16 +150,47 @@ function calcExpectedProfitFromProbs(probs, timeMin, budgetYen) {
   return Math.round(weightedEvCoins * actualGames * 4);
 }
 
-function calcScore(probs, expectedSetting, stand, fit = 1) {
+// 【辛口】RB確率ペナルティ。マイジャグ/アイム等はRBが設定の主軸。
+// BBが上振れて合成が良く見えても、RBが低設定域なら大きく減点する。
+// サンプル不足(RB<4 or 1500G未満)は「判定不能」として減点しない。
+function rbPenaltyFactor(stand, settings) {
+  if (stand.combined_only || !settings) return 1;
+  const rb = parseInt(stand.rb) || 0, games = stand.games || 0;
+  if (games < 1500 || rb < 4) return 1;
+  const rbProb = games / rb;
+  const rb4 = settings[4] && settings[4].rb, rb2 = settings[2] && settings[2].rb, rb1 = settings[1] && settings[1].rb;
+  if (!rb4 || !rb2 || !rb1) return 1;
+  if (rbProb <= rb4) return 1;            // 設定4以上のRB → 減点なし
+  if (rbProb >= rb1) return 0.12;         // 設定1より悪いRB → ほぼ壊滅
+  if (rbProb >= rb2) return 0.3;          // 設定2以下のRB → 大幅減点
+  const t = (rbProb - rb4) / (rb2 - rb4); // 設定4〜2の間を線形に 1.0→0.3
+  return 1 - t * 0.7;
+}
+
+// 【辛口】RBの試行回数が少ないと高設定判定を割り引く。RB主軸ゆえRB数が肝。
+function rbConfidence(stand) {
+  if (stand.combined_only) return 1;
+  const rb = parseInt(stand.rb) || 0;
+  if (rb >= 10) return 1;
+  if (rb <= 2) return 0.5;
+  return 0.5 + (rb - 2) * 0.0625;        // RB2→0.5, RB10→1.0
+}
+
+function calcScore(probs, expectedSetting, stand, fit = 1, settings = null) {
   if (!probs || !expectedSetting) return 0;
   const highProb = (probs[4] || 0) + (probs[5] || 0) + (probs[6] || 0);
   const s6prob = probs[6] || 0;
   const gameBonus = Math.min(stand.games / 3000, 1.0);
-  // 設定推定の部分は「当てはまり度」で割引（BB/RB/合成が矛盾する台は減点）
-  const settingPart = (highProb * 55 + s6prob * 25) * fit;
-  // 差枚ボーナス（±8点まで）: 勝っている台を加点
-  const diffBonus = stand.combined_only ? 0 : Math.max(-8, Math.min(8, (stand.diff || 0) / 250));
-  return Math.max(0, Math.min(100, Math.round(settingPart + gameBonus * 20 + diffBonus)));
+  // 設定推定の部分は「当てはまり度 × RB確率ペナルティ × RB試行回数の信頼度」で割引（辛口）
+  const rbPen = rbPenaltyFactor(stand, settings);
+  const rbConf = rbConfidence(stand);
+  const settingPart = (highProb * 55 + s6prob * 25) * fit * rbPen * rbConf;
+  // 差枚ボーナス: 勝ってても過信しない（BB上振れ差枚対策で+側は弱め+4まで、-側は-8まで素直に減点）
+  const diff = stand.diff || 0;
+  const diffBonus = stand.combined_only ? 0 : (diff >= 0 ? Math.min(4, diff / 400) : Math.max(-8, diff / 250));
+  // 合成のみの店(ダイナム系)はBB上振れを見抜けないぶん一律で辛口割引
+  const combPenalty = stand.combined_only ? 0.8 : 1;
+  return Math.max(0, Math.min(100, Math.round((settingPart + gameBonus * 20 + diffBonus) * combPenalty)));
 }
 
 function scoreToStars(score) {
@@ -193,9 +224,17 @@ function buildReasonTags(stand, probs, expectedSetting) {
   if (s6prob > 0.3) tags.push({ text: `設定6推定${Math.round(s6prob * 100)}%`, good: true });
   else if (s56prob > 0.4) tags.push({ text: `設定5/6推定${Math.round(s56prob * 100)}%`, good: true });
   else if (highProb > 0.5) tags.push({ text: `高設定推定${Math.round(highProb * 100)}%`, good: true });
-  if (stand.rb > 0 && stand.games > 0) {
+  if (!stand.combined_only && stand.rb > 0 && stand.games > 0) {
     const rbRate = stand.games / stand.rb;
+    const set = getMachineSettings(stand.machine_name || '');
     if (rbRate < 250) tags.push({ text: `RB好調 1/${Math.round(rbRate)}`, good: true });
+    // 【辛口】RBが低設定域なら警告（BB上振れ・差枚に騙されない）
+    else if (stand.games >= 1500 && stand.rb >= 4 && set[2] && rbRate >= set[2].rb) {
+      tags.push({ text: `RB不調 1/${Math.round(rbRate)}（低設定濃厚）`, good: false });
+      if ((stand.diff || 0) > 300) tags.push({ text: 'BB上振れ注意（差枚に騙されるな）', good: false });
+    } else if (stand.games >= 1500 && stand.rb >= 4 && set[4] && rbRate > set[4].rb) {
+      tags.push({ text: `RBやや不足 1/${Math.round(rbRate)}`, good: false });
+    }
   }
   if (stand.combined_only && stand.combined_prob > 0) {
     if (stand.combined_prob < 135) tags.push({ text: `合成好調 1/${Math.round(stand.combined_prob)}`, good: true });
@@ -358,7 +397,7 @@ function scoreStands(stands, budget, timeMin) {
     const probs = calcSettingLikelihood(stand, settings);
     const expectedSetting = calcExpectedSetting(probs);
     const fit = calcFitQuality(stand, settings);
-    const score = calcScore(probs, expectedSetting, stand, fit);
+    const score = calcScore(probs, expectedSetting, stand, fit, settings);
     const expectedProfit = calcExpectedProfitFromProbs(probs, timeMin, budget);
     const tags = buildReasonTags(stand, probs, expectedSetting);
     return { ...stand, probs, expectedSetting, score, expectedProfit, tags };
