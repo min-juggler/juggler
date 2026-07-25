@@ -391,6 +391,33 @@ function populateStoreSelect() {
 }
 
 // ===== 分析 =====
+// 【夕方型】設定5-6が「ほぼ確定」と言える台か。
+// 十分なサンプル(4000G以上)で、合算とRBの"両方"が高設定域で一致している台だけ通す。
+// これによりBB上振れで合算だけ良く見える偽物（例:合算1/112だがRB1/303）を弾く。
+function isConfirmedHigh(stand, settings) {
+  if (!settings) return false;
+  const g = stand.games || 0;
+  if (stand.combined_only) {
+    const tb = parseInt(stand.total_bonus) || 0;
+    if (g < 4000 || tb < 10) return false;
+    return (g / tb) <= (settings[5] ? settings[5].combined : 128);
+  }
+  const bb = parseInt(stand.bb) || 0, rb = parseInt(stand.rb) || 0;
+  if (g < 4000 || (bb + rb) < 10 || rb < 1) return false;
+  const comb = g / (bb + rb), rbProb = g / rb;
+  const comb4 = settings[4] ? settings[4].combined : 138;
+  const comb5 = settings[5] ? settings[5].combined : 128;
+  const rb5 = settings[5] ? settings[5].rb : 255;
+  const rb4 = settings[4] ? settings[4].rb : 290;
+  const isRbAxis = /ｱｲﾑ|アイム|ﾏｲｼﾞｬｸﾞﾗｰ|マイジャグ/.test(stand.machine_name || '');
+  if (isRbAxis) {
+    // RB主軸: RBが設定5以下(高設定域) かつ 合算も設定4以下(整合＝BB上振れでない)
+    return rbProb <= rb5 && comb <= comb4;
+  }
+  // ゴーゴー系(合算主軸): 合算が設定5以下 かつ RBも設定4以下(BB上振れの偽物を排除)
+  return comb <= comb5 && rbProb <= rb4;
+}
+
 function scoreStands(stands, budget, timeMin) {
   return stands.map(stand => {
     const settings = getMachineSettings(stand.machine_name || '');
@@ -400,7 +427,9 @@ function scoreStands(stands, budget, timeMin) {
     const score = calcScore(probs, expectedSetting, stand, fit, settings);
     const expectedProfit = calcExpectedProfitFromProbs(probs, timeMin, budget);
     const tags = buildReasonTags(stand, probs, expectedSetting);
-    return { ...stand, probs, expectedSetting, score, expectedProfit, tags };
+    const confirmed = isConfirmedHigh(stand, settings);
+    if (confirmed) tags.unshift({ text: '◎設定5-6ほぼ確定（合算×RB一致）', good: true });
+    return { ...stand, probs, expectedSetting, score, expectedProfit, tags, _confirmed: confirmed };
   });
 }
 
@@ -441,8 +470,11 @@ function analyze() {
   const verdict = scored.filter(s => s.games >= VERDICT_MIN_GAMES && high56(s) >= VERDICT_MIN_HIGH56).slice(0, 8);
   renderVerdict(verdict);
 
-  // 夕方：1000G以上で高スコア台
-  const evening = scored.filter(s => s.games >= 1000 && s.score >= 45).slice(0, 10);
+  // 夕方：◎確定台(4000G+/合算×RB一致)を最優先で、次に1000G以上の高スコア台
+  const evening = scored
+    .filter(s => s._confirmed || (s.games >= 1000 && s.score >= 45))
+    .sort((a, b) => (b._confirmed ? 1 : 0) - (a._confirmed ? 1 : 0) || b.score - a.score)
+    .slice(0, 10);
   renderEveningList(evening);
   renderAllStands(scored);
   // 店舗フィルターに合わせて傾向タブの店舗も切り替え
@@ -525,18 +557,24 @@ function tendencyVerdict(t) {
     return { label: '⏳ 判定中（データ不足）', cls: 't-none', note };
   }
   const ratio = t.base > 0 ? t.cont / t.base : 0;
+  const hitPct = Math.round(t.cont * 100);       // 前日高→翌日も高の「絶対的中率」
+  const dropPct = Math.round((1 - t.cont) * 100); // 翌日は高設定でなかった率
   // サンプルが中途半端(3〜7件) or 信頼度lowなら「参考」扱い
   const rough = t.contTot < 8 || t.confidence === 'low';
   const conf = t.confidence === 'high' ? '信頼度:高'
     : rough ? `参考(サンプル${t.contTot}件)` : '信頼度:中';
-  if (t.signal === 'strong' || (rough && ratio >= 1.3)) return {
-    label: rough ? '△ 据え置き傾向あり(参考)' : '✅ 据え置き店', cls: rough ? 't-weak' : 't-strong', conf,
-    note: '前日の高設定台が翌日も残りやすい傾向。' + (rough ? 'サンプルが少ないので参考程度に。' : '朝イチは昨日の高設定台（🌅）が買い。') };
-  if (t.signal === 'weak' || (rough && ratio > 1)) return {
-    label: '△ やや据え置き', cls: 't-weak', conf,
-    note: '多少の据え置き傾向あり。前日台は参考程度に。' };
+  // 【重要】比率だけでなく「絶対的中率」を主軸に判定する。
+  // 比率が1.3倍でも的中率が3割なら「7割外れる」ので据え置き店とは呼ばない。
+  const strongAbs = t.cont >= 0.45 && ratio >= 1.3;  // 半分近く残る＝本当に信頼できる
+  const midAbs    = t.cont >= 0.35 && ratio >= 1.15; // 多少は効くが過信禁物
+  if (strongAbs && !rough) return {
+    label: '✅ 据え置き店', cls: 't-strong', conf,
+    note: `前日の高設定台の${hitPct}%が翌日も高設定（通常の${ratio.toFixed(1)}倍）。朝イチは昨日の高設定台（🌅）が比較的信頼できる。それでも当日データで最終確認を。` };
+  if (midAbs || (strongAbs && rough)) return {
+    label: '△ やや据え置き（参考）', cls: 't-weak', conf,
+    note: `前日高設定台が翌日も残る率は${hitPct}%止まり（通常の${ratio.toFixed(1)}倍）。多少の傾向はあるが過信は禁物。席は投入頻度で選び、当日データで確定させるのが安全。` };
   return { label: '❌ 据え置き弱い（リセット寄り）', cls: 't-none', conf,
-    note: '前日データに頼りすぎない方が無難。朝イチは博打になりやすい。' };
+    note: `前日高設定台が翌日も高設定なのは${hitPct}%だけ（約${dropPct}%は転落）。昨日の台は当てにせず、当日の実測（RB確率・合算）で判断を。朝イチ据え置き狙いは博打になりやすい。` };
 }
 
 function renderTendency(storeFilter) {
@@ -631,11 +669,12 @@ function renderMorningList(stands) {
 function morningTrustTag(sid) {
   const t = storeTendencyMap[sid];
   const v = tendencyVerdict(t);
-  if (v.cls === 't-strong') return { text: '✅ 据え置き店◎ 信じて狙える', good: true };
-  if (v.cls === 't-weak')   return { text: '△ やや据え置き 参考程度', good: true };
+  const hitPct = t && t.cont ? Math.round(t.cont * 100) : null;
+  if (v.cls === 't-strong') return { text: `✅ 据え置き傾向あり（翌日も高${hitPct}%）当日で最終確認`, good: true };
+  if (v.cls === 't-weak')   return { text: `△ 据え置き弱め（翌日も高${hitPct}%）参考程度`, good: false };
   if (t && (t.confidence === 'low' || t.contTot < 8))
     return { text: '⚠️ 据え置きデータ不足 自己責任', good: false };
-  return { text: '❌ リセット寄り 朝イチは博打', good: false };
+  return { text: `❌ リセット寄り（翌日も高${hitPct ?? '?'}%）朝イチは博打`, good: false };
 }
 
 function renderEveningList(stands) {
