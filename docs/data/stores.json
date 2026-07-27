@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-07-27T12:56:26.104Z",
+  "fetched_at": "2026-07-27T17:04:44.297Z",
   "stores": {
     "yonezawa": {
       "name": "アイランド米沢店",
@@ -1890,26 +1890,26 @@
             {
               "rack_no": "501",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 444,
+              "games": 518,
               "bb": 3,
               "rb": 0,
-              "diff": 203
+              "diff": 110
             },
             {
               "rack_no": "502",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 911,
+              "games": 971,
               "bb": 6,
               "rb": 1,
-              "diff": 528
+              "diff": 434
             },
             {
               "rack_no": "503",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 2170,
+              "games": 2350,
               "bb": 8,
-              "rb": 6,
-              "diff": 60
+              "rb": 8,
+              "diff": -34
             },
             {
               "rack_no": "505",
@@ -1938,10 +1938,10 @@
             {
               "rack_no": "508",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 1062,
+              "games": 1120,
               "bb": 1,
               "rb": 5,
-              "diff": -683
+              "diff": -777
             },
             {
               "rack_no": "510",
@@ -1978,18 +1978,18 @@
             {
               "rack_no": "525",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 386,
-              "bb": 4,
+              "games": 695,
+              "bb": 5,
               "rb": 1,
-              "diff": 413
+              "diff": 621
             },
             {
               "rack_no": "526",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 1655,
+              "games": 1677,
               "bb": 6,
               "rb": 6,
-              "diff": -60
+              "diff": -107
             },
             {
               "rack_no": "527",
@@ -2002,34 +2002,34 @@
             {
               "rack_no": "528",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 131,
+              "games": 189,
               "bb": 0,
               "rb": 0,
-              "diff": -143
+              "diff": -207
             },
             {
               "rack_no": "530",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 2139,
+              "games": 2171,
               "bb": 13,
               "rb": 4,
-              "diff": 1372
+              "diff": 1347
             },
             {
               "rack_no": "531",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 1769,
-              "bb": 4,
-              "rb": 6,
-              "diff": -470
+              "games": 2027,
+              "bb": 5,
+              "rb": 7,
+              "diff": -449
             },
             {
               "rack_no": "532",
               "machine_name": "S ネオアイムジャグラーEX KK⑱",
-              "games": 3498,
-              "bb": 18,
-              "rb": 7,
-              "diff": 1054
+              "games": 3838,
+              "bb": 20,
+              "rb": 9,
+              "diff": 1364
             }
           ]
         },
@@ -2040,10 +2040,10 @@
             {
               "rack_no": "511",
               "machine_name": "S ミスタージャグラー KK②",
-              "games": 2051,
+              "games": 2298,
               "bb": 6,
               "rb": 7,
-              "diff": -262
+              "diff": -544
             },
             {
               "rack_no": "512",
@@ -2062,10 +2062,10 @@
             {
               "rack_no": "513",
               "machine_name": "S ゴーゴージャグラー3 KA",
-              "games": 2992,
-              "bb": 13,
-              "rb": 10,
-              "diff": 433
+              "games": 3877,
+              "bb": 15,
+              "rb": 14,
+              "diff": 258
             }
           ]
         },
@@ -2092,18 +2092,18 @@
             {
               "rack_no": "517",
               "machine_name": "SウルトラミラクルジャグラーKT④",
-              "games": 1328,
+              "games": 1432,
               "bb": 11,
               "rb": 1,
-              "diff": 960
+              "diff": 872
             },
             {
               "rack_no": "518",
               "machine_name": "SウルトラミラクルジャグラーKT④",
-              "games": 2827,
-              "bb": 11,
-              "rb": 9,
-              "diff": 318
+              "games": 4035,
+              "bb": 19,
+              "rb": 13,
+              "diff": 1102
             }
           ]
         },
