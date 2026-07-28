@@ -418,6 +418,53 @@ function isConfirmedHigh(stand, settings) {
   return comb <= comb5 && rbProb <= rb4;
 }
 
+// ===== 現地用「この台どう？」判定電卓 =====
+function calcManual() {
+  const mn = document.getElementById('calc-machine').value;
+  const g = parseInt(document.getElementById('calc-games').value) || 0;
+  const bb = parseInt(document.getElementById('calc-bb').value) || 0;
+  const rb = parseInt(document.getElementById('calc-rb').value) || 0;
+  const el = document.getElementById('calc-result');
+  if (g <= 0 || (bb + rb) <= 0) {
+    el.innerHTML = `<div style="background:#eee;border-radius:8px;padding:12px;font-size:13px">ゲーム数とBB/RBを入れてください。</div>`;
+    return;
+  }
+  const settings = getMachineSettings(mn);
+  const stand = { machine_name: mn, games: g, bb, rb, diff: 0 };
+  const probs = calcSettingLikelihood(stand, settings);
+  const es = calcExpectedSetting(probs);
+  const high = probs ? (probs[4] || 0) + (probs[5] || 0) + (probs[6] || 0) : 0;
+  const rbAxis = /ｱｲﾑ|アイム|ﾏｲｼﾞｬｸﾞﾗｰ|マイジャグ/.test(mn);
+  const rbP = rb > 0 ? g / rb : Infinity;
+  const combP = (bb + rb) > 0 ? g / (bb + rb) : Infinity;
+  const fmt = v => isFinite(v) ? `1/${Math.round(v)}` : '-';
+
+  // 判定（座る台ガイドの基準に準拠）
+  let verdict, cls, note;
+  if (g < 2000) {
+    verdict = '⏳ まだ判断できない';
+    cls = 'calc-wait';
+    note = `G${g}はサンプル不足（2000G以上で判定）。この数字はブレます。回してから再判定を。`;
+  } else if (rbAxis) {
+    if (rbP <= 250) { verdict = '✅ 座ってOK'; cls = 'calc-go'; note = `RB${fmt(rbP)}は設定4以上の域。本物の可能性が高い。`; }
+    else if (rbP <= 290) { verdict = '△ 微妙（設定3-4）'; cls = 'calc-mid'; note = `RB${fmt(rbP)}は設定3-4のグレー。他に良い台が空いてればそっち優先。`; }
+    else { verdict = '❌ 座るな（低設定濃厚）'; cls = 'calc-stop'; note = `RB${fmt(rbP)}は設定1-2域。合算${fmt(combP)}が良く見えてもBB上振れの罠。`; }
+  } else {
+    if (combP <= 128 && rbP <= 290) { verdict = '✅ 座ってOK'; cls = 'calc-go'; note = `合算${fmt(combP)}・RB${fmt(rbP)}とも高設定域で一致。本物。`; }
+    else if (combP <= 138 && rbP <= 320) { verdict = '△ 微妙（設定4前後）'; cls = 'calc-mid'; note = `合算${fmt(combP)}は設定4級だが確定的でない。`; }
+    else { verdict = '❌ 座るな'; cls = 'calc-stop'; note = combP <= 128 ? `合算${fmt(combP)}は良いがRB${fmt(rbP)}が弱くBB偏り。罠の可能性。` : `合算${fmt(combP)}・RB${fmt(rbP)}とも低設定域。`; }
+  }
+  el.innerHTML = `
+    <div class="calc-verdict ${cls}">${verdict}</div>
+    <div class="calc-stats">
+      <span>推定設定 <b>${es ? es.toFixed(1) : '-'}</b></span>
+      <span>高設定確率 <b>${Math.round(high * 100)}%</b></span>
+      <span>RB <b>${fmt(rbP)}</b></span>
+      <span>合算 <b>${fmt(combP)}</b></span>
+    </div>
+    <div class="calc-note">${note}</div>`;
+}
+
 function scoreStands(stands, budget, timeMin) {
   return stands.map(stand => {
     const settings = getMachineSettings(stand.machine_name || '');

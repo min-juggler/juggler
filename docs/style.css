@@ -473,3 +473,14 @@ body {
   color: var(--text-muted);
   font-size: 14px;
 }
+
+/* ===== 現地用 台判定電卓 ===== */
+.calc-verdict { font-size: 20px; font-weight: 800; text-align: center; padding: 14px; border-radius: 10px; margin-bottom: 10px; }
+.calc-go   { background: #2d6a4f; color: #fff; }
+.calc-mid  { background: #f0ad4e; color: #fff; }
+.calc-stop { background: #e63946; color: #fff; }
+.calc-wait { background: #6c757d; color: #fff; }
+.calc-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.calc-stats span { flex: 1 1 40%; background: #f5f5f5; border-radius: 6px; padding: 8px 10px; font-size: 13px; color: #555; }
+.calc-stats span b { color: #1d3557; font-size: 15px; }
+.calc-note { font-size: 13px; line-height: 1.7; color: #444; background: #fff8e1; border-radius: 6px; padding: 10px; }

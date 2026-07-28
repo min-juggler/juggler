@@ -93,6 +93,69 @@
         </div>
       </section>
 
+      <!-- 現地で使う台判定電卓 -->
+      <section class="card" id="calc-card">
+        <h2 class="card-title">🎰 この台どう？（現地で数字を入れて即判定）</h2>
+        <p style="font-size:12px;color:#888;margin:-4px 0 10px">台のデータパネルの「累計ゲーム数・BB・RB」を入れるだけ。ネットのデータと違ってても、目の前の台の生数字で判定します。</p>
+        <div class="form-row">
+          <label>機種</label>
+          <select id="calc-machine">
+            <option value="マイジャグラーⅤ">マイジャグ</option>
+            <option value="ネオアイムジャグラーEX">アイム</option>
+            <option value="ゴーゴージャグラー">ゴーゴー</option>
+            <option value="ミスタージャグラー">ミスター</option>
+            <option value="ハッピージャグラー">その他(ハッピー/ファンキー等)</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>ゲーム数</label>
+          <div class="input-group"><input type="number" id="calc-games" placeholder="例: 3000" step="100"><span class="unit">G</span></div>
+        </div>
+        <div class="form-row">
+          <label>BB回数</label>
+          <div class="input-group"><input type="number" id="calc-bb" placeholder="例: 12"><span class="unit">回</span></div>
+        </div>
+        <div class="form-row">
+          <label>RB回数</label>
+          <div class="input-group"><input type="number" id="calc-rb" placeholder="例: 12"><span class="unit">回</span></div>
+        </div>
+        <button class="btn-primary btn-full" onclick="calcManual()">判定する</button>
+        <div id="calc-result" style="margin-top:12px"></div>
+      </section>
+
+      <!-- 座る台の見分け方ガイド（現地判断用・常設） -->
+      <section class="card" id="seat-guide-card">
+        <details>
+          <summary style="font-weight:700;font-size:15px;cursor:pointer;color:#1d3557">🪑 座る台の見分け方（タップで開く）</summary>
+          <div style="font-size:13px;line-height:1.9;color:#333;margin-top:10px">
+            <p style="color:#888;font-size:12px;margin-bottom:8px">※アプリのリストは"当たりを付ける参考"。最終判断は目の前の台の今の数字（上の電卓）で。</p>
+            <div style="background:#e8f5e9;border-radius:8px;padding:10px;margin-bottom:8px">
+              <b>① 座っていい台</b><br>
+              ・マイジャグ/アイム → <b>RB 1/250以下</b><br>
+              ・ゴーゴー/ミスター等 → <b>合算 1/128以下 かつ RB 1/290以下</b><br>
+              ・どちらも <b>G2000以上</b>（未満はブレるので信用しない）
+            </div>
+            <div style="background:#ffebee;border-radius:8px;padding:10px;margin-bottom:8px">
+              <b>② 即・除外する罠</b><br>
+              ・差枚が大きくプラス(+1500超)なのに <b>RB 1/300超</b> → BB上振れの偽物。座らない<br>
+              ・リストで上位でも、現地でRBが①を割ってたら外す
+            </div>
+            <div style="background:#e3f2fd;border-radius:8px;padding:10px;margin-bottom:8px">
+              <b>③ 穴場（群衆が見落とす本物）</b><br>
+              ・差枚は地味orマイナスなのに <b>RB 1/250以下</b> の空き台 → 狙い目
+            </div>
+            <div style="background:#fff3e0;border-radius:8px;padding:10px;margin-bottom:8px">
+              <b>④ 空いてなかったら</b><br>
+              ・本物が全部埋まってる → <b>打たない・帰るが正解</b>。空いてる罠台に妥協しない
+            </div>
+            <div style="background:#f3e5f5;border-radius:8px;padding:10px">
+              <b>⑤ 座った後</b><br>
+              ・1000gごとに①の数字をキープしてるか再確認。割れたら即撤退
+            </div>
+          </div>
+        </details>
+      </section>
+
       <!-- 辛口判定（鉄板台 / 撤退推奨） -->
       <section id="verdict-section" class="hidden">
         <div id="verdict-banner"></div>
@@ -244,6 +307,6 @@
 
   </div><!-- /app -->
 
-  <script src="main.js?v=20260725"></script>
+  <script src="main.js?v=20260728"></script>
 </body>
 </html>
