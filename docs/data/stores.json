@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-07-28T14:07:20.484Z",
+  "fetched_at": "2026-07-28T14:10:41.840Z",
   "stores": {
     "yonezawa": {
       "name": "アイランド米沢店",
@@ -2902,67 +2902,6 @@
               "diff": 0,
               "total_bonus": 29,
               "combined_prob": 159,
-              "combined_only": true
-            }
-          ]
-        },
-        {
-          "machine_name": "ＳマイジャグラーⅤＫＤ",
-          "count": 5,
-          "stands": [
-            {
-              "rack_no": "460",
-              "machine_name": "ＳマイジャグラーⅤＫＤ",
-              "games": 8645,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0,
-              "total_bonus": 65,
-              "combined_prob": 133,
-              "combined_only": true
-            },
-            {
-              "rack_no": "461",
-              "machine_name": "ＳマイジャグラーⅤＫＤ",
-              "games": 5504,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0,
-              "total_bonus": 32,
-              "combined_prob": 172,
-              "combined_only": true
-            },
-            {
-              "rack_no": "462",
-              "machine_name": "ＳマイジャグラーⅤＫＤ",
-              "games": 6512,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0,
-              "total_bonus": 44,
-              "combined_prob": 148,
-              "combined_only": true
-            },
-            {
-              "rack_no": "463",
-              "machine_name": "ＳマイジャグラーⅤＫＤ",
-              "games": 1380,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0,
-              "total_bonus": 3,
-              "combined_prob": 460,
-              "combined_only": true
-            },
-            {
-              "rack_no": "464",
-              "machine_name": "ＳマイジャグラーⅤＫＤ",
-              "games": 6760,
-              "bb": 0,
-              "rb": 0,
-              "diff": 0,
-              "total_bonus": 52,
-              "combined_prob": 130,
               "combined_only": true
             }
           ]
