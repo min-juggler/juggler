@@ -432,11 +432,34 @@ function toggleBudou() {
   row.style.display = (opt && opt.dataset.budou === '1') ? '' : 'none';
 }
 
-// ぶどう確率(1/x)から高設定寄りかの粗い参考判定。※要2000G以上・あくまで補助
+// ぶどう確率(1/x)から高設定寄りかの粗い参考判定。※要1500G以上・あくまで補助
 function budouHint(bp) {
   if (bp <= 5.85) return { txt: '高設定寄り', good: true };
   if (bp >= 6.05) return { txt: '低設定寄り', good: false };
   return { txt: '中間', good: null };
+}
+
+// ===== ぶどうライブカウンター（座ってから数える） =====
+let _budouCount = 0;
+function budouInc() { _budouCount++; refreshBudou(); }
+function budouReset() {
+  _budouCount = 0;
+  const mg = document.getElementById('calc-mygames'); if (mg) mg.value = '';
+  refreshBudou();
+}
+function myGamesAdd(n) {
+  const el = document.getElementById('calc-mygames');
+  if (!el) return;
+  el.value = Math.max(0, (parseInt(el.value) || 0) + n);
+  refreshBudou();
+}
+function refreshBudou() {
+  const cEl = document.getElementById('budou-count');
+  const rEl = document.getElementById('budou-rate');
+  if (!cEl || !rEl) return;
+  const mg = parseInt(document.getElementById('calc-mygames').value) || 0;
+  cEl.textContent = _budouCount;
+  rEl.textContent = (_budouCount > 0 && mg > 0) ? `1/${(mg / _budouCount).toFixed(2)}` : '1/-';
 }
 
 function calcManual() {
@@ -444,7 +467,7 @@ function calcManual() {
   const g = parseInt(document.getElementById('calc-games').value) || 0;
   const bb = parseInt(document.getElementById('calc-bb').value) || 0;
   const rb = parseInt(document.getElementById('calc-rb').value) || 0;
-  const budou = parseInt(document.getElementById('calc-budou').value) || 0;
+  const myGames = parseInt(document.getElementById('calc-mygames').value) || 0;
   const el = document.getElementById('calc-result');
   if (g <= 0 || (bb + rb) <= 0) {
     el.innerHTML = `<div style="background:#eee;border-radius:8px;padding:12px;font-size:13px">ゲーム数とBB/RBを入れてください。</div>`;
@@ -475,14 +498,14 @@ function calcManual() {
     else if (combP <= 138 && rbP <= 320) { verdict = '△ 微妙（設定4前後）'; cls = 'calc-mid'; note = `合算${fmt(combP)}は設定4級だが確定的でない。`; }
     else { verdict = '❌ 座るな'; cls = 'calc-stop'; note = combP <= 128 ? `合算${fmt(combP)}は良いがRB${fmt(rbP)}が弱くBB偏り。罠の可能性。` : `合算${fmt(combP)}・RB${fmt(rbP)}とも低設定域。`; }
   }
-  // ぶどう補助（対象機種＆入力あり時のみ）
+  // ぶどう補助（対象機種＆座ってからカウントした自分の区間のみ）
   let budouHtml = '';
-  if (budouRelevant(mn) && budou > 0 && g > 0) {
-    const bp = g / budou;
+  if (budouRelevant(mn) && _budouCount > 0 && myGames > 0) {
+    const bp = myGames / _budouCount;
     const h = budouHint(bp);
-    const enough = g >= 2000;
+    const enough = myGames >= 1500;
     const mark = h.good === true ? '◎' : h.good === false ? '▲' : '・';
-    budouHtml = `<div class="calc-note" style="background:#eef7ff">🍇 ぶどう 1/${bp.toFixed(2)} → ${mark}${h.txt}${enough ? '' : '（※G2000未満で判断不可、参考値）'}<br><span style="font-size:11px;color:#888">ぶどうは補助指標。主軸はあくまでRB。両方が高設定を示せば確信度アップ。</span></div>`;
+    budouHtml = `<div class="calc-note" style="background:#eef7ff">🍇 自分のぶどう 1/${bp.toFixed(2)}（自分の${myGames}Gでぶどう${_budouCount}個）→ ${mark}${h.txt}${enough ? '' : '<br>※自分の回転が1500G未満なのでまだ参考値'}<br><span style="font-size:11px;color:#888">ぶどうは補助。主軸はRB。両方が高設定を示せば確信度アップ。</span></div>`;
   }
   el.innerHTML = `
     <div class="calc-verdict ${cls}">${verdict}</div>
