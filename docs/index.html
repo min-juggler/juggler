@@ -99,12 +99,13 @@
         <p style="font-size:12px;color:#888;margin:-4px 0 10px">台のデータパネルの「累計ゲーム数・BB・RB」を入れるだけ。ネットのデータと違ってても、目の前の台の生数字で判定します。</p>
         <div class="form-row">
           <label>機種</label>
-          <select id="calc-machine">
-            <option value="マイジャグラーⅤ">マイジャグ</option>
+          <select id="calc-machine" onchange="toggleBudou()">
+            <option value="マイジャグラーⅤ" data-budou="1">マイジャグ</option>
+            <option value="ファンキージャグラー2" data-budou="1">ファンキー</option>
+            <option value="ミスタージャグラー" data-budou="1">ミスター</option>
             <option value="ネオアイムジャグラーEX">アイム</option>
             <option value="ゴーゴージャグラー">ゴーゴー</option>
-            <option value="ミスタージャグラー">ミスター</option>
-            <option value="ハッピージャグラー">その他(ハッピー/ファンキー等)</option>
+            <option value="ハッピージャグラー">その他(ハッピー等)</option>
           </select>
         </div>
         <div class="form-row">
@@ -118,6 +119,10 @@
         <div class="form-row">
           <label>RB回数</label>
           <div class="input-group"><input type="number" id="calc-rb" placeholder="例: 12"><span class="unit">回</span></div>
+        </div>
+        <div class="form-row" id="calc-budou-row">
+          <label>ぶどう総数<br><span style="font-size:10px;color:#aaa">補助・任意</span></label>
+          <div class="input-group"><input type="number" id="calc-budou" placeholder="例: 420"><span class="unit">個</span></div>
         </div>
         <button class="btn-primary btn-full" onclick="calcManual()">判定する</button>
         <div id="calc-result" style="margin-top:12px"></div>
@@ -307,6 +312,6 @@
 
   </div><!-- /app -->
 
-  <script src="main.js?v=20260728"></script>
+  <script src="main.js?v=20260728b"></script>
 </body>
 </html>

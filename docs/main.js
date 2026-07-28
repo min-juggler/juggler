@@ -419,11 +419,32 @@ function isConfirmedHigh(stand, settings) {
 }
 
 // ===== 現地用「この台どう？」判定電卓 =====
+// ぶどう総数で設定を補助判定できる機種（マイジャグ/ファンキー/ミスター）。アイム・ゴーゴーはぶどう設定差ほぼ無し。
+const BUDOU_MACHINES = ['マイジャグラーⅤ', 'ファンキージャグラー2', 'ミスタージャグラー'];
+function budouRelevant(mn) { return BUDOU_MACHINES.some(m => mn.includes(m)); }
+
+// 選択機種に応じてぶどう入力欄の表示/非表示を切り替え
+function toggleBudou() {
+  const sel = document.getElementById('calc-machine');
+  const row = document.getElementById('calc-budou-row');
+  if (!sel || !row) return;
+  const opt = sel.options[sel.selectedIndex];
+  row.style.display = (opt && opt.dataset.budou === '1') ? '' : 'none';
+}
+
+// ぶどう確率(1/x)から高設定寄りかの粗い参考判定。※要2000G以上・あくまで補助
+function budouHint(bp) {
+  if (bp <= 5.85) return { txt: '高設定寄り', good: true };
+  if (bp >= 6.05) return { txt: '低設定寄り', good: false };
+  return { txt: '中間', good: null };
+}
+
 function calcManual() {
   const mn = document.getElementById('calc-machine').value;
   const g = parseInt(document.getElementById('calc-games').value) || 0;
   const bb = parseInt(document.getElementById('calc-bb').value) || 0;
   const rb = parseInt(document.getElementById('calc-rb').value) || 0;
+  const budou = parseInt(document.getElementById('calc-budou').value) || 0;
   const el = document.getElementById('calc-result');
   if (g <= 0 || (bb + rb) <= 0) {
     el.innerHTML = `<div style="background:#eee;border-radius:8px;padding:12px;font-size:13px">ゲーム数とBB/RBを入れてください。</div>`;
@@ -454,6 +475,15 @@ function calcManual() {
     else if (combP <= 138 && rbP <= 320) { verdict = '△ 微妙（設定4前後）'; cls = 'calc-mid'; note = `合算${fmt(combP)}は設定4級だが確定的でない。`; }
     else { verdict = '❌ 座るな'; cls = 'calc-stop'; note = combP <= 128 ? `合算${fmt(combP)}は良いがRB${fmt(rbP)}が弱くBB偏り。罠の可能性。` : `合算${fmt(combP)}・RB${fmt(rbP)}とも低設定域。`; }
   }
+  // ぶどう補助（対象機種＆入力あり時のみ）
+  let budouHtml = '';
+  if (budouRelevant(mn) && budou > 0 && g > 0) {
+    const bp = g / budou;
+    const h = budouHint(bp);
+    const enough = g >= 2000;
+    const mark = h.good === true ? '◎' : h.good === false ? '▲' : '・';
+    budouHtml = `<div class="calc-note" style="background:#eef7ff">🍇 ぶどう 1/${bp.toFixed(2)} → ${mark}${h.txt}${enough ? '' : '（※G2000未満で判断不可、参考値）'}<br><span style="font-size:11px;color:#888">ぶどうは補助指標。主軸はあくまでRB。両方が高設定を示せば確信度アップ。</span></div>`;
+  }
   el.innerHTML = `
     <div class="calc-verdict ${cls}">${verdict}</div>
     <div class="calc-stats">
@@ -462,7 +492,8 @@ function calcManual() {
       <span>RB <b>${fmt(rbP)}</b></span>
       <span>合算 <b>${fmt(combP)}</b></span>
     </div>
-    <div class="calc-note">${note}</div>`;
+    <div class="calc-note">${note}</div>
+    ${budouHtml}`;
 }
 
 function scoreStands(stands, budget, timeMin) {
@@ -1698,6 +1729,7 @@ async function init() {
   buildAuthCard();
   buildBookmarklet();
   injectPhoneBanner();
+  toggleBudou();  // ぶどう欄の初期表示を機種に合わせる
 
   const hasData = await loadData();
   const hasRealData = hasData && allStands.length > 0;
