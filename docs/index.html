@@ -61,39 +61,7 @@
         <button id="btn-reload" class="btn-ghost btn-sm">↻ 再読み込み</button>
       </div>
 
-      <!-- データ取得カード -->
-      <section class="card auth-card" id="auth-card">
-        <h2 class="card-title">📲 データ取得方法</h2>
-        <a href="shortcut.html" style="display:block;background:#1d3557;color:#fff;border-radius:10px;padding:12px 14px;text-align:center;font-weight:700;font-size:14px;text-decoration:none;margin-bottom:12px">
-          📱 iPhoneで1タップ全店舗取得を設定する →
-        </a>
-        <p class="auth-desc">PCの場合：下のリンクをChromeのブックマークバーにドラッグして登録してください。<br>その後、店舗サイトを開いてそのブックマークをクリックするだけでデータが取得できます。</p>
-
-        <div style="background:#f0f7ff;border-radius:8px;padding:12px;margin-bottom:12px">
-          <div style="font-size:12px;color:#457b9d;margin-bottom:8px">① このリンクをブックマークバーにドラッグ ↓</div>
-          <a id="bookmarklet-link" href="" style="display:block;background:#e63946;color:white;border-radius:8px;padding:10px 14px;text-align:center;font-weight:700;font-size:15px;text-decoration:none">🎰 データ取得（直近3日分）</a>
-          <div style="font-size:11px;color:#888;margin:8px 0 6px">1クリックで今日・昨日・一昨日をまとめて取得。取り忘れた日も自動で穴埋め（既存日は上書きなので重複しません）。急ぎは下の時短版↓</div>
-          <a id="bookmarklet-link-yesterday" href="" style="display:block;background:#457b9d;color:white;border-radius:8px;padding:8px 14px;text-align:center;font-weight:700;font-size:13px;text-decoration:none">⚡ 今日だけ取得（時短）</a>
-        </div>
-
-        <div style="font-size:12px;color:#666;line-height:2">
-          ② 下のボタンで店舗サイトを開く<br>
-          ③ 開いたページで上のブックマークをクリック<br>
-          ④ 自動でデータ取得→このページに反映
-        </div>
-
-        <div id="auth-store-buttons" style="margin-top:12px"></div>
-
-        <div id="token-setting" style="margin-top:12px;padding-top:12px;border-top:1px solid #eee">
-          <div style="font-size:12px;color:#666;margin-bottom:6px">GitHubトークン（初回のみ）</div>
-          <div style="display:flex;gap:6px">
-            <input type="password" id="input-token" placeholder="ghp_..." style="flex:1;border:1px solid #ddd;border-radius:6px;padding:6px 10px;font-size:13px">
-            <button onclick="saveToken()" style="background:#457b9d;color:white;border:none;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer">保存</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- 現地で使う台判定電卓 -->
+      <!-- 現地で使う台判定電卓（一番よく使うので上に配置） -->
       <section class="card" id="calc-card">
         <h2 class="card-title">🎰 この台どう？（現地で数字を入れて即判定）</h2>
         <p style="font-size:12px;color:#888;margin:-4px 0 10px">台のデータパネルの「累計ゲーム数・BB・RB」を入れるだけ。ネットのデータと違ってても、目の前の台の生数字で判定します。</p>
@@ -126,6 +94,38 @@
         </div>
         <button class="btn-primary btn-full" onclick="calcManual()">判定する</button>
         <div id="calc-result" style="margin-top:12px"></div>
+      </section>
+
+      <!-- データ取得カード -->
+      <section class="card auth-card" id="auth-card">
+        <h2 class="card-title">📲 データ取得方法</h2>
+        <a href="shortcut.html" style="display:block;background:#1d3557;color:#fff;border-radius:10px;padding:12px 14px;text-align:center;font-weight:700;font-size:14px;text-decoration:none;margin-bottom:12px">
+          📱 iPhoneで1タップ全店舗取得を設定する →
+        </a>
+        <p class="auth-desc">PCの場合：下のリンクをChromeのブックマークバーにドラッグして登録してください。<br>その後、店舗サイトを開いてそのブックマークをクリックするだけでデータが取得できます。</p>
+
+        <div style="background:#f0f7ff;border-radius:8px;padding:12px;margin-bottom:12px">
+          <div style="font-size:12px;color:#457b9d;margin-bottom:8px">① このリンクをブックマークバーにドラッグ ↓</div>
+          <a id="bookmarklet-link" href="" style="display:block;background:#e63946;color:white;border-radius:8px;padding:10px 14px;text-align:center;font-weight:700;font-size:15px;text-decoration:none">🎰 データ取得（直近3日分）</a>
+          <div style="font-size:11px;color:#888;margin:8px 0 6px">1クリックで今日・昨日・一昨日をまとめて取得。取り忘れた日も自動で穴埋め（既存日は上書きなので重複しません）。急ぎは下の時短版↓</div>
+          <a id="bookmarklet-link-yesterday" href="" style="display:block;background:#457b9d;color:white;border-radius:8px;padding:8px 14px;text-align:center;font-weight:700;font-size:13px;text-decoration:none">⚡ 今日だけ取得（時短）</a>
+        </div>
+
+        <div style="font-size:12px;color:#666;line-height:2">
+          ② 下のボタンで店舗サイトを開く<br>
+          ③ 開いたページで上のブックマークをクリック<br>
+          ④ 自動でデータ取得→このページに反映
+        </div>
+
+        <div id="auth-store-buttons" style="margin-top:12px"></div>
+
+        <div id="token-setting" style="margin-top:12px;padding-top:12px;border-top:1px solid #eee">
+          <div style="font-size:12px;color:#666;margin-bottom:6px">GitHubトークン（初回のみ）</div>
+          <div style="display:flex;gap:6px">
+            <input type="password" id="input-token" placeholder="ghp_..." style="flex:1;border:1px solid #ddd;border-radius:6px;padding:6px 10px;font-size:13px">
+            <button onclick="saveToken()" style="background:#457b9d;color:white;border:none;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer">保存</button>
+          </div>
+        </div>
       </section>
 
       <!-- 座る台の見分け方ガイド（現地判断用・常設） -->
@@ -312,6 +312,6 @@
 
   </div><!-- /app -->
 
-  <script src="main.js?v=20260728b"></script>
+  <script src="main.js?v=20260728c"></script>
 </body>
 </html>
