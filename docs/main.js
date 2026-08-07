@@ -1505,8 +1505,8 @@ const STORE_AUTH_URLS = [
   { name: 'ベガスベガス米沢店', url: 'https://vegasmobile.pt.teramoba2.com/hl-105/rack_info_kt?kind_code=21' },
   // 成沢はテラモバ(hl-106)が500で非公開。実データはP'sCUBE(pscube.jp)にあり、
   // DMMぱちタウンはそれを別オリジンのiframeで埋め込んでいるだけ＝DMM側では中身を読めない。
-  // よってpscube.jpを直接開く。ホールコード c721220。
-  { name: 'ベガスベガス成沢店', url: 'https://www.pscube.jp/dedamajyoho-P-townDMMpachi/c721220/', manual: true },
+  // よってpscube.jpを直接開く。ホールコード c721220。取得はダイナム同様に合算のみ。
+  { name: 'ベガスベガス成沢店', url: 'https://www.pscube.jp/dedamajyoho-P-townDMMpachi/c721220/' },
   { name: 'ダイナム米沢店', url: 'https://www.dynam-data.jp/h/a725254/cgi-bin/nc-v13-001.php?cd_ps=2' },
   { name: 'ダイナム天童店', url: 'https://www.dynam-data.jp/h/a736724/cgi-bin/nc-v13-001.php?cd_ps=2' },
 ];

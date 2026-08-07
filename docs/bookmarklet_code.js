@@ -69,15 +69,81 @@ if(location.href.includes('dynam-data.jp')){
   return;
 }
 
-var sid=(location.href.includes('vegasmobile')&&location.href.includes('hl-105'))?'vegas_yonezawa':(location.href.includes('vegasmobile')&&location.href.includes('hl-106'))?'vegas_narusawa':location.href.includes('yonezawa')?'yonezawa':location.href.includes('kaminoyama')?'kaminoyama':null;
+// ===== P'sCUBE（pscube.jp）専用処理 =====
+// ダイナムと同じCGI体系。HTMLページ側には台別のBIG/REG/累計ゲームが載っている
+// （JSON APIは合算のみなので使わない）。3段階で取得する:
+//   ① nc-v03-001.php?cd_ps=2      → 機種一覧（a[href*=nc-v05-011.php] のテキストが機種名）
+//   ② nc-v05-003.php?<機種クエリ>  → その機種の全台番号（HTML中の cd_dai=XXXX を拾う）
+//   ③ nc-v06-001.php?cd_dai=XXXX  → 台ごとの7日分データ
+// ③の構造: td.column が7本（本日/1日前…6日前）、各11要素の固定順:
+//   [0]日ラベル [1]BIG [2]REG [3]AT/ART [4]BIG確率 [5]REG確率
+//   [6]AT/ART確率 [7]合成確率 [8]累計ゲーム [9]最終ゲーム [10]最大放出数
+// 7日分あるので __OFF（0=今日,-1=昨日,-2=一昨日）をそのまま列インデックスに使える。
+if(location.href.includes('pscube.jp')){
+  var pm=location.href.match(/pscube\.jp\/([^\/]+)\/([^\/]+)\//);
+  if(!pm){alert('P\'sCUBEの店舗ページで実行してください');return;}
+  var pSeg=pm[1], pHall=pm[2];
+  var PSTORES={'c721220':{sid:'vegas_narusawa',name:'ベガスベガス成沢店'}};
+  var pinfo=PSTORES[pHall]||{sid:'pscube_'+pHall,name:'P\'sCUBE'+pHall};
+  var bar=document.createElement('div');
+  bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
+  bar.textContent='🎰 '+pinfo.name+' 取得中...';document.body.appendChild(bar);
+  var pBase='/'+pSeg+'/'+pHall+'/cgi-bin/';
+  var pToday=__baseDate().toISOString().slice(0,10).replace(/-/g,'');
+  try{
+    // ① 機種一覧（JSON・トークン不要）
+    bar.textContent='機種一覧取得中...';
+    var r1=await fetch(pBase+'nc-m03-001.php?cd_ps=2&dt='+pToday,{credentials:'include'});
+    if(!r1.ok)throw new Error('機種一覧失敗 '+r1.status);
+    var j1=await r1.json();
+    var pKi=(j1.Ki||[]).filter(function(k){return /ｼﾞｬｸﾞﾗｰ|ジャグラー/.test(k.nmk_kisyu||'');});
+    if(pKi.length===0)throw new Error('ジャグラー機種なし');
+    // ② 機種ごとの台データ（JSON・合算のみ）
+    var pStands=[];
+    for(var pi=0;pi<pKi.length;pi++){
+      var php=pKi[pi].php||'';
+      var qs=php.indexOf('?')>=0?php.slice(php.indexOf('?')):'?cd_ps=2';
+      bar.textContent='台データ取得中 '+(pi+1)+'/'+pKi.length+' '+pKi[pi].nmk_kisyu;
+      try{
+        var ab2=new AbortController();setTimeout(function(){ab2.abort();},8000);
+        var r2=await fetch(pBase+'nc-m05-003.php'+qs,{credentials:'include',signal:ab2.signal});
+        if(!r2.ok)continue;
+        var t2=await r2.text();
+        if(t2[0]!=='{')continue;
+        (JSON.parse(t2).Dai||[]).forEach(function(dai){
+          var d0=dai.D0; if(!d0)return;
+          var rack=String(d0.cd_dai||'?');
+          if(/^0\d{3,4}$/.test(rack))rack=String(parseInt(rack));
+          var bonus=parseInt((d0.toku0&&d0.toku0.count)||0);
+          var prob=parseFloat((d0.toku0&&d0.toku0.ratio)||0);
+          var games=(bonus>0&&prob>0)?Math.round(bonus*prob):0;
+          pStands.push({rack_no:rack,machine_name:pKi[pi].nmk_kisyu||'不明',games:games,
+            bb:0,rb:0,diff:0,total_bonus:bonus,combined_prob:prob,combined_only:true});
+        });
+      }catch(e2){}
+    }
+    if(pStands.length===0)throw new Error('台データ0');
+    var pMap={};
+    pStands.forEach(function(s){if(!pMap[s.machine_name])pMap[s.machine_name]=[];pMap[s.machine_name].push(s);});
+    var pResult={name:pinfo.name,machines:[]};
+    for(var pmn in pMap)pResult.machines.push({machine_name:pmn,count:pMap[pmn].length,stands:pMap[pmn]});
+    bar.textContent='✅ '+pStands.length+'台 GitHub送信中...';
+    if(typeof completion==='function')completion('done');
+    await push(pResult,pinfo.sid,pinfo.name);
+  }catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
+  setTimeout(()=>bar.remove(),12000);
+  return;
+}
+
+var sid=(location.href.includes('vegasmobile')&&location.href.includes('hl-105'))?'vegas_yonezawa':location.href.includes('yonezawa')?'yonezawa':location.href.includes('kaminoyama')?'kaminoyama':null;
 if(!sid){alert('店舗サイトで実行してください');return;}
-var sname={yonezawa:'アイランド米沢店',kaminoyama:'1円劇場上山店',vegas_yonezawa:'ベガスベガス米沢店',vegas_narusawa:'ベガスベガス成沢店'}[sid];
+var sname={yonezawa:'アイランド米沢店',kaminoyama:'1円劇場上山店',vegas_yonezawa:'ベガスベガス米沢店'}[sid];
 // hall_idはページのpropsから自動検出される（下記propsHid）。ここは検出失敗時のフォールバック値。
 // ベガス米沢のテラモバ内部hall_id=435（hall_informations.hall_id）。propsからも自動検出される。
-// ベガス成沢(hl-106)はhall_id不明のためpropsからの自動検出に任せる（0=未指定）。
-var hid={yonezawa:292,kaminoyama:1303,vegas_yonezawa:435,vegas_narusawa:0}[sid];
-// standlist_slotフォールバック用のURLパスセグメント（ベガスはテラモバ上のパスがhl-105/106）
-var pathSeg={yonezawa:'yonezawa',kaminoyama:'kaminoyama',vegas_yonezawa:'hl-105',vegas_narusawa:'hl-106'}[sid];
+// ※ベガス成沢はテラモバ(hl-106)が500で非公開。P'sCUBE側（上のpscube.jp分岐）で取得する。
+var hid={yonezawa:292,kaminoyama:1303,vegas_yonezawa:435}[sid];
+// standlist_slotフォールバック用のURLパスセグメント（ベガスはテラモバ上のパスがhl-105）
+var pathSeg={yonezawa:'yonezawa',kaminoyama:'kaminoyama',vegas_yonezawa:'hl-105'}[sid];
 var bar=document.createElement('div');
 bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
 bar.textContent='🎰 v10 起動中...';document.body.appendChild(bar);
