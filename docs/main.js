@@ -1503,8 +1503,9 @@ const STORE_AUTH_URLS = [
   { name: 'アイランド米沢店',  url: 'https://island.pt.teramoba2.com/yonezawa/standlist_slot?kind_code=Z' },
   { name: '1円劇場上山店', url: 'https://island.pt.teramoba2.com/kaminoyama/standlist_slot?kind_code=Z' },
   { name: 'ベガスベガス米沢店', url: 'https://vegasmobile.pt.teramoba2.com/hl-105/rack_info_kt?kind_code=21' },
-  // 成沢はテラモバ(hl-106)が500エラーで非公開。DMMぱちタウン経由のP'sCUBEに台別BIG/REGあり。
-  { name: 'ベガスベガス成沢店', url: 'https://p-town.dmm.com/shops/yamagata/12067/jackpot' },
+  // 成沢はテラモバ(hl-106)が500で非公開。DMMぱちタウン経由のP'sCUBEに台別BIG/REGはあるが
+  // Cloudflareボット判定があり、ブックマークレットのパーサーも未対応 → 手入力運用(manual)。
+  { name: 'ベガスベガス成沢店', url: 'https://p-town.dmm.com/shops/yamagata/12067/jackpot', manual: true },
   { name: 'ダイナム米沢店', url: 'https://www.dynam-data.jp/h/a725254/cgi-bin/nc-v13-001.php?cd_ps=2' },
   { name: 'ダイナム天童店', url: 'https://www.dynam-data.jp/h/a736724/cgi-bin/nc-v13-001.php?cd_ps=2' },
 ];
@@ -1723,8 +1724,8 @@ function buildAuthCard() {
   if (!container) return;
   container.innerHTML = STORE_AUTH_URLS.map(s => `
     <a class="auth-store-btn" href="${s.url}" target="_blank" rel="noopener">
-      <span>📍 ${s.name}</span>
-      <span class="arrow">認証ページへ →</span>
+      <span>📍 ${s.name}${s.manual ? '<br><span style="font-size:11px;color:#c1121f;font-weight:400">⚠️ 自動取得は非対応。データを見て上の電卓に手入力してください</span>' : ''}</span>
+      <span class="arrow">${s.manual ? 'データを見る →' : '認証ページへ →'}</span>
     </a>
   `).join('');
 }
