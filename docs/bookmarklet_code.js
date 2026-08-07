@@ -69,14 +69,15 @@ if(location.href.includes('dynam-data.jp')){
   return;
 }
 
-var sid=(location.href.includes('vegasmobile')&&location.href.includes('hl-105'))?'vegas_yonezawa':location.href.includes('yonezawa')?'yonezawa':location.href.includes('kaminoyama')?'kaminoyama':null;
+var sid=(location.href.includes('vegasmobile')&&location.href.includes('hl-105'))?'vegas_yonezawa':(location.href.includes('vegasmobile')&&location.href.includes('hl-106'))?'vegas_narusawa':location.href.includes('yonezawa')?'yonezawa':location.href.includes('kaminoyama')?'kaminoyama':null;
 if(!sid){alert('店舗サイトで実行してください');return;}
-var sname={yonezawa:'アイランド米沢店',kaminoyama:'1円劇場上山店',vegas_yonezawa:'ベガスベガス米沢店'}[sid];
+var sname={yonezawa:'アイランド米沢店',kaminoyama:'1円劇場上山店',vegas_yonezawa:'ベガスベガス米沢店',vegas_narusawa:'ベガスベガス成沢店'}[sid];
 // hall_idはページのpropsから自動検出される（下記propsHid）。ここは検出失敗時のフォールバック値。
 // ベガス米沢のテラモバ内部hall_id=435（hall_informations.hall_id）。propsからも自動検出される。
-var hid={yonezawa:292,kaminoyama:1303,vegas_yonezawa:435}[sid];
-// standlist_slotフォールバック用のURLパスセグメント（ベガスはテラモバ上のパスがhl-105）
-var pathSeg={yonezawa:'yonezawa',kaminoyama:'kaminoyama',vegas_yonezawa:'hl-105'}[sid];
+// ベガス成沢(hl-106)はhall_id不明のためpropsからの自動検出に任せる（0=未指定）。
+var hid={yonezawa:292,kaminoyama:1303,vegas_yonezawa:435,vegas_narusawa:0}[sid];
+// standlist_slotフォールバック用のURLパスセグメント（ベガスはテラモバ上のパスがhl-105/106）
+var pathSeg={yonezawa:'yonezawa',kaminoyama:'kaminoyama',vegas_yonezawa:'hl-105',vegas_narusawa:'hl-106'}[sid];
 var bar=document.createElement('div');
 bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
 bar.textContent='🎰 v10 起動中...';document.body.appendChild(bar);

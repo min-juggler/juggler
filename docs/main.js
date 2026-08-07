@@ -1503,6 +1503,8 @@ const STORE_AUTH_URLS = [
   { name: 'アイランド米沢店',  url: 'https://island.pt.teramoba2.com/yonezawa/standlist_slot?kind_code=Z' },
   { name: '1円劇場上山店', url: 'https://island.pt.teramoba2.com/kaminoyama/standlist_slot?kind_code=Z' },
   { name: 'ベガスベガス米沢店', url: 'https://vegasmobile.pt.teramoba2.com/hl-105/rack_info_kt?kind_code=21' },
+  // 成沢はテラモバ(hl-106)が500エラーで非公開。DMMぱちタウン経由のP'sCUBEに台別BIG/REGあり。
+  { name: 'ベガスベガス成沢店', url: 'https://p-town.dmm.com/shops/yamagata/12067/jackpot' },
   { name: 'ダイナム米沢店', url: 'https://www.dynam-data.jp/h/a725254/cgi-bin/nc-v13-001.php?cd_ps=2' },
   { name: 'ダイナム天童店', url: 'https://www.dynam-data.jp/h/a736724/cgi-bin/nc-v13-001.php?cd_ps=2' },
 ];
