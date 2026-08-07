@@ -135,8 +135,20 @@ if(location.href.includes('pscube.jp')){
   return;
 }
 
+// DMMぱちタウンは実データ(P'sCUBE)を別オリジンiframeで埋め込んでいるだけなので、
+// ここでは何も読めない。ページ内スクリプトに埋まっているpscubeのURLへ自動で移動する。
+if(location.href.includes('p-town.dmm.com')){
+  var pu=(document.documentElement.innerHTML.match(/https:\/\/www\.pscube\.jp\/[A-Za-z0-9._~%\/-]+\//)||[])[0];
+  if(pu){
+    if(confirm('このページ(DMMぱちタウン)からは取得できません。\nデータ元のP\'sCUBEへ移動します。\n移動後もう一度ブックマークをクリックしてください。'))location.href=pu;
+  }else{
+    alert('このページからは取得できません。P\'sCUBE(pscube.jp)のページを開いて実行してください。');
+  }
+  return;
+}
+
 var sid=(location.href.includes('vegasmobile')&&location.href.includes('hl-105'))?'vegas_yonezawa':location.href.includes('yonezawa')?'yonezawa':location.href.includes('kaminoyama')?'kaminoyama':null;
-if(!sid){alert('店舗サイトで実行してください');return;}
+if(!sid){alert('この店舗サイトには対応していません。\n対応: アイランド米沢/上山/ベガス米沢(テラモバ)、ダイナム(dynam-data.jp)、ベガス成沢(pscube.jp)\n現在のURL: '+location.hostname);return;}
 var sname={yonezawa:'アイランド米沢店',kaminoyama:'1円劇場上山店',vegas_yonezawa:'ベガスベガス米沢店'}[sid];
 // hall_idはページのpropsから自動検出される（下記propsHid）。ここは検出失敗時のフォールバック値。
 // ベガス米沢のテラモバ内部hall_id=435（hall_informations.hall_id）。propsからも自動検出される。
