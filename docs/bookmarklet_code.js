@@ -90,6 +90,9 @@ if(location.href.includes('pscube.jp')){
   bar.textContent='🎰 '+pinfo.name+' 取得中...';document.body.appendChild(bar);
   var pBase='/'+pSeg+'/'+pHall+'/cgi-bin/';
   var pToday=__baseDate().toISOString().slice(0,10).replace(/-/g,'');
+  // Dai[]のD0〜D6が7日分に対応する。__OFF=0→D0(当日), -1→D1(1日前) …
+  var pDn=Math.min(6,Math.max(0,-__OFF));
+  var pDkey='D'+pDn;
   try{
     // ① 機種一覧（JSON・トークン不要）
     bar.textContent='機種一覧取得中...';
@@ -111,25 +114,32 @@ if(location.href.includes('pscube.jp')){
         var t2=await r2.text();
         if(t2[0]!=='{')continue;
         (JSON.parse(t2).Dai||[]).forEach(function(dai){
-          var d0=dai.D0; if(!d0)return;
+          // Dai[] は D0(当日)〜D6(6日前) の7日分を持つ。__OFF に対応する日を選ぶ。
+          var d0=dai[pDkey]; if(!d0||!d0.YMD_biz)return;
           var rack=String(d0.cd_dai||'?');
           if(/^0\d{3,4}$/.test(rack))rack=String(parseInt(rack));
           var bonus=parseInt((d0.toku0&&d0.toku0.count)||0);
           var prob=parseFloat((d0.toku0&&d0.toku0.ratio)||0);
           var games=(bonus>0&&prob>0)?Math.round(bonus*prob):0;
           pStands.push({rack_no:rack,machine_name:pKi[pi].nmk_kisyu||'不明',games:games,
-            bb:0,rb:0,diff:0,total_bonus:bonus,combined_prob:prob,combined_only:true});
+            bb:0,rb:0,diff:0,total_bonus:bonus,combined_prob:prob,combined_only:true,
+            _ymd:String(d0.YMD_biz)});
         });
       }catch(e2){}
     }
     if(pStands.length===0)throw new Error('台データ0');
+    // データ自身の営業日を採用（YMD_biz。全台で同じはずなので最多のものを使う）
+    var pYmdCount={};
+    pStands.forEach(function(s){if(s._ymd)pYmdCount[s._ymd]=(pYmdCount[s._ymd]||0)+1;});
+    var pYmdRaw=Object.keys(pYmdCount).sort(function(a,b){return pYmdCount[b]-pYmdCount[a];})[0];
+    var pYmd=pYmdRaw?(pYmdRaw.slice(0,4)+'-'+pYmdRaw.slice(4,6)+'-'+pYmdRaw.slice(6,8)):null;
     var pMap={};
-    pStands.forEach(function(s){if(!pMap[s.machine_name])pMap[s.machine_name]=[];pMap[s.machine_name].push(s);});
+    pStands.forEach(function(s){delete s._ymd;if(!pMap[s.machine_name])pMap[s.machine_name]=[];pMap[s.machine_name].push(s);});
     var pResult={name:pinfo.name,machines:[]};
     for(var pmn in pMap)pResult.machines.push({machine_name:pmn,count:pMap[pmn].length,stands:pMap[pmn]});
-    bar.textContent='✅ '+pStands.length+'台 GitHub送信中...';
+    bar.textContent='✅ '+pStands.length+'台 ('+(pYmd||'当日')+') GitHub送信中...';
     if(typeof completion==='function')completion('done');
-    await push(pResult,pinfo.sid,pinfo.name);
+    await push(pResult,pinfo.sid,pinfo.name,pYmd);
   }catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
   setTimeout(()=>bar.remove(),12000);
   return;
@@ -236,12 +246,14 @@ async function ghPut(path,sha,data,msg){
   return r.ok;
 }
 
-async function push(result,_sid,_sname){
+// _ymd: 'YYYY-MM-DD' を渡すとその日付で保存する（P'sCUBEは営業日YMD_bizが取れるので
+// ローカル日付とのズレを避けるため明示指定する）。省略時は従来どおり__baseDate()。
+async function push(result,_sid,_sname,_ymd){
   // 引数なしの場合はクロージャの sid/sname を使う（テラモバ用後方互換）
   var _s=_sid||sid, _n=_sname||sname;
   var total=result.machines.reduce((a,m)=>a+m.stands.length,0);
-  var today=__baseDate().toISOString().slice(0,10);
-  var msg='データ更新 '+new Date().toLocaleString('ja')+(__OFF?' (対象日:'+today+')':'');
+  var today=_ymd||__baseDate().toISOString().slice(0,10);
+  var msg='データ更新 '+new Date().toLocaleString('ja')+((__OFF||_ymd)?' (対象日:'+today+')':'');
 
   // ① stores.json（当日データ）を更新
   // ※過去日(__OFF!==0)の取得では「今日のスナップショット」を汚さないよう更新しない
