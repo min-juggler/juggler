@@ -51,12 +51,72 @@
   <button class="btn btn-primary" onclick="saveToken()">保存してスクリプトを生成</button>
 </div>
 
+<!-- おすすめ: 6タブ一括オープン -->
+<div class="card">
+  <h2>🚀 おすすめ：6タブを1タップで開く</h2>
+
+  <div style="background:#e8f5e9;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#1b5e20;line-height:1.8">
+    iOSの仕様上、「URLを開く」から「JavaScriptを実行」へは<b>繋げられません</b>（JavaScript実行はSafariの共有シート専用）。<br>
+    そこで<b>「6店舗のURLを一括で開くだけ」</b>のショートカットを作ります。一番面倒なURL移動が消えます。
+  </div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <div class="step-title">ショートカットを新規作成し、「URLを開く」を1つだけ追加</div>
+      <div class="step-desc">アクション検索で「<strong>URLを開く</strong>」→ 追加</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <div class="step-title">下の6つのURLをまとめて貼り付け</div>
+      <div class="step-desc">URL欄をタップして貼り付け。複数URLを入れると<strong>全部タブで開きます</strong><br>
+      ※うまく1つにまとまらない場合は「URLを開く」を6個並べて1つずつ貼ってもOK</div>
+      <div class="code-block expanded" id="url-all">https://island.pt.teramoba2.com/yonezawa/standlist_slot?kind_code=Z
+https://island.pt.teramoba2.com/kaminoyama/standlist_slot?kind_code=Z
+https://vegasmobile.pt.teramoba2.com/hl-105/rack_info_kt?kind_code=21
+https://www.pscube.jp/dedamajyoho-P-townDMMpachi/c721220/
+https://www.dynam-data.jp/h/a725254/cgi-bin/nc-v13-001.php?cd_ps=2
+https://www.dynam-data.jp/h/a736724/cgi-bin/nc-v13-001.php?cd_ps=2</div>
+      <button class="btn btn-copy" onclick="copyText('url-all',this)">📋 6店舗のURLをまとめてコピー</button>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <div class="step-title">ホーム画面に追加</div>
+      <div class="step-desc">「<strong>店データ全部開く</strong>」などの名前で保存 → 右上「…」→「ホーム画面に追加」</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <div class="step-title">毎日の使い方</div>
+      <div class="step-desc">
+        ① アイコンを1タップ → <strong>6タブが全部開く</strong>（ボット認証もここでまとめて突破）<br>
+        ② 各タブで <strong>共有ボタン → 取得ショートカット</strong> を実行<br>
+        ③ 緑の「✅ 送信完了」を待って次のタブへ
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#fff3cd;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:12px;color:#856404;line-height:1.8">
+    ⚠️ <b>同時に走らせないこと</b>：完了表示を待たずに次を実行すると、片方のデータが上書きで消えます。
+  </div>
+</div>
+
 <!-- STEP1: ショートカット作成 -->
 <div class="card" id="shortcut-guide" style="display:none">
-  <h2>② iOSショートカットを作る</h2>
+  <h2>② 取得用ショートカット（店舗ごと）</h2>
 
-  <div style="background:#fff3cd;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#856404">
-    💡 ショートカットを1つ作るだけで、毎日1タップで6店舗のデータが全部取れます
+  <div style="background:#fff3cd;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#856404;line-height:1.8">
+    💡 各店舗のスクリプトはここからコピーします。<b>「Safariでスクリプトを実行」だけ</b>のショートカットを作り、
+    店のページを開いた状態で<b>共有シートから実行</b>してください（これがiOS本来の使い方です）。<br>
+    下の「URLを開く」の記載は、1タップ連鎖を試したい場合の参考です。
   </div>
 
   <!-- ショートカット作成手順 -->
