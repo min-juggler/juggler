@@ -1,12 +1,12 @@
 (async function(){
 var T='__TOKEN__',R='__REPO__';
 
-// ダイナムP'sCUBEのURLからstore IDを取得
-var m=location.href.match(/dynam-data\.jp\/h\/([a-z0-9]+)\//);
-if(!m){alert('ダイナムのページで実行してください');return;}
+// ダイナム(dynam-data.jp)＆ニラク(pscube.jp/h/...)のURLからstore IDを取得。両方同じCGI体系。
+var m=location.href.match(/\/h\/([a-z0-9]+)\//);
+if(!m){alert('店舗のページで実行してください');return;}
 var storeCode=m[1]; // 例: a725254
 
-var STORES={'a725254':{sid:'dynam_yonezawa',name:'ダイナム米沢店'},'a736724':{sid:'dynam_tendo',name:'ダイナム天童店'}};
+var STORES={'a725254':{sid:'dynam_yonezawa',name:'ダイナム米沢店'},'a736724':{sid:'dynam_tendo',name:'ダイナム天童店'},'a720930':{sid:'niraku_yoshiwara',name:'ニラク吉原店'}};
 var storeInfo=STORES[storeCode]||{sid:'dynam_'+storeCode,name:'ダイナム'+storeCode};
 var sid=storeInfo.sid, sname=storeInfo.name;
 
@@ -72,9 +72,6 @@ try{
   }
 
   if(allStands.length===0)throw new Error('台データ0');
-
-  // ── completion()を早めに呼ぶ（iOSタイムアウト回避）──
-  if(typeof completion==='function')completion('done');
 
   // ── STEP3: GitHubに送信 ──
   var realStands=allStands.filter(function(s){return s.games>0;}).length;
@@ -165,6 +162,12 @@ try{
 
   if(ok1){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+allStands.length+'台 送信完了！';}
   else{bar.style.background='#888';bar.textContent='⚠️ GitHub送信失敗';}
-}catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
+  // 送信完了を確認してからcompletion()を呼ぶ。以前は送信前に呼んでいたため、
+  // iOSショートカットの連続実行だとページ破棄で送信が途中で殺されていた。
+  if(typeof completion==='function')completion('done');
+}catch(e){
+  bar.style.background='#888';bar.textContent='❌ '+e.message;
+  if(typeof completion==='function')completion('error');
+}
 setTimeout(function(){bar.remove();},10000);
 })();

@@ -1509,6 +1509,8 @@ const STORE_AUTH_URLS = [
   { name: 'ベガスベガス成沢店', url: 'https://www.pscube.jp/dedamajyoho-P-townDMMpachi/c721220/' },
   { name: 'ダイナム米沢店', url: 'https://www.dynam-data.jp/h/a725254/cgi-bin/nc-v13-001.php?cd_ps=2' },
   { name: 'ダイナム天童店', url: 'https://www.dynam-data.jp/h/a736724/cgi-bin/nc-v13-001.php?cd_ps=2' },
+  // ニラク吉原店はP'sCUBE(pscube.jp)だがダイナムと同じ/h/<コード>/構造。Cloudflareのボット認証が出やすい店。
+  { name: 'ニラク吉原店', url: 'https://www.pscube.jp/h/a720930/' },
 ];
 
 // ===== GitHubトークン保存 =====
