@@ -56,7 +56,7 @@
   <h2>② iOSショートカットを作る</h2>
 
   <div style="background:#fff3cd;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#856404">
-    💡 ショートカットを1つ作るだけで、毎日1タップで3店舗のデータが全部取れます
+    💡 ショートカットを1つ作るだけで、毎日1タップで6店舗のデータが全部取れます
   </div>
 
   <!-- ショートカット作成手順 -->
@@ -70,7 +70,7 @@
 
   <!-- 店舗ごとにURLオープン+JS実行を繰り返す -->
   <div style="font-size:12px;color:#666;margin-bottom:10px;padding:8px 10px;background:#f5f5f5;border-radius:8px">
-    以下の <strong>①URLを開く → ②スクリプト実行</strong> を3店舗分追加します（計6アクション）
+    以下の <strong>①URLを開く → ②スクリプト実行</strong> を6店舗分追加します（計12アクション）
   </div>
 
   <!-- アイランド米沢 -->
@@ -108,6 +108,20 @@
     <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け</div>
     <div class="code-block" id="code-vegas">⏳ 生成中...</div>
     <button class="btn btn-copy" onclick="copyText('code-vegas',this)">📋 スクリプトをコピー</button>
+  </div>
+
+  <div class="flow-arrow">↓</div>
+
+  <!-- ベガスベガス成沢 -->
+  <div class="store-card">
+    <h3>🏪 ベガスベガス成沢</h3>
+    <div class="step-desc" style="margin-bottom:8px">※ 成沢だけはテラモバではなく<strong>P'sCUBE</strong>。URLが他店と違うので注意</div>
+    <div class="step-desc" style="margin-bottom:8px">「<strong>URLを開く</strong>」アクション追加 → URLを貼り付け</div>
+    <div class="code-block" id="url-narusawa">https://www.pscube.jp/dedamajyoho-P-townDMMpachi/c721220/</div>
+    <button class="btn btn-copy" onclick="copyText('url-narusawa',this)">📋 URLをコピー</button>
+    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け（他店と同じスクリプトでOK・URLで自動判別）</div>
+    <div class="code-block" id="code-narusawa">⏳ 生成中...</div>
+    <button class="btn btn-copy" onclick="copyText('code-narusawa',this)">📋 スクリプトをコピー</button>
   </div>
 
   <div class="flow-arrow">↓</div>
@@ -150,7 +164,7 @@
     <div class="step-num">3</div>
     <div class="step-body">
       <div class="step-title">ホーム画面に追加</div>
-      <div class="step-desc">ショートカットを開いて右上「…」→「<strong>ホーム画面に追加</strong>」<br>毎日このアイコンをタップするだけで3店舗一括取得！</div>
+      <div class="step-desc">ショートカットを開いて右上「…」→「<strong>ホーム画面に追加</strong>」<br>毎日このアイコンをタップするだけで6店舗一括取得！</div>
     </div>
   </div>
 </div>
@@ -226,10 +240,12 @@ async function updateUI() {
     document.getElementById('code-yonezawa').textContent  = wrapForShortcut3Day(teramoba, token, REPO, 3);
     document.getElementById('code-kaminoyama').textContent = wrapForShortcut3Day(teramoba, token, REPO, 3);
     document.getElementById('code-vegas').textContent     = wrapForShortcut3Day(teramoba, token, REPO, 3);
+    // 成沢(P'sCUBE)もbookmarklet_code.js内で自動判別される。D0〜D6があるので3日分取得に対応。
+    document.getElementById('code-narusawa').textContent  = wrapForShortcut3Day(teramoba, token, REPO, 3);
     document.getElementById('code-dynam').textContent     = wrapForShortcut(dynamCode, token, REPO);
     document.getElementById('code-dynam-tendo').textContent = wrapForShortcut(dynamCode, token, REPO);
   } catch(e) {
-    ['yonezawa','kaminoyama','vegas','dynam','dynam-tendo'].forEach(id => {
+    ['yonezawa','kaminoyama','vegas','narusawa','dynam','dynam-tendo'].forEach(id => {
       document.getElementById('code-' + id).textContent = '❌ 生成失敗: ' + e.message;
     });
   }
