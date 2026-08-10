@@ -70,7 +70,14 @@
 
   <!-- 店舗ごとにURLオープン+JS実行を繰り返す -->
   <div style="font-size:12px;color:#666;margin-bottom:10px;padding:8px 10px;background:#f5f5f5;border-radius:8px">
-    以下の <strong>①URLを開く → ②スクリプト実行</strong> を6店舗分追加します（計12アクション）
+    以下の <strong>①URLを開く → ②待機(3秒) → ③スクリプト実行</strong> を6店舗分追加します（計18アクション）
+  </div>
+
+  <div style="background:#e8f5e9;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#1b5e20;line-height:1.8">
+    <b>⚠️ 先に1回だけ準備してください</b><br>
+    ダイナムとベガス成沢は<b>ボット認証</b>が出ます。初回は各店のURLをSafariで手動で開き、認証を通してください。
+    Cookieが残るので、以降はショートカットだけで通ります。<br>
+    <b>💡「待機」を必ず挟むこと</b>：ページ読み込みが終わる前にスクリプトが走ると失敗します。遅い店は5秒に伸ばしてください。
   </div>
 
   <!-- アイランド米沢 -->
@@ -79,7 +86,7 @@
     <div class="step-desc" style="margin-bottom:8px">「<strong>URLを開く</strong>」アクションを追加 → 以下のURLを貼り付け</div>
     <div class="code-block" id="url-yonezawa">https://island.pt.teramoba2.com/yonezawa/standlist_slot?kind_code=Z</div>
     <button class="btn btn-copy" onclick="copyText('url-yonezawa',this)">📋 URLをコピー</button>
-    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>Safariでスクリプトを実行</strong>」アクションを追加 → 以下をコピーして貼り付け</div>
+    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>待機</strong>」3秒 → 「<strong>Safariでスクリプトを実行</strong>」アクション追加 → 以下をコピーして貼り付け</div>
     <div class="code-block" id="code-yonezawa">⏳ 生成中...</div>
     <button class="btn btn-copy" onclick="copyText('code-yonezawa',this)">📋 スクリプトをコピー</button>
   </div>
@@ -92,7 +99,7 @@
     <div class="step-desc" style="margin-bottom:8px">「<strong>URLを開く</strong>」アクション追加 → URLを貼り付け</div>
     <div class="code-block" id="url-kaminoyama">https://island.pt.teramoba2.com/kaminoyama/standlist_slot?kind_code=Z</div>
     <button class="btn btn-copy" onclick="copyText('url-kaminoyama',this)">📋 URLをコピー</button>
-    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け</div>
+    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>待機</strong>」3秒 → 「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け</div>
     <div class="code-block" id="code-kaminoyama">⏳ 生成中...</div>
     <button class="btn btn-copy" onclick="copyText('code-kaminoyama',this)">📋 スクリプトをコピー</button>
   </div>
@@ -105,7 +112,7 @@
     <div class="step-desc" style="margin-bottom:8px">「<strong>URLを開く</strong>」アクション追加 → URLを貼り付け</div>
     <div class="code-block" id="url-vegas">https://vegasmobile.pt.teramoba2.com/hl-105/rack_info_kt?kind_code=21</div>
     <button class="btn btn-copy" onclick="copyText('url-vegas',this)">📋 URLをコピー</button>
-    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け</div>
+    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>待機</strong>」3秒 → 「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け</div>
     <div class="code-block" id="code-vegas">⏳ 生成中...</div>
     <button class="btn btn-copy" onclick="copyText('code-vegas',this)">📋 スクリプトをコピー</button>
   </div>
@@ -119,7 +126,7 @@
     <div class="step-desc" style="margin-bottom:8px">「<strong>URLを開く</strong>」アクション追加 → URLを貼り付け</div>
     <div class="code-block" id="url-narusawa">https://www.pscube.jp/dedamajyoho-P-townDMMpachi/c721220/</div>
     <button class="btn btn-copy" onclick="copyText('url-narusawa',this)">📋 URLをコピー</button>
-    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け（他店と同じスクリプトでOK・URLで自動判別）</div>
+    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>待機</strong>」3秒 → 「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け（他店と同じスクリプトでOK・URLで自動判別）</div>
     <div class="code-block" id="code-narusawa">⏳ 生成中...</div>
     <button class="btn btn-copy" onclick="copyText('code-narusawa',this)">📋 スクリプトをコピー</button>
   </div>
@@ -133,7 +140,7 @@
     <div class="step-desc" style="margin-bottom:8px">「<strong>URLを開く</strong>」アクション追加 → URLを貼り付け</div>
     <div class="code-block" id="url-dynam">https://www.dynam-data.jp/h/a725254/cgi-bin/nc-v13-001.php?cd_ps=2</div>
     <button class="btn btn-copy" onclick="copyText('url-dynam',this)">📋 URLをコピー</button>
-    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け</div>
+    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>待機</strong>」3秒 → 「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け</div>
     <div class="code-block" id="code-dynam">⏳ 生成中...</div>
     <button class="btn btn-copy" onclick="copyText('code-dynam',this)">📋 スクリプトをコピー</button>
   </div>
@@ -147,7 +154,7 @@
     <div class="step-desc" style="margin-bottom:8px">「<strong>URLを開く</strong>」アクション追加 → URLを貼り付け</div>
     <div class="code-block" id="url-dynam-tendo">https://www.dynam-data.jp/h/a736724/cgi-bin/nc-v13-001.php?cd_ps=2</div>
     <button class="btn btn-copy" onclick="copyText('url-dynam-tendo',this)">📋 URLをコピー</button>
-    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け（米沢と同じスクリプトでOK・URLで自動判別）</div>
+    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>待機</strong>」3秒 → 「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け（米沢と同じスクリプトでOK・URLで自動判別）</div>
     <div class="code-block" id="code-dynam-tendo">⏳ 生成中...</div>
     <button class="btn btn-copy" onclick="copyText('code-dynam-tendo',this)">📋 スクリプトをコピー</button>
   </div>

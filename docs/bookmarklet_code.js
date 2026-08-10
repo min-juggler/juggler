@@ -4,6 +4,19 @@ var T='__TOKEN__',R='__REPO__';
 var __OFF=(typeof window!=='undefined'&&typeof window.__JUG_DAYOFF__==='number')?window.__JUG_DAYOFF__:0;
 function __baseDate(){var d=new Date();if(__OFF)d.setDate(d.getDate()+__OFF);return d;}
 
+// iOSショートカットで複数店舗を連続実行するための完了通知。
+// 以前は「送信前にcompletion()」していたが、ショートカットが次の店のURLを開くと
+// ページが破棄され、送信中のGitHubリクエストが途中で殺されていた（1タップ化が失敗する原因）。
+// → 送信完了を待ってからcompletion()を呼ぶ。ただし異常に長引いた時に
+//    ショートカットが固まらないよう保険のタイムアウトも設ける。
+async function __finish(pushPromise){
+  var timedOut=false;
+  var guard=new Promise(function(r){setTimeout(function(){timedOut=true;r();},25000);});
+  try{ await Promise.race([pushPromise,guard]); }catch(e){}
+  if(typeof completion==='function')completion(timedOut?'timeout':'done');
+  try{ await pushPromise; }catch(e){}
+}
+
 // ===== ダイナム（dynam-data.jp）専用処理 =====
 // ※ 個別台のBIG/REGはapikeyが使い捨てトークンのため取得不可。
 //   合算データ（大当り合計 count + 合成確率 ratio）のみ取得する。
@@ -62,8 +75,7 @@ if(location.href.includes('dynam-data.jp')){
     var dResult={name:dsname,machines:[]};
     for(var dmn in dMap)dResult.machines.push({machine_name:dmn,count:dMap[dmn].length,stands:dMap[dmn]});
     bar.textContent='✅ '+dAllStands.length+'台 GitHub送信中...';
-    if(typeof completion==='function')completion('done');
-    await push(dResult,dsid,dsname);
+    await __finish(push(dResult,dsid,dsname));
   }catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
   setTimeout(()=>bar.remove(),12000);
   return;
@@ -138,8 +150,7 @@ if(location.href.includes('pscube.jp')){
     var pResult={name:pinfo.name,machines:[]};
     for(var pmn in pMap)pResult.machines.push({machine_name:pmn,count:pMap[pmn].length,stands:pMap[pmn]});
     bar.textContent='✅ '+pStands.length+'台 ('+(pYmd||'当日')+') GitHub送信中...';
-    if(typeof completion==='function')completion('done');
-    await push(pResult,pinfo.sid,pinfo.name,pYmd);
+    await __finish(push(pResult,pinfo.sid,pinfo.name,pYmd));
   }catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
   setTimeout(()=>bar.remove(),12000);
   return;
@@ -643,10 +654,7 @@ try{
   var result={name:sname,machines:[]};
   for(var[mn2,sts2]of Object.entries(mmap))result.machines.push({machine_name:mn2,count:sts2.length,stands:sts2});
   bar.textContent='✅ '+allStands.length+'台(試行'+machineNames.length+'機種) GitHub送信中...';
-  // iOSショートカットのタイムアウト回避: 送信前にcompletion()を呼ぶ
-  // (ページは生きたままなので送信は裏で完走する)
-  if(typeof completion==='function')completion('done');
-  await push(result);
+  await __finish(push(result));
 }catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
 setTimeout(()=>bar.remove(),10000);
 })();
