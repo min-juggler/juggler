@@ -32,6 +32,10 @@ if(location.href.includes('dynam-data.jp')||/pscube\.jp\/h\/[a-z0-9]+\//.test(lo
   bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
   bar.textContent='🎰 ダイナム取得中...';document.body.appendChild(bar);
   var dToday=__baseDate().toISOString().slice(0,10).replace(/-/g,'');
+  // Dai[]はD0(当日)〜D6(6日前)の7日分を持つ。__OFFに応じてD{n}を選ぶ
+  // （以前はD0固定だったため、3日分ループしても同じ当日データが重複保存されていた）。
+  var dDn=Math.min(6,Math.max(0,-__OFF));
+  var dDkey='D'+dDn;
   try{
     // STEP1: 機種一覧取得 (nc-m03-001.php)
     bar.textContent='機種一覧取得中...';
@@ -58,25 +62,30 @@ if(location.href.includes('dynam-data.jp')||/pscube\.jp\/h\/[a-z0-9]+\//.test(lo
         var j3=JSON.parse(t3);
         var dais=j3.Dai||[];
         dais.forEach(function(dai){
-          var d0=dai.D0;
-          if(!d0)return;
+          var d0=dai[dDkey];
+          if(!d0||!d0.YMD_biz)return;
           var rack=String(d0.cd_dai||'?');
           if(/^0\d{3,4}$/.test(rack))rack=String(parseInt(rack));
           var bonus=parseInt((d0.toku0&&d0.toku0.count)||0);
           var prob=parseFloat((d0.toku0&&d0.toku0.ratio)||0); // 合成確率(1/X)
           var games=(bonus>0&&prob>0)?Math.round(bonus*prob):0;
-          dAllStands.push({rack_no:rack,machine_name:jug.nmk_kisyu||'不明',games:games,bb:0,rb:0,diff:0,total_bonus:bonus,combined_prob:prob,combined_only:true});
+          dAllStands.push({rack_no:rack,machine_name:jug.nmk_kisyu||'不明',games:games,bb:0,rb:0,diff:0,total_bonus:bonus,combined_prob:prob,combined_only:true,_ymd:String(d0.YMD_biz)});
         });
       }catch(e2){}
     }
     if(dAllStands.length===0)throw new Error('台データ0');
+    // データ自身の営業日(YMD_biz)を採用してローカル日付とのズレを防ぐ
+    var dYmdCount={};
+    dAllStands.forEach(function(s){if(s._ymd)dYmdCount[s._ymd]=(dYmdCount[s._ymd]||0)+1;});
+    var dYmdRaw=Object.keys(dYmdCount).sort(function(a,b){return dYmdCount[b]-dYmdCount[a];})[0];
+    var dYmd=dYmdRaw?(dYmdRaw.slice(0,4)+'-'+dYmdRaw.slice(4,6)+'-'+dYmdRaw.slice(6,8)):null;
     // 機種ごとにまとめる
     var dMap={};
-    dAllStands.forEach(function(s){var mn=s.machine_name;if(!dMap[mn])dMap[mn]=[];dMap[mn].push(s);});
+    dAllStands.forEach(function(s){delete s._ymd;var mn=s.machine_name;if(!dMap[mn])dMap[mn]=[];dMap[mn].push(s);});
     var dResult={name:dsname,machines:[]};
     for(var dmn in dMap)dResult.machines.push({machine_name:dmn,count:dMap[dmn].length,stands:dMap[dmn]});
-    bar.textContent='✅ '+dAllStands.length+'台 GitHub送信中...';
-    await __finish(push(dResult,dsid,dsname));
+    bar.textContent='✅ '+dAllStands.length+'台 ('+(dYmd||'当日')+') GitHub送信中...';
+    await __finish(push(dResult,dsid,dsname,dYmd));
   }catch(e){bar.style.background='#888';bar.textContent='❌ '+e.message;}
   setTimeout(()=>bar.remove(),12000);
   return;

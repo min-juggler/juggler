@@ -1,5 +1,7 @@
 (async function(){
 var T='__TOKEN__',R='__REPO__';
+// 取得対象日のオフセット（0=今日, -1=昨日）。ショートカットのループが window.__JUG_DAYOFF__ をセットする。
+var __OFF=(typeof window!=='undefined'&&typeof window.__JUG_DAYOFF__==='number')?window.__JUG_DAYOFF__:0;
 
 // ダイナム(dynam-data.jp)＆ニラク(pscube.jp/h/...)のURLからstore IDを取得。両方同じCGI体系。
 var m=location.href.match(/\/h\/([a-z0-9]+)\//);
@@ -14,7 +16,11 @@ var bar=document.createElement('div');
 bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
 bar.textContent='🎰 ダイナム取得中...';document.body.appendChild(bar);
 
-var today=new Date().toISOString().slice(0,10).replace(/-/g,'');
+var __baseDate=function(){var d=new Date();if(__OFF)d.setDate(d.getDate()+__OFF);return d;};
+var today=__baseDate().toISOString().slice(0,10).replace(/-/g,'');
+// Dai[]はD0(当日)〜D6(6日前)の7日分を持つ。__OFFに応じてD{n}を選ぶ。
+var __Dn=Math.min(6,Math.max(0,-__OFF));
+var __Dkey='D'+__Dn;
 
 try{
   // STEP1: 機種一覧取得 (nc-m03-001.php)
@@ -51,8 +57,8 @@ try{
       var j3=JSON.parse(t3);
       var dais=j3.Dai||[];
       dais.forEach(function(dai){
-        var d0=dai.D0;
-        if(!d0)return;
+        var d0=dai[__Dkey];
+        if(!d0||!d0.YMD_biz)return;
         var rack=String(d0.cd_dai||'?');
         if(/^0\d{3,4}$/.test(rack))rack=String(parseInt(rack));
         var bonus=parseInt((d0.toku0&&d0.toku0.count)||0);
@@ -65,7 +71,8 @@ try{
           bb:0,rb:0,diff:0,
           total_bonus:bonus,
           combined_prob:prob,
-          combined_only:true
+          combined_only:true,
+          _ymd:String(d0.YMD_biz)
         });
       });
     }catch(e2){}
@@ -75,9 +82,15 @@ try{
 
   // ── STEP3: GitHubに送信 ──
   var realStands=allStands.filter(function(s){return s.games>0;}).length;
-  bar.textContent='📡 '+allStands.length+'台('+realStands+'稼働) GitHub送信中...';
-  var today2=new Date().toISOString().slice(0,10);
-  var msg='データ更新 '+new Date().toLocaleString('ja');
+  // データ自身の営業日(YMD_biz)を保存日付にする。ローカル日付だと深夜・早朝でズレる。
+  var ymdCount={};
+  allStands.forEach(function(s){if(s._ymd)ymdCount[s._ymd]=(ymdCount[s._ymd]||0)+1;});
+  var ymdRaw=Object.keys(ymdCount).sort(function(a,b){return ymdCount[b]-ymdCount[a];})[0];
+  var today2=ymdRaw?(ymdRaw.slice(0,4)+'-'+ymdRaw.slice(4,6)+'-'+ymdRaw.slice(6,8))
+                  :__baseDate().toISOString().slice(0,10);
+  allStands.forEach(function(s){delete s._ymd;});
+  bar.textContent='📡 '+allStands.length+'台('+realStands+'稼働) '+today2+' GitHub送信中...';
+  var msg='データ更新 '+new Date().toLocaleString('ja')+' (対象日:'+today2+')';
 
   // ※ Contents APIは1MB超でcontentが空になるため、その場合はraw URLから取得
   async function ghGet(path){
@@ -160,7 +173,7 @@ try{
     await ghPut('docs/data/history.json',s2.sha,hist,msg);
   }
 
-  if(ok1){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+allStands.length+'台 送信完了！';}
+  if(ok1){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+allStands.length+'台 ('+today2+') 送信完了！';}
   else{bar.style.background='#888';bar.textContent='⚠️ GitHub送信失敗';}
   // 送信完了を確認してからcompletion()を呼ぶ。以前は送信前に呼んでいたため、
   // iOSショートカットの連続実行だとページ破棄で送信が途中で殺されていた。

@@ -139,7 +139,8 @@ https://www.pscube.jp/h/a720930/</div>
     ダイナム・ベガス成沢・<b>ニラク吉原</b>は<b>ボット認証</b>が出ます（ニラクは特に出やすいです）。
     初回は各店のURLをSafariで手動で開き、認証を通してください。
     Cookieが残るので、以降はショートカットだけで通ります。<br>
-    <b>💡「待機」を必ず挟むこと</b>：ページ読み込みが終わる前にスクリプトが走ると失敗します。遅い店は5秒に伸ばしてください。
+    <b>💡「待機」を必ず挟むこと</b>：ページ読み込みが終わる前にスクリプトが走ると失敗します。遅い店は5秒に伸ばしてください。<br>
+    <b>📅 全店とも1回の実行で直近3日分</b>（今日・昨日・一昨日）をまとめて取得します。完了バーに対象日が出るので確認できます。
   </div>
 
   <!-- アイランド米沢 -->
@@ -325,10 +326,11 @@ async function updateUI() {
     document.getElementById('code-vegas').textContent     = wrapForShortcut3Day(teramoba, token, REPO, 3);
     // 成沢(P'sCUBE)もbookmarklet_code.js内で自動判別される。D0〜D6があるので3日分取得に対応。
     document.getElementById('code-narusawa').textContent  = wrapForShortcut3Day(teramoba, token, REPO, 3);
-    document.getElementById('code-dynam').textContent     = wrapForShortcut(dynamCode, token, REPO);
-    document.getElementById('code-dynam-tendo').textContent = wrapForShortcut(dynamCode, token, REPO);
+    // ダイナム/ニラクもDai[]にD0〜D6の7日分があるため3日分取得に対応
+    document.getElementById('code-dynam').textContent     = wrapForShortcut3Day(dynamCode, token, REPO, 3);
+    document.getElementById('code-dynam-tendo').textContent = wrapForShortcut3Day(dynamCode, token, REPO, 3);
     // ニラク吉原(pscube.jp/h/a720930/)もbookmarklet_dynam.js内で自動判別される
-    document.getElementById('code-niraku').textContent    = wrapForShortcut(dynamCode, token, REPO);
+    document.getElementById('code-niraku').textContent    = wrapForShortcut3Day(dynamCode, token, REPO, 3);
   } catch(e) {
     ['yonezawa','kaminoyama','vegas','narusawa','dynam','dynam-tendo','niraku'].forEach(id => {
       document.getElementById('code-' + id).textContent = '❌ 生成失敗: ' + e.message;
