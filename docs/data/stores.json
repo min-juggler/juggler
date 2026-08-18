@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-08-18T14:35:26.847Z",
+  "fetched_at": "2026-08-18T14:36:14.075Z",
   "stores": {
     "yonezawa": {
       "name": "アイランド米沢店",
@@ -4938,111 +4938,111 @@
             {
               "rack_no": "850",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 6446,
+              "games": 7521,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 48,
+              "total_bonus": 56,
               "combined_prob": 134.3,
               "combined_only": true
             },
             {
               "rack_no": "851",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 1720,
+              "games": 1957,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 10,
-              "combined_prob": 172,
+              "combined_prob": 195.7,
               "combined_only": true
             },
             {
               "rack_no": "852",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 3397,
+              "games": 3500,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 22,
-              "combined_prob": 154.4,
+              "combined_prob": 159.1,
               "combined_only": true
             },
             {
               "rack_no": "853",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 2187,
+              "games": 2205,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 15,
-              "combined_prob": 145.8,
+              "combined_prob": 147,
               "combined_only": true
             },
             {
               "rack_no": "854",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 6122,
+              "games": 7880,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 55,
-              "combined_prob": 111.3,
+              "total_bonus": 66,
+              "combined_prob": 119.4,
               "combined_only": true
             },
             {
               "rack_no": "855",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 5173,
+              "games": 5597,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 35,
-              "combined_prob": 147.8,
+              "total_bonus": 38,
+              "combined_prob": 147.3,
               "combined_only": true
             },
             {
               "rack_no": "856",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 5428,
+              "games": 6850,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 46,
-              "combined_prob": 118,
+              "total_bonus": 59,
+              "combined_prob": 116.1,
               "combined_only": true
             },
             {
               "rack_no": "857",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 3497,
+              "games": 4750,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 26,
-              "combined_prob": 134.5,
+              "total_bonus": 39,
+              "combined_prob": 121.8,
               "combined_only": true
             },
             {
               "rack_no": "858",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 7119,
+              "games": 8278,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 45,
-              "combined_prob": 158.2,
+              "total_bonus": 54,
+              "combined_prob": 153.3,
               "combined_only": true
             },
             {
               "rack_no": "859",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 6635,
+              "games": 8112,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 58,
-              "combined_prob": 114.4,
+              "total_bonus": 68,
+              "combined_prob": 119.3,
               "combined_only": true
             },
             {
@@ -5059,78 +5059,78 @@
             {
               "rack_no": "861",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 7119,
+              "games": 8752,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 52,
-              "combined_prob": 136.9,
+              "total_bonus": 68,
+              "combined_prob": 128.7,
               "combined_only": true
             },
             {
               "rack_no": "862",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 5454,
+              "games": 6424,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 36,
-              "combined_prob": 151.5,
+              "total_bonus": 43,
+              "combined_prob": 149.4,
               "combined_only": true
             },
             {
               "rack_no": "863",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 6408,
+              "games": 8301,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 46,
-              "combined_prob": 139.3,
+              "total_bonus": 59,
+              "combined_prob": 140.7,
               "combined_only": true
             },
             {
               "rack_no": "864",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 5058,
+              "games": 5655,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 37,
-              "combined_prob": 136.7,
+              "total_bonus": 43,
+              "combined_prob": 131.5,
               "combined_only": true
             },
             {
               "rack_no": "865",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 1938,
+              "games": 2036,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 10,
-              "combined_prob": 193.8,
+              "combined_prob": 203.6,
               "combined_only": true
             },
             {
               "rack_no": "866",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 6824,
+              "games": 8126,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 51,
-              "combined_prob": 133.8,
+              "total_bonus": 58,
+              "combined_prob": 140.1,
               "combined_only": true
             },
             {
               "rack_no": "867",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 3914,
+              "games": 5544,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 28,
-              "combined_prob": 139.8,
+              "total_bonus": 38,
+              "combined_prob": 145.9,
               "combined_only": true
             },
             {
@@ -5147,12 +5147,12 @@
             {
               "rack_no": "980",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 5766,
+              "games": 7498,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 53,
-              "combined_prob": 108.8,
+              "total_bonus": 66,
+              "combined_prob": 113.6,
               "combined_only": true
             },
             {
@@ -5169,23 +5169,23 @@
             {
               "rack_no": "982",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 4277,
+              "games": 5328,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 34,
-              "combined_prob": 125.8,
+              "total_bonus": 44,
+              "combined_prob": 121.1,
               "combined_only": true
             },
             {
               "rack_no": "983",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 6272,
+              "games": 8078,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 59,
-              "combined_prob": 106.3,
+              "total_bonus": 72,
+              "combined_prob": 112.2,
               "combined_only": true
             },
             {
@@ -5202,23 +5202,23 @@
             {
               "rack_no": "985",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 3158,
+              "games": 3452,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 19,
-              "combined_prob": 166.2,
+              "combined_prob": 181.7,
               "combined_only": true
             },
             {
               "rack_no": "986",
               "machine_name": "ﾏｲｼﾞｬｸﾞﾗｰV",
-              "games": 6300,
+              "games": 6563,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 35,
-              "combined_prob": 180,
+              "combined_prob": 187.5,
               "combined_only": true
             }
           ]
@@ -5230,12 +5230,12 @@
             {
               "rack_no": "775",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 2991,
+              "games": 3019,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 19,
-              "combined_prob": 157.4,
+              "combined_prob": 158.9,
               "combined_only": true
             },
             {
@@ -5274,23 +5274,23 @@
             {
               "rack_no": "779",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 699,
+              "games": 749,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 4,
-              "combined_prob": 174.8,
+              "combined_prob": 187.3,
               "combined_only": true
             },
             {
               "rack_no": "780",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 2462,
+              "games": 2858,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 19,
-              "combined_prob": 129.6,
+              "total_bonus": 20,
+              "combined_prob": 142.9,
               "combined_only": true
             },
             {
@@ -5307,23 +5307,23 @@
             {
               "rack_no": "987",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 1494,
+              "games": 3402,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 16,
-              "combined_prob": 93.4,
+              "total_bonus": 35,
+              "combined_prob": 97.2,
               "combined_only": true
             },
             {
               "rack_no": "988",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 4221,
+              "games": 4747,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 33,
-              "combined_prob": 127.9,
+              "total_bonus": 37,
+              "combined_prob": 128.3,
               "combined_only": true
             },
             {
@@ -5340,56 +5340,56 @@
             {
               "rack_no": "990",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 1323,
+              "games": 3276,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 7,
-              "combined_prob": 189,
+              "total_bonus": 18,
+              "combined_prob": 182,
               "combined_only": true
             },
             {
               "rack_no": "991",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 3706,
+              "games": 4792,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 29,
-              "combined_prob": 127.8,
+              "total_bonus": 33,
+              "combined_prob": 145.2,
               "combined_only": true
             },
             {
               "rack_no": "992",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 298,
+              "games": 317,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 2,
-              "combined_prob": 149,
+              "combined_prob": 158.5,
               "combined_only": true
             },
             {
               "rack_no": "993",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 4892,
+              "games": 6635,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 40,
-              "combined_prob": 122.3,
+              "total_bonus": 52,
+              "combined_prob": 127.6,
               "combined_only": true
             },
             {
               "rack_no": "994",
               "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
-              "games": 674,
+              "games": 698,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 5,
-              "combined_prob": 134.8,
+              "combined_prob": 139.6,
               "combined_only": true
             },
             {
@@ -5412,23 +5412,23 @@
             {
               "rack_no": "957",
               "machine_name": "SｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 1094,
+              "games": 1151,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 8,
-              "combined_prob": 136.8,
+              "combined_prob": 143.9,
               "combined_only": true
             },
             {
               "rack_no": "958",
               "machine_name": "SｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 2360,
+              "games": 3413,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 23,
-              "combined_prob": 102.6,
+              "total_bonus": 28,
+              "combined_prob": 121.9,
               "combined_only": true
             },
             {
@@ -5456,12 +5456,12 @@
             {
               "rack_no": "961",
               "machine_name": "SｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 280,
+              "games": 335,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 1,
-              "combined_prob": 280,
+              "combined_prob": 335,
               "combined_only": true
             },
             {
@@ -5478,12 +5478,12 @@
             {
               "rack_no": "963",
               "machine_name": "SｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 862,
+              "games": 873,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 3,
-              "combined_prob": 287.4,
+              "combined_prob": 291,
               "combined_only": true
             },
             {
@@ -5511,12 +5511,12 @@
             {
               "rack_no": "966",
               "machine_name": "SｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 2519,
+              "games": 4234,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 19,
-              "combined_prob": 132.6,
+              "total_bonus": 32,
+              "combined_prob": 132.3,
               "combined_only": true
             },
             {
@@ -5533,12 +5533,12 @@
             {
               "rack_no": "968",
               "machine_name": "SｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 711,
+              "games": 758,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 4,
-              "combined_prob": 177.8,
+              "combined_prob": 189.5,
               "combined_only": true
             },
             {
@@ -5566,12 +5566,12 @@
             {
               "rack_no": "971",
               "machine_name": "SｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 210,
+              "games": 752,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 1,
-              "combined_prob": 210,
+              "total_bonus": 4,
+              "combined_prob": 188,
               "combined_only": true
             },
             {
@@ -5594,45 +5594,45 @@
             {
               "rack_no": "947",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 4896,
+              "games": 5177,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 32,
-              "combined_prob": 153,
+              "total_bonus": 35,
+              "combined_prob": 147.9,
               "combined_only": true
             },
             {
               "rack_no": "948",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 363,
+              "games": 447,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 1,
-              "combined_prob": 363,
+              "total_bonus": 2,
+              "combined_prob": 223.5,
               "combined_only": true
             },
             {
               "rack_no": "949",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 659,
+              "games": 729,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 4,
-              "combined_prob": 164.8,
+              "combined_prob": 182.3,
               "combined_only": true
             },
             {
               "rack_no": "950",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 2798,
+              "games": 4134,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 20,
-              "combined_prob": 139.9,
+              "total_bonus": 30,
+              "combined_prob": 137.8,
               "combined_only": true
             },
             {
@@ -5649,23 +5649,23 @@
             {
               "rack_no": "952",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 558,
+              "games": 729,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 1,
-              "combined_prob": 558,
+              "total_bonus": 2,
+              "combined_prob": 364.5,
               "combined_only": true
             },
             {
               "rack_no": "953",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 329,
+              "games": 1058,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 1,
-              "combined_prob": 329,
+              "total_bonus": 13,
+              "combined_prob": 81.4,
               "combined_only": true
             },
             {
@@ -5682,23 +5682,23 @@
             {
               "rack_no": "955",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 1976,
+              "games": 2007,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 13,
-              "combined_prob": 152,
+              "combined_prob": 154.4,
               "combined_only": true
             },
             {
               "rack_no": "956",
               "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
-              "games": 344,
+              "games": 451,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 3,
-              "combined_prob": 114.7,
+              "combined_prob": 150.4,
               "combined_only": true
             }
           ]
@@ -5710,45 +5710,45 @@
             {
               "rack_no": "996",
               "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
-              "games": 2292,
+              "games": 4020,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 17,
-              "combined_prob": 134.8,
+              "total_bonus": 30,
+              "combined_prob": 134,
               "combined_only": true
             },
             {
               "rack_no": "997",
               "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
-              "games": 890,
+              "games": 1014,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 5,
-              "combined_prob": 178,
+              "combined_prob": 202.8,
               "combined_only": true
             },
             {
               "rack_no": "998",
               "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
-              "games": 5208,
+              "games": 5654,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 40,
-              "combined_prob": 130.2,
+              "total_bonus": 41,
+              "combined_prob": 137.9,
               "combined_only": true
             },
             {
               "rack_no": "999",
               "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
-              "games": 850,
+              "games": 876,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 5,
-              "combined_prob": 170,
+              "combined_prob": 175.2,
               "combined_only": true
             },
             {
@@ -5765,12 +5765,12 @@
             {
               "rack_no": "1001",
               "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
-              "games": 795,
+              "games": 912,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 5,
-              "combined_prob": 159,
+              "combined_prob": 182.4,
               "combined_only": true
             },
             {
@@ -5787,23 +5787,23 @@
             {
               "rack_no": "1003",
               "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
-              "games": 888,
+              "games": 942,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 4,
-              "combined_prob": 222,
+              "combined_prob": 235.5,
               "combined_only": true
             },
             {
               "rack_no": "1004",
               "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
-              "games": 1978,
+              "games": 2005,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 6,
-              "combined_prob": 329.7,
+              "combined_prob": 334.2,
               "combined_only": true
             },
             {
@@ -5826,23 +5826,23 @@
             {
               "rack_no": "768",
               "machine_name": "ｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS",
-              "games": 405,
+              "games": 438,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 1,
-              "combined_prob": 405,
+              "combined_prob": 438,
               "combined_only": true
             },
             {
               "rack_no": "769",
               "machine_name": "ｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS",
-              "games": 1513,
+              "games": 1652,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 11,
-              "combined_prob": 137.5,
+              "combined_prob": 150.2,
               "combined_only": true
             },
             {
@@ -5859,45 +5859,45 @@
             {
               "rack_no": "771",
               "machine_name": "ｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS",
-              "games": 564,
+              "games": 1090,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 5,
-              "combined_prob": 112.8,
+              "total_bonus": 8,
+              "combined_prob": 136.3,
               "combined_only": true
             },
             {
               "rack_no": "772",
               "machine_name": "ｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS",
-              "games": 910,
+              "games": 1129,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 6,
-              "combined_prob": 151.7,
+              "combined_prob": 188.2,
               "combined_only": true
             },
             {
               "rack_no": "773",
               "machine_name": "ｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS",
-              "games": 257,
+              "games": 340,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 1,
-              "combined_prob": 257,
+              "combined_prob": 340,
               "combined_only": true
             },
             {
               "rack_no": "774",
               "machine_name": "ｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS",
-              "games": 564,
+              "games": 615,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 1,
-              "combined_prob": 564,
+              "combined_prob": 615,
               "combined_only": true
             }
           ]
@@ -5909,45 +5909,45 @@
             {
               "rack_no": "764",
               "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ",
-              "games": 412,
+              "games": 1677,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 2,
-              "combined_prob": 206,
+              "total_bonus": 13,
+              "combined_prob": 129,
               "combined_only": true
             },
             {
               "rack_no": "765",
               "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ",
-              "games": 1621,
+              "games": 1881,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 14,
-              "combined_prob": 115.8,
+              "total_bonus": 15,
+              "combined_prob": 125.4,
               "combined_only": true
             },
             {
               "rack_no": "766",
               "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ",
-              "games": 2235,
+              "games": 2295,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 15,
-              "combined_prob": 149,
+              "combined_prob": 153,
               "combined_only": true
             },
             {
               "rack_no": "767",
               "machine_name": "ﾐｽﾀｰｼﾞｬｸﾞﾗｰ",
-              "games": 954,
+              "games": 1106,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 7,
-              "combined_prob": 136.3,
+              "combined_prob": 158,
               "combined_only": true
             }
           ]
@@ -5959,12 +5959,12 @@
             {
               "rack_no": "975",
               "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
-              "games": 683,
+              "games": 1003,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 4,
-              "combined_prob": 170.8,
+              "total_bonus": 7,
+              "combined_prob": 143.3,
               "combined_only": true
             },
             {
@@ -6009,23 +6009,23 @@
             {
               "rack_no": "973",
               "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰVIII",
-              "games": 2433,
+              "games": 2574,
               "bb": 0,
               "rb": 0,
               "diff": 0,
               "total_bonus": 23,
-              "combined_prob": 105.8,
+              "combined_prob": 111.9,
               "combined_only": true
             },
             {
               "rack_no": "974",
               "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰVIII",
-              "games": 1284,
+              "games": 3050,
               "bb": 0,
               "rb": 0,
               "diff": 0,
-              "total_bonus": 12,
-              "combined_prob": 107,
+              "total_bonus": 24,
+              "combined_prob": 127.1,
               "combined_only": true
             }
           ]
