@@ -59,8 +59,93 @@ const SETTING_EV_PER_GAME = {
   4: -0.08, 5: 0.12,  6: 0.31,
 };
 
-const COINS_PER_1000YEN = 50;
+// ===== 機械割（設定別・メーカー公表値ベース） =====
+// ボーダー機械割と直接比較するために持つ。アイムだけ設定6でも105.5%と極端に低い点が重要。
+const PAYOUT_RATE = {
+  'default':            { 1:0.970, 2:0.980, 3:0.995, 4:1.028, 5:1.053, 6:1.094 },
+  'ネオアイムジャグラーEX': { 1:0.967, 2:0.979, 3:0.991, 4:1.014, 5:1.033, 6:1.055 },
+  'ミスタージャグラー':     { 1:0.970, 2:0.984, 3:0.994, 4:1.020, 5:1.050, 6:1.090 },
+};
+function getPayoutRate(machineName) {
+  for (const k of Object.keys(PAYOUT_RATE)) {
+    if (k !== 'default' && (machineName || '').includes(k)) return PAYOUT_RATE[k];
+  }
+  return PAYOUT_RATE.default;
+}
+
+// ===== 貸出レート / 交換率 =====
+// 【重要】店のサイトに載っているのは「貸出レート（借りる値段）」だけ。
+// 交換率（換金する値段）は法的に公表できないので、店頭の景品交換一覧で確認するしかない。
+// exchangeYenPerCoin が null の間は「等価（＝貸出単価と同じ）」と仮定する。
+// これは楽観側の仮定なので、UIに必ず「交換率未確定」と出すこと。黙って楽観値を出さない。
+const STORE_RATES = {
+  yonezawa:       { coinsPer1000: 46, exchangeYenPerCoin: null },
+  kaminoyama:     { coinsPer1000: 46, exchangeYenPerCoin: null },
+  vegas_yonezawa: { coinsPer1000: 46, exchangeYenPerCoin: null },
+  vegas_narusawa: { coinsPer1000: 46, exchangeYenPerCoin: null },
+  dynam_yonezawa: { coinsPer1000: 88, exchangeYenPerCoin: null }, // 低貸(1000円88枚)
+  dynam_tendo:    { coinsPer1000: 88, exchangeYenPerCoin: null }, // 低貸(1000円88枚)
+};
+// 店舗によって46枚/47枚があるが、46で固定する。46の方が貸出単価が高く＝ボーダーが高く＝
+// 判定が辛くなるため、保守側に倒れる。差は+2.17%（設定4→5のギャップ2.5%とほぼ同等）なので、
+// 交換率が判明して本運用に入る段階では店ごとの正確な値に置き換えること。
+const DEFAULT_COINS_PER_1000 = 46;
+
+function rentYenPerCoin(storeId) {
+  const r = STORE_RATES[storeId];
+  return 1000 / ((r && r.coinsPer1000) || DEFAULT_COINS_PER_1000);
+}
+function exchangeYenPerCoin(storeId) {
+  const r = STORE_RATES[storeId];
+  // 未確定なら等価と仮定（楽観側）
+  return (r && r.exchangeYenPerCoin) || rentYenPerCoin(storeId);
+}
+function isExchangeRateKnown(storeId) {
+  const r = STORE_RATES[storeId];
+  return !!(r && r.exchangeYenPerCoin);
+}
+// ボーダー機械割 ＝ 貸出単価 ÷ 換金単価。これを上回る設定でないと打つ意味がない。
+function borderPayout(storeId) {
+  return rentYenPerCoin(storeId) / exchangeYenPerCoin(storeId);
+}
+// その台の期待収支(円/G)。設定確率で重み付けし、ボーダー超過分だけを利益とする。
+function evYenPerGame(probs, machineName, storeId) {
+  if (!probs) return 0;
+  const pr = getPayoutRate(machineName);
+  const border = borderPayout(storeId);
+  const exYen = exchangeYenPerCoin(storeId);
+  let ev = 0;
+  for (const s of [1, 2, 3, 4, 5, 6]) {
+    ev += (probs[s] || 0) * (pr[s] - border) * 3 * exYen; // 3枚掛け
+  }
+  return ev;
+}
+
 const GAME_SPEED = 400;
+
+// ===== 回転数ゲート =====
+// 【今日の535の教訓】判定精度をいくら上げても、回せるG数が足りなければ期待値は分散に埋もれる。
+// 設定5確定でも510Gなら 期待値+1,224円 に対しブレ±7,039円（S/N 0.17）＝ほぼコイン投げ。
+// 「何G回せるか」を判定に組み込み、S/Nが基準未満なら✅を出さない。
+const MIN_SIGNAL_NOISE = 0.35;   // 期待値÷1σ。これ未満は「勝負として成立しない」
+const AVG_BONUS_COINS = 175;     // BIG/REG平均の獲得枚数（分散計算用）
+
+// 予算と残り時間から、実際に回せるゲーム数を出す。
+// 小役の戻りがあるので、投入枚数の約2.1倍が回せる（実測ベースの概算）。
+function playableGames(budgetYen, timeMin, storeId) {
+  const coins = budgetYen / rentYenPerCoin(storeId);
+  const fromBudget = Math.floor(coins / 3 * 2.1);
+  const fromTime = Math.floor(timeMin / 60 * GAME_SPEED);
+  return Math.max(0, Math.min(fromBudget, fromTime));
+}
+// 期待値とブレ幅を返す。games が少ないほどS/Nが下がる＝座る価値がない。
+function edgeVsNoise(probs, machineName, storeId, games) {
+  if (!probs || !games) return { ev: 0, sd: 0, sn: 0, games: games || 0 };
+  const ev = evYenPerGame(probs, machineName, storeId) * games;
+  const combined = getMachineSettings(machineName)[5].combined;
+  const sd = Math.sqrt(games / combined) * AVG_BONUS_COINS * exchangeYenPerCoin(storeId);
+  return { ev, sd, sn: sd > 0 ? ev / sd : 0, games };
+}
 
 // 辛口判定の基準（厳しめ）: これを満たす台が無ければ「撤退推奨」
 // もっと辛く → 数字を上げる / 甘く → 下げる
@@ -118,7 +203,144 @@ function _rawLikelihoods(stand, settings) {
   return raw;
 }
 
+// ===== 事前確率（設定配分） =====
+// 【重大バグの修正 2026-08-25】
+// 以前は事前確率を置かず、尤度をそのまま正規化していた。これは「設定1〜6が等確率で入っている」
+// ＝高設定(5-6)が最初から33.3%ある、という仮定と同じ。
+// だが実測(79日/2008台)では高設定は10.3%しかない。結果、高設定確率を約1.5倍に過大表示していた。
+// 例: 8/25の535は「高設定確率75%」と表示したが、実測事前で補正すると41〜66%だった。
+// この過大表示が、勝てない台に座らせ続けた直接の原因。
+// 【2026-08-25 第2の修正】
+// 最初の修正では「高設定率 hi」だけを実測に合わせ、設定1〜4/5〜6の内訳は手で置いた形
+// (1:.50 2:.25 3:.15 4:.10 / 5:.60 6:.40) を使っていた。これが裏目に出た。
+// 設定4の事前が 0.10×(1-hi) と薄すぎ、設定5の 0.60×hi より小さくなる店があり、
+// 「設定4と5の間」にあるデータをむしろ設定5へ押し上げてしまった（535が75%→78%に上昇）。
+// 内訳を手で決める根拠は無いので、6設定の配分そのものをEM法で履歴から推定する。
+const SETTINGS_ALL = [1, 2, 3, 4, 5, 6];
+const PRIOR_FALLBACK = { 1: 0.42, 2: 0.20, 3: 0.15, 4: 0.13, 5: 0.06, 6: 0.04 }; // 履歴が無いとき
+const PRIOR_SHRINK_N = 40;     // 機種別の判定台数がこれ未満なら店平均へ縮める
+const PRIOR_MIN_N_STORE = 50;  // 店別を信じる最低台数
+const PRIOR_FLOOR = 0.01;      // どの設定も最低1%は残す（0に張り付くと事後が壊れる）
+const EM_ITER = 300;
+const PRIOR_SAMPLE_MIN_GAMES = 4000; // 設定が読める程度に回っている台だけ母数にする
+
+// 履歴から推定した設定配分。loadHistoryData後に buildEmpiricalPriors() で構築する。
+let EMPIRICAL_PRIOR = { overall: { ...PRIOR_FALLBACK }, byStore: {}, byStoreMachine: {}, _n: 0 };
+// 「高設定率」は表示・説明用の要約値（配分の 5+6）。判定そのものには使わない。
+let EMPIRICAL_HIGH = { overall: PRIOR_FALLBACK[5] + PRIOR_FALLBACK[6], byStore: {}, byStoreMachine: {} };
+
+// 尤度ベクトルの集合から、設定配分πを推定する（混合比のEM）。
+// 【重要】素のEM(最尤)は使えない。隣り合う設定の尤度が重なりすぎて混合比が識別できず、
+// 実際に回すと 設2/設5/設6 が下限に張り付き「全体の高設定率1.9%」という現実離れした解に落ちた。
+// そこで業界的に妥当な基準配分 PRIOR_REFERENCE を疑似データとして混ぜたMAP推定にする。
+// 疑似データ数 = PRIOR_REG × 実データ数。データが基準を押し返せた分だけ動く。
+const PRIOR_REFERENCE = { 1: 0.40, 2: 0.18, 3: 0.15, 4: 0.15, 5: 0.08, 6: 0.04 }; // 高設定12%
+const PRIOR_REG = 1.0;
+
+function _emFitPrior(vectors, init) {
+  if (!vectors || !vectors.length) return null;
+  const n = vectors.length;
+  const pseudo = PRIOR_REG * n;
+  let pi = {}, s0 = 0;
+  for (const k of SETTINGS_ALL) { pi[k] = (init && init[k]) || 1 / 6; s0 += pi[k]; }
+  for (const k of SETTINGS_ALL) pi[k] /= s0;
+  for (let it = 0; it < EM_ITER; it++) {
+    const acc = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+    let used = 0;
+    for (const L of vectors) {
+      const w = {}; let tot = 0;
+      for (const k of SETTINGS_ALL) { const v = (L[k] || 0) * pi[k]; w[k] = v; tot += v; }
+      if (!(tot > 0)) continue;
+      used++;
+      for (const k of SETTINGS_ALL) acc[k] += w[k] / tot;
+    }
+    if (!used) return null;
+    let diff = 0;
+    for (const k of SETTINGS_ALL) {
+      const nv = (acc[k] + pseudo * PRIOR_REFERENCE[k]) / (used + pseudo);
+      diff += Math.abs(nv - pi[k]); pi[k] = nv;
+    }
+    if (diff < 1e-7) break;
+  }
+  let t = 0;
+  for (const k of SETTINGS_ALL) { pi[k] = Math.max(PRIOR_FLOOR, pi[k]); t += pi[k]; }
+  for (const k of SETTINGS_ALL) pi[k] /= t;
+  return pi;
+}
+
+function _blendPrior(a, b, w) { // w の重みで a、残りで b
+  const p = {}; let t = 0;
+  for (const k of SETTINGS_ALL) { p[k] = w * (a[k] || 0) + (1 - w) * (b[k] || 0); t += p[k]; }
+  for (const k of SETTINGS_ALL) p[k] /= t;
+  return p;
+}
+const _highOf = (p) => (p[5] || 0) + (p[6] || 0);
+
+function buildEmpiricalPriors() {
+  const all = [], byStore = {}, bySm = {};
+  for (const day of Object.values(historyData || {})) {
+    for (const [sid, store] of Object.entries(day.stores || {})) {
+      for (const m of store.machines || []) {
+        const mn = hw2fw(m.machine_name || '');
+        if (!mn.includes('ジャグラー')) continue;
+        const settings = getMachineSettings(mn);
+        for (const st of m.stands || []) {
+          if ((st.games || 0) < PRIOR_SAMPLE_MIN_GAMES) continue;
+          const L = _rawLikelihoods({ ...st, machine_name: mn }, settings);
+          if (!L) continue;
+          all.push(L);
+          (byStore[sid] = byStore[sid] || []).push(L);
+          const key = sid + '|' + mn;
+          (bySm[key] = bySm[key] || []).push(L);
+        }
+      }
+    }
+  }
+  const overall = (all.length >= 100 && _emFitPrior(all, PRIOR_FALLBACK)) || { ...PRIOR_FALLBACK };
+  EMPIRICAL_PRIOR = { overall, byStore: {}, byStoreMachine: {}, _n: all.length };
+  for (const [k, v] of Object.entries(byStore)) {
+    const p = _emFitPrior(v, overall);
+    if (p) EMPIRICAL_PRIOR.byStore[k] = { prior: p, n: v.length };
+  }
+  for (const [k, v] of Object.entries(bySm)) {
+    const p = _emFitPrior(v, overall);
+    if (p) EMPIRICAL_PRIOR.byStoreMachine[k] = { prior: p, n: v.length };
+  }
+  // 表示用の要約
+  EMPIRICAL_HIGH = { overall: _highOf(overall), byStore: {}, byStoreMachine: {}, _n: all.length };
+  for (const [k, v] of Object.entries(EMPIRICAL_PRIOR.byStore)) EMPIRICAL_HIGH.byStore[k] = { rate: _highOf(v.prior), n: v.n };
+  for (const [k, v] of Object.entries(EMPIRICAL_PRIOR.byStoreMachine)) EMPIRICAL_HIGH.byStoreMachine[k] = { rate: _highOf(v.prior), n: v.n };
+}
+
+// 店×機種の配分を、サンプルが薄いときは店平均→全体へ縮小（縮小推定）して返す。
+function priorFor(storeId, machineName) {
+  const overall = EMPIRICAL_PRIOR.overall || PRIOR_FALLBACK;
+  const st = EMPIRICAL_PRIOR.byStore[storeId];
+  const storePrior = (st && st.n >= PRIOR_MIN_N_STORE) ? st.prior : overall;
+  const sm = EMPIRICAL_PRIOR.byStoreMachine[storeId + '|' + (machineName || '')];
+  if (!sm || !sm.n) return storePrior;
+  return _blendPrior(sm.prior, storePrior, sm.n / (sm.n + PRIOR_SHRINK_N));
+}
+
+// 説明表示用（判定には使わない）
+function highRateFor(storeId, machineName) { return _highOf(priorFor(storeId, machineName)); }
+
+// 事後確率 ∝ 尤度 × 事前確率
 function calcSettingLikelihood(stand, settings) {
+  const raw = _rawLikelihoods(stand, settings);
+  if (!raw) return null;
+  const prior = priorFor(stand.store_id, stand.machine_name || '');
+  const w = {};
+  let total = 0;
+  for (const [s, l] of Object.entries(raw)) { const v = l * (prior[s] || 0); w[s] = v; total += v; }
+  if (!(total > 0)) return null;
+  const probs = {};
+  for (const [s, v] of Object.entries(w)) probs[parseInt(s)] = v / total;
+  return probs;
+}
+
+// 事前補正なしの生の尤度比較（デバッグ・比較表示用）。旧ロジックと同じ値になる。
+function calcSettingLikelihoodFlat(stand, settings) {
   const raw = _rawLikelihoods(stand, settings);
   if (!raw) return null;
   const total = Object.values(raw).reduce((a, b) => a + b, 0);
@@ -313,6 +535,9 @@ async function loadHistoryData(url) {
     for (const day of Object.values(historyData)) {
       if (day && day.stores) normalizeStoresDict(day.stores);
     }
+    // 【重要】設定推定の事前確率を、履歴の実測高設定率から構築する。
+    // これより前に calcSettingLikelihood を呼ぶと fallback(10%)が使われる。必ず先に走らせること。
+    buildEmpiricalPriors();
     // 朝イチ用：最新の履歴日を「前日（据え置き基準）」として展開
     buildPrevFromHistory();
     // 履歴読み込み完了後に傾向タブを更新
@@ -498,6 +723,30 @@ function calcManual() {
     else if (combP <= 138 && rbP <= 320) { verdict = '△ 微妙（設定4前後）'; cls = 'calc-mid'; note = `合算${fmt(combP)}は設定4級だが確定的でない。`; }
     else { verdict = '❌ 座るな'; cls = 'calc-stop'; note = combP <= 128 ? `合算${fmt(combP)}は良いがRB${fmt(rbP)}が弱くBB偏り。罠の可能性。` : `合算${fmt(combP)}・RB${fmt(rbP)}とも低設定域。`; }
   }
+  // ===== 回転数ゲート（現地電卓版） =====
+  // ✅が出ても、残り予算で回せるG数が足りなければ勝負として成立しない。✅を格下げする。
+  const calcBudget = parseInt(document.getElementById('calc-budget')?.value) || 0;
+  const calcStore  = document.getElementById('calc-store')?.value || '';
+  let gateHtml = '';
+  if (calcBudget > 0) {
+    const canPlay = playableGames(calcBudget, 24 * 60, calcStore); // 時間は予算側で律速させる
+    const en = edgeVsNoise(probs, mn, calcStore, canPlay);
+    const yen = v => (v >= 0 ? '+' : '') + Math.round(v).toLocaleString() + '円';
+    if (en.sn < MIN_SIGNAL_NOISE) {
+      if (verdict.startsWith('✅')) { verdict = '⚠️ データは良いが資金不足'; cls = 'calc-mid'; }
+      gateHtml = `<div class="calc-note" style="background:#fff3cd">⚠️ 予算${calcBudget.toLocaleString()}円では約<b>${canPlay}G</b>しか回せません。<br>
+        期待値 <b>${yen(en.ev)}</b> に対しブレ <b>±${Math.round(en.sd).toLocaleString()}円</b>（期待値÷ブレ ${en.sn.toFixed(2)}）。<br>
+        <b>これは勝負として成立しません。</b>資金を足せないなら座らないでください。</div>`;
+    } else {
+      gateHtml = `<div class="calc-note" style="background:#eaf7ee">✔ 予算${calcBudget.toLocaleString()}円で約<b>${canPlay}G</b>回せます。
+        期待値 <b>${yen(en.ev)}</b> / ブレ ±${Math.round(en.sd).toLocaleString()}円（${en.sn.toFixed(2)}）</div>`;
+    }
+    if (!isExchangeRateKnown(calcStore)) {
+      gateHtml += `<div class="calc-note" style="background:#ffe9e9;color:#8b1a1a">🔴 <b>交換率が未確定</b>です。今は等価と仮定して計算しています＝<b>楽観側の数字</b>。<br>
+        店頭の景品交換一覧（特殊景品◯枚＝◯◯円）を確認して教えてください。非等価だと設定5でもマイナスになり得ます。</div>`;
+    }
+  }
+
   // ぶどう補助（対象機種＆座ってからカウントした自分の区間のみ）
   let budouHtml = '';
   if (budouRelevant(mn) && _budouCount > 0 && myGames > 0) {
@@ -516,6 +765,7 @@ function calcManual() {
       <span>合算 <b>${fmt(combP)}</b></span>
     </div>
     <div class="calc-note">${note}</div>
+    ${gateHtml}
     ${budouHtml}`;
 }
 
@@ -528,9 +778,27 @@ function scoreStands(stands, budget, timeMin) {
     const score = calcScore(probs, expectedSetting, stand, fit, settings);
     const expectedProfit = calcExpectedProfitFromProbs(probs, timeMin, budget);
     const tags = buildReasonTags(stand, probs, expectedSetting);
-    const confirmed = isConfirmedHigh(stand, settings);
-    if (confirmed) tags.unshift({ text: '◎設定5-6ほぼ確定（合算×RB一致）', good: true });
-    return { ...stand, probs, expectedSetting, score, expectedProfit, tags, _confirmed: confirmed };
+
+    // ===== 回転数ゲート =====
+    // データ上は高設定でも、残り予算・時間で回せるG数が足りなければ期待値は分散に埋もれる。
+    // 「データが良い」と「勝負として成立する」は別問題。ここで後者を必ず確認する。
+    const canPlay = playableGames(budget, timeMin, stand.store_id);
+    const en = edgeVsNoise(probs, stand.machine_name || '', stand.store_id, canPlay);
+    const noiseOk = en.sn >= MIN_SIGNAL_NOISE;
+
+    const dataHigh = isConfirmedHigh(stand, settings);
+    const confirmed = dataHigh && noiseOk;   // 両方満たして初めて✅
+    if (dataHigh) {
+      tags.unshift({ text: '◎設定5-6ほぼ確定（合算×RB一致）', good: true });
+      if (!noiseOk) {
+        tags.unshift({
+          text: `⚠️回せるのは約${canPlay}G＝勝負にならない（期待値${en.ev >= 0 ? '+' : ''}${Math.round(en.ev).toLocaleString()}円 / ブレ±${Math.round(en.sd).toLocaleString()}円）`,
+          good: false,
+        });
+      }
+    }
+    return { ...stand, probs, expectedSetting, score, expectedProfit, tags,
+             _confirmed: confirmed, _dataHigh: dataHigh, _edge: en };
   });
 }
 
