@@ -51,13 +51,13 @@
   <button class="btn btn-primary" onclick="saveToken()">保存してスクリプトを生成</button>
 </div>
 
-<!-- おすすめ: 7タブ一括オープン -->
+<!-- おすすめ: 6タブ一括オープン -->
 <div class="card">
-  <h2>🚀 おすすめ：7タブを1タップで開く</h2>
+  <h2>🚀 おすすめ：6タブを1タップで開く</h2>
 
   <div style="background:#e8f5e9;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#1b5e20;line-height:1.8">
     iOSの仕様上、「URLを開く」から「JavaScriptを実行」へは<b>繋げられません</b>（JavaScript実行はSafariの共有シート専用）。<br>
-    そこで<b>「7店舗のURLを一括で開くだけ」</b>のショートカットを作ります。一番面倒なURL移動が消えます。
+    そこで<b>「6店舗のURLを一括で開くだけ」</b>のショートカットを作ります。一番面倒なURL移動が消えます。
   </div>
 
   <div class="step">
@@ -71,17 +71,16 @@
   <div class="step">
     <div class="step-num">2</div>
     <div class="step-body">
-      <div class="step-title">下の7つのURLをまとめて貼り付け</div>
+      <div class="step-title">下の6つのURLをまとめて貼り付け</div>
       <div class="step-desc">URL欄をタップして貼り付け。複数URLを入れると<strong>全部タブで開きます</strong><br>
-      ※うまく1つにまとまらない場合は「URLを開く」を7個並べて1つずつ貼ってもOK</div>
+      ※うまく1つにまとまらない場合は「URLを開く」を6個並べて1つずつ貼ってもOK</div>
       <div class="code-block expanded" id="url-all">https://island.pt.teramoba2.com/yonezawa/standlist_slot?kind_code=Z
 https://island.pt.teramoba2.com/kaminoyama/standlist_slot?kind_code=Z
 https://vegasmobile.pt.teramoba2.com/hl-105/rack_info_kt?kind_code=21
 https://www.pscube.jp/dedamajyoho-P-townDMMpachi/c721220/
 https://www.dynam-data.jp/h/a725254/cgi-bin/nc-v13-001.php?cd_ps=2
-https://www.dynam-data.jp/h/a736724/cgi-bin/nc-v13-001.php?cd_ps=2
-https://www.pscube.jp/h/a720930/</div>
-      <button class="btn btn-copy" onclick="copyText('url-all',this)">📋 7店舗のURLをまとめてコピー</button>
+https://www.dynam-data.jp/h/a736724/cgi-bin/nc-v13-001.php?cd_ps=2</div>
+      <button class="btn btn-copy" onclick="copyText('url-all',this)">📋 6店舗のURLをまとめてコピー</button>
     </div>
   </div>
 
@@ -98,7 +97,7 @@ https://www.pscube.jp/h/a720930/</div>
     <div class="step-body">
       <div class="step-title">毎日の使い方</div>
       <div class="step-desc">
-        ① アイコンを1タップ → <strong>7タブが全部開く</strong>（ボット認証もここでまとめて突破）<br>
+        ① アイコンを1タップ → <strong>6タブが全部開く</strong>（ボット認証もここでまとめて突破）<br>
         ② 各タブで <strong>共有ボタン → 取得ショートカット</strong> を実行<br>
         ③ 緑の「✅ 送信完了」を待って次のタブへ
       </div>
@@ -131,12 +130,12 @@ https://www.pscube.jp/h/a720930/</div>
 
   <!-- 店舗ごとにURLオープン+JS実行を繰り返す -->
   <div style="font-size:12px;color:#666;margin-bottom:10px;padding:8px 10px;background:#f5f5f5;border-radius:8px">
-    以下の <strong>①URLを開く → ②待機(3秒) → ③スクリプト実行</strong> を7店舗分追加します（計21アクション）
+    以下の <strong>①URLを開く → ②待機(3秒) → ③スクリプト実行</strong> を6店舗分追加します（計18アクション）
   </div>
 
   <div style="background:#e8f5e9;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#1b5e20;line-height:1.8">
     <b>⚠️ 先に1回だけ準備してください</b><br>
-    ダイナム・ベガス成沢・<b>ニラク吉原</b>は<b>ボット認証</b>が出ます（ニラクは特に出やすいです）。
+    ダイナム・ベガス成沢は<b>ボット認証</b>が出ます。
     初回は各店のURLをSafariで手動で開き、認証を通してください。
     Cookieが残るので、以降はショートカットだけで通ります。<br>
     <b>💡「待機」を必ず挟むこと</b>：ページ読み込みが終わる前にスクリプトが走ると失敗します。遅い店は5秒に伸ばしてください。<br>
@@ -222,19 +221,8 @@ https://www.pscube.jp/h/a720930/</div>
     <button class="btn btn-copy" onclick="copyText('code-dynam-tendo',this)">📋 スクリプトをコピー</button>
   </div>
 
-  <div class="flow-arrow">↓</div>
-
-  <!-- ニラク吉原 -->
-  <div class="store-card">
-    <h3>🏪 ニラク吉原<span class="tag-new">NEW</span></h3>
-    <div class="step-desc" style="margin-bottom:8px">※ ボット認証が特に出やすい店です。最初にロボット認証が出たら、手で認証してから実行してください</div>
-    <div class="step-desc" style="margin-bottom:8px">「<strong>URLを開く</strong>」アクション追加 → URLを貼り付け</div>
-    <div class="code-block" id="url-niraku">https://www.pscube.jp/h/a720930/</div>
-    <button class="btn btn-copy" onclick="copyText('url-niraku',this)">📋 URLをコピー</button>
-    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>待機</strong>」3秒 → 「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け（ダイナムと同じスクリプトでOK・URLで自動判別）</div>
-    <div class="code-block" id="code-niraku">⏳ 生成中...</div>
-    <button class="btn btn-copy" onclick="copyText('code-niraku',this)">📋 スクリプトをコピー</button>
-  </div>
+  <!-- ニラク吉原は2026-08-25に対応を打ち切った。
+       Cloudflareのボット認証を突破できず、3ヶ月間で一度もデータ取得に成功しなかったため。 -->
 
   <div class="step" style="margin-top:14px">
     <div class="step-num">2</div>
@@ -248,7 +236,7 @@ https://www.pscube.jp/h/a720930/</div>
     <div class="step-num">3</div>
     <div class="step-body">
       <div class="step-title">ホーム画面に追加</div>
-      <div class="step-desc">ショートカットを開いて右上「…」→「<strong>ホーム画面に追加</strong>」<br>毎日このアイコンをタップするだけで7店舗一括取得！</div>
+      <div class="step-desc">ショートカットを開いて右上「…」→「<strong>ホーム画面に追加</strong>」<br>毎日このアイコンをタップするだけで6店舗一括取得！</div>
     </div>
   </div>
 </div>
@@ -326,13 +314,11 @@ async function updateUI() {
     document.getElementById('code-vegas').textContent     = wrapForShortcut3Day(teramoba, token, REPO, 3);
     // 成沢(P'sCUBE)もbookmarklet_code.js内で自動判別される。D0〜D6があるので3日分取得に対応。
     document.getElementById('code-narusawa').textContent  = wrapForShortcut3Day(teramoba, token, REPO, 3);
-    // ダイナム/ニラクもDai[]にD0〜D6の7日分があるため3日分取得に対応
+    // ダイナムもDai[]にD0〜D6の7日分があるため3日分取得に対応
     document.getElementById('code-dynam').textContent     = wrapForShortcut3Day(dynamCode, token, REPO, 3);
     document.getElementById('code-dynam-tendo').textContent = wrapForShortcut3Day(dynamCode, token, REPO, 3);
-    // ニラク吉原(pscube.jp/h/a720930/)もbookmarklet_dynam.js内で自動判別される
-    document.getElementById('code-niraku').textContent    = wrapForShortcut3Day(dynamCode, token, REPO, 3);
   } catch(e) {
-    ['yonezawa','kaminoyama','vegas','narusawa','dynam','dynam-tendo','niraku'].forEach(id => {
+    ['yonezawa','kaminoyama','vegas','narusawa','dynam','dynam-tendo'].forEach(id => {
       document.getElementById('code-' + id).textContent = '❌ 生成失敗: ' + e.message;
     });
   }

@@ -3,12 +3,14 @@ var T='__TOKEN__',R='__REPO__';
 // 取得対象日のオフセット（0=今日, -1=昨日）。ショートカットのループが window.__JUG_DAYOFF__ をセットする。
 var __OFF=(typeof window!=='undefined'&&typeof window.__JUG_DAYOFF__==='number')?window.__JUG_DAYOFF__:0;
 
-// ダイナム(dynam-data.jp)＆ニラク(pscube.jp/h/...)のURLからstore IDを取得。両方同じCGI体系。
+// ダイナム(dynam-data.jp)のURLからstore IDを取得。
+// ※ ニラク吉原(pscube.jp/h/a720930/)は同じCGI体系だったが、Cloudflareのボット認証を
+//   突破できず3ヶ月で一度も取得に成功しなかったため、2026-08-25に対応を打ち切った。
 var m=location.href.match(/\/h\/([a-z0-9]+)\//);
 if(!m){alert('店舗のページで実行してください');return;}
 var storeCode=m[1]; // 例: a725254
 
-var STORES={'a725254':{sid:'dynam_yonezawa',name:'ダイナム米沢店'},'a736724':{sid:'dynam_tendo',name:'ダイナム天童店'},'a720930':{sid:'niraku_yoshiwara',name:'ニラク吉原店'}};
+var STORES={'a725254':{sid:'dynam_yonezawa',name:'ダイナム米沢店'},'a736724':{sid:'dynam_tendo',name:'ダイナム天童店'}};
 var storeInfo=STORES[storeCode]||{sid:'dynam_'+storeCode,name:'ダイナム'+storeCode};
 var sid=storeInfo.sid, sname=storeInfo.name;
 
