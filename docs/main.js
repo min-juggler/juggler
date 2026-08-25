@@ -802,6 +802,135 @@ function scoreStands(stands, budget, timeMin) {
   });
 }
 
+// ===== 推奨ログと自動採点 =====
+// 【なぜ必要か】シミュレーションでの検証は「アプリのモデルが正しい」前提でしか回せない。
+// 設定値テーブルや尤度の作り方そのものが間違っていた場合、それでは絶対に見つからない。
+// 見つける方法は1つだけ：「今日これを推した」を先に記録し、閉店データで答え合わせすること。
+// 後出しでは意味がないので、記録は必ず推奨を表示した瞬間に取る。
+const PICKS_KEY = 'juggler_picks_v1';
+const PICKS_MAX_DAYS = 120;
+// 記録時のG数が最終G数のこの割合を超えていたら「ほぼ閉店後に見ただけ」なので採点から除く。
+// これを入れないと、夜遅くに開いた日の的中率が勝手に上がって自分を騙すことになる。
+const PICKS_EARLY_RATIO = 0.75;
+
+// 営業日。深夜〜早朝に見たときは前日扱いにする。
+function businessDate(iso) {
+  const d = iso ? new Date(iso) : new Date();
+  if (d.getHours() < 6) d.setDate(d.getDate() - 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+const loadPicks = () => Storage.get(PICKS_KEY, []) || [];
+const savePicks = (a) => Storage.set(PICKS_KEY, a);
+
+function recordPicks(list) {
+  if (!list || !list.length || !storeData) return;
+  const date = businessDate(storeData.fetched_at);
+  const picks = loadPicks();
+  const seen = new Set(picks.map(p => p.d + '|' + p.sid + '|' + p.rack));
+  let added = 0;
+  for (const s of list) {
+    const key = date + '|' + s.store_id + '|' + s.rack_no;
+    if (seen.has(key)) continue; // その日の最初の推奨だけを残す（後から良い方に書き換えない）
+    seen.add(key);
+    picks.push({
+      d: date, sid: s.store_id, rack: String(s.rack_no), mn: s.machine_name || '',
+      g: s.games || 0, bb: s.bb || 0, rb: s.rb || 0,
+      p56: (s.probs ? (s.probs[5] || 0) + (s.probs[6] || 0) : 0),
+      es: s.expectedSetting || 0, sc: s.score || 0,
+      conf: !!s._confirmed, dh: !!s._dataHigh,
+      sn: (s._edge && s._edge.sn) || 0,
+      ts: new Date().toISOString(),
+    });
+    added++;
+  }
+  if (!added) return;
+  const days = [...new Set(picks.map(p => p.d))].sort();
+  if (days.length > PICKS_MAX_DAYS) {
+    const cut = days[days.length - PICKS_MAX_DAYS];
+    savePicks(picks.filter(p => p.d >= cut));
+  } else savePicks(picks);
+}
+
+// 記録した推奨を、その日の最終データ(history.json)と突き合わせて採点する。
+function scorePicks() {
+  const picks = loadPicks();
+  const rows = [];
+  let pending = 0, tooLate = 0;
+  for (const p of picks) {
+    const day = (historyData || {})[p.d];
+    const store = day && day.stores && day.stores[p.sid];
+    if (!store) { pending++; continue; }
+    let fin = null;
+    for (const m of store.machines || []) {
+      const hit = (m.stands || []).find(st => String(st.rack_no) === p.rack);
+      if (hit) { fin = { ...hit, machine_name: hw2fw(m.machine_name || '') }; break; }
+    }
+    if (!fin || !(fin.games > 0)) { pending++; continue; }
+    if (p.g > fin.games * PICKS_EARLY_RATIO) { tooLate++; continue; }
+    rows.push({
+      ...p, fg: fin.games, fbb: fin.bb, frb: fin.rb, fdiff: fin.diff,
+      hit: isConfirmedHigh(fin, getMachineSettings(fin.machine_name)),
+    });
+  }
+  return { rows, pending, tooLate, total: picks.length };
+}
+
+function renderPicksReview() {
+  const sec = document.getElementById('review-section');
+  const body = document.getElementById('review-body');
+  if (!sec || !body) return;
+  sec.classList.remove('hidden');
+  const { rows, pending, tooLate, total } = scorePicks();
+  const need = 40;
+  if (rows.length < 5) {
+    body.innerHTML = `<p style="font-size:13px;color:#666;padding:0 16px 16px;line-height:1.7">
+      推奨した台を自動で記録しています。翌日以降、閉店データが揃った分から自動で採点されます。<br>
+      記録 <b>${total}</b>件 / 採点済み <b>${rows.length}</b>件 / 結果待ち <b>${pending}</b>件${tooLate ? ` / 対象外 ${tooLate}件（閉店間際に見た分）` : ''}<br>
+      <span style="color:#999">目安として${need}件たまると、確率表示が正しいかどうか判断できます。</span></p>`;
+    return;
+  }
+  const buckets = [[0, .2], [.2, .4], [.4, .6], [.6, .8], [.8, 1.01]];
+  let sp = 0, sa = 0;
+  const trs = buckets.map(([lo, hi]) => {
+    const b = rows.filter(r => r.p56 >= lo && r.p56 < hi);
+    if (!b.length) return `<tr><td>${Math.round(lo * 100)}〜${Math.min(100, Math.round(hi * 100))}%</td><td colspan="4" style="color:#bbb">-</td></tr>`;
+    const pred = b.reduce((a, r) => a + r.p56, 0) / b.length * 100;
+    const act = b.filter(r => r.hit).length / b.length * 100;
+    sp += pred * b.length; sa += act * b.length;
+    const gap = pred - act;
+    const col = Math.abs(gap) <= 10 ? '#2d6a4f' : (gap > 0 ? '#e63946' : '#c77800');
+    return `<tr><td>${Math.round(lo * 100)}〜${Math.min(100, Math.round(hi * 100))}%</td>
+      <td>${b.length}</td><td>${pred.toFixed(0)}%</td><td><b>${act.toFixed(0)}%</b></td>
+      <td style="color:${col};font-weight:600">${gap >= 0 ? '+' : ''}${gap.toFixed(0)}</td></tr>`;
+  }).join('');
+  const confRows = rows.filter(r => r.conf);
+  const confTxt = confRows.length
+    ? `✅が付いた台 <b>${confRows.length}</b>件 → 実際に高設定だったのは <b>${(confRows.filter(r => r.hit).length / confRows.length * 100).toFixed(0)}%</b>`
+    : '✅が付いた台はまだありません';
+  const diffRows = rows.filter(r => typeof r.fdiff === 'number' && r.fdiff !== 0);
+  const diffTxt = diffRows.length
+    ? `推奨した台のその日の差枚 平均 <b>${Math.round(diffRows.reduce((a, r) => a + r.fdiff, 0) / diffRows.length).toLocaleString()}枚</b>（${diffRows.length}件）`
+    : '';
+  const avgG = Math.round(rows.reduce((a, r) => a + r.g, 0) / rows.length);
+  body.innerHTML = `
+    <p style="font-size:12px;color:#666;padding:0 16px 8px;line-height:1.6">
+      「高設定確率X%」と表示した台が、閉店データで本当に高設定だった割合。<br>
+      <b>ズレがプラス＝盛りすぎ</b>（実際より高く表示している）。0に近いほど信頼できます。</p>
+    <div style="padding:0 16px 8px;overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead><tr style="background:#f5f5f5;text-align:left">
+          <th style="padding:6px">表示した確率</th><th>件数</th><th>表示</th><th>実際</th><th>ズレ</th>
+        </tr></thead>
+        <tbody>${trs}</tbody>
+      </table>
+    </div>
+    <p style="font-size:12px;color:#666;padding:0 16px 16px;line-height:1.8">
+      全体 ${rows.length}件：表示平均 ${(sp / rows.length).toFixed(0)}% / 実際 ${(sa / rows.length).toFixed(0)}%<br>
+      ${confTxt}<br>${diffTxt ? diffTxt + '<br>' : ''}
+      <span style="color:#999">記録時の平均G数 ${avgG.toLocaleString()}G / 結果待ち ${pending}件${tooLate ? ` / 対象外 ${tooLate}件` : ''}</span>
+    </p>`;
+}
+
 function analyze() {
   const budget = parseInt(document.getElementById('input-budget').value) || 5000;
   const timeMin = parseInt(document.getElementById('input-time').value) || 60;
@@ -845,6 +974,9 @@ function analyze() {
     .sort((a, b) => (b._confirmed ? 1 : 0) - (a._confirmed ? 1 : 0) || b.score - a.score)
     .slice(0, 10);
   renderEveningList(evening);
+  // 【重要】表示したものをそのまま記録する。後から良い方に選び直さないこと。
+  recordPicks(evening);
+  renderPicksReview();
   renderAllStands(scored);
   // 店舗フィルターに合わせて傾向タブの店舗も切り替え
   if (storeFilter !== 'all') trendStoreId = storeFilter;
