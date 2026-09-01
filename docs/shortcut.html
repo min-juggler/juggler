@@ -284,12 +284,21 @@ async function fetchScript(filename) {
   return await r.text();
 }
 
-function getToken() { return localStorage.getItem('github_token') || ''; }
+// アプリ側(main.js)が以前JSON形式で保存していた分も読めるようにする。
+// クォート付きのまま使うと壊れたトークンをスクリプトに埋め込んでしまう。
+function getToken() {
+  let raw = localStorage.getItem('github_token') || '';
+  raw = raw.trim();
+  if (raw.startsWith('"') && raw.endsWith('"')) {
+    try { return JSON.parse(raw) || ''; } catch (e) { return raw.slice(1, -1); }
+  }
+  return raw;
+}
 
 function saveToken() {
   const t = document.getElementById('token-input').value.trim();
   if (!t) { alert('トークンを入力してください'); return; }
-  localStorage.setItem('github_token', t);
+  localStorage.setItem('github_token', t.trim());
   updateUI();
 }
 

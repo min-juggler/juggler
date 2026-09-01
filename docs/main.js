@@ -160,6 +160,26 @@ const Storage = {
   set(key, val) { localStorage.setItem(key, JSON.stringify(val)); },
 };
 
+// ===== GitHubトークン =====
+// 【バグ修正 2026-09-01】このページ(main.js)はJSON形式で、shortcut.htmlは生文字列で
+// 同じキー 'github_token' に保存していた。そのため
+//   ・スマホ設定ページで入れる → こちらがJSON.parseに失敗し「未設定」扱い
+//   ・こちらで入れる → スマホ側が "ghp_xxx" とクォート付きの壊れたトークンを埋め込む
+// という食い違いが起きていた。保存は生文字列に統一し、読み出しは両形式を受け付ける。
+function readGithubToken() {
+  let raw = null;
+  try { raw = localStorage.getItem('github_token'); } catch { return ''; }
+  if (!raw) return '';
+  raw = raw.trim();
+  if (raw.startsWith('"') && raw.endsWith('"')) {
+    try { return JSON.parse(raw) || ''; } catch { return raw.slice(1, -1); }
+  }
+  return raw;
+}
+function saveGithubToken(token) {
+  try { localStorage.setItem('github_token', String(token).trim()); } catch {}
+}
+
 // ===== 設定推測ロジック =====
 function getMachineSettings(machineName) {
   for (const key of Object.keys(JUGGLER_SETTINGS)) {
@@ -618,15 +638,21 @@ function renderStoreFreshness() {
   const rows = Object.entries(storeData.stores).map(([id, st]) => {
     const age = storeDataAgeDays(st);
     const stale = age >= STALE_STORE_DAYS;
-    const label = age === 0 ? '今日' : `${age}日前`;
+    // data_date が無い＝新しいスクリプトでまだ取り直していない店。
+    // 「今日」と言い切ると嘘になるので、分からないことを分からないと出す。
+    const unknown = !st.data_date;
+    const label = unknown ? '日付不明' : (age === 0 ? '今日' : `${age}日前`);
+    const bg = unknown ? '#f0f0f0' : (stale ? '#ffe0e0' : '#e6f4ea');
+    const fg = unknown ? '#888'    : (stale ? '#c1121f' : '#2d6a4f');
     return `<span style="display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:10px;font-size:11px;
-      background:${stale ? '#ffe0e0' : '#e6f4ea'};color:${stale ? '#c1121f' : '#2d6a4f'}">
+      background:${bg};color:${fg}">
       ${st.name || id} ${label}${stale ? ' ⚠除外' : ''}</span>`;
   }).join('');
   const anyStale = Object.values(storeData.stores).some(st => storeDataAgeDays(st) >= STALE_STORE_DAYS);
-  el.innerHTML = rows + (anyStale
-    ? `<div style="font-size:11px;color:#c1121f;margin-top:4px">⚠が付いた店は取得に失敗して古いデータのままです。今日の狙い台からは外しています。</div>`
-    : '');
+  const anyUnknown = Object.values(storeData.stores).some(st => !st.data_date);
+  el.innerHTML = rows
+    + (anyStale ? `<div style="font-size:11px;color:#c1121f;margin-top:4px">⚠が付いた店は取得に失敗して古いデータのままです。今日の狙い台からは外しています。</div>` : '')
+    + (anyUnknown ? `<div style="font-size:11px;color:#888;margin-top:4px">「日付不明」の店は、新しいスクリプトでまだ取り直していません。1回取得すると日付が入ります。</div>` : '');
 }
 
 function updateDataStatus() {
@@ -1955,7 +1981,7 @@ function saveToken() {
   if (!el) return;
   const token = el.value.trim();
   if (!token) { alert('トークンを入力してください'); return; }
-  Storage.set('github_token', token);
+  saveGithubToken(token);
   el.value = '';
   alert('✅ トークンを保存しました');
   buildBookmarklet();
@@ -2130,7 +2156,7 @@ setTimeout(()=>bar.remove(),8000);
 
 // ===== ブックマークレット =====
 function buildBookmarklet() {
-  const token = Storage.get('github_token', '');
+  const token = readGithubToken();
   const repo  = 'min-juggler/juggler';
   if (!token) {
     const el = document.getElementById('bookmarklet-link');
