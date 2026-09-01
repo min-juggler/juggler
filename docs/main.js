@@ -84,30 +84,32 @@ function getPayoutRate(machineName) {
 // ※出典はユーザー投稿型サイトなので、店頭の景品交換一覧を見たら必ず突き合わせること。
 const STORE_RATES = {
   // 21.74円(46枚貸し) / 5.15枚交換 → 実質89.3%
-  yonezawa:       { coinsPer1000: 46, exchangeYenPerCoin: 100 / 5.15, replay: null },
+  yonezawa:       { coinsPer1000: 46, exchangeYenPerCoin: 100 / 5.15 },
   // 21.27円(47枚貸し) / 5.3枚交換 → 実質88.7%
-  kaminoyama:     { coinsPer1000: 47, exchangeYenPerCoin: 100 / 5.3,  replay: null },
-  vegas_yonezawa: { coinsPer1000: 47, exchangeYenPerCoin: 100 / 5.3,  replay: null },
+  kaminoyama:     { coinsPer1000: 47, exchangeYenPerCoin: 100 / 5.3 },
+  vegas_yonezawa: { coinsPer1000: 47, exchangeYenPerCoin: 100 / 5.3 },
   // 21.73円(46枚貸し) / 5.2枚交換 → 実質88.5%
-  vegas_narusawa: { coinsPer1000: 46, exchangeYenPerCoin: 100 / 5.2,  replay: null },
+  vegas_narusawa: { coinsPer1000: 46, exchangeYenPerCoin: 100 / 5.2 },
   // 低貸(1000円88枚=11.36円) / 10枚交換 → 実質88.0%
-  dynam_tendo:    { coinsPer1000: 88, exchangeYenPerCoin: 100 / 10,   replay: null },
+  dynam_tendo:    { coinsPer1000: 88, exchangeYenPerCoin: 100 / 10 },
   // 米沢は「非等価」としか出ておらず交換枚数が不明。同チェーンの天童と同じと仮定している。
-  dynam_yonezawa: { coinsPer1000: 89, exchangeYenPerCoin: 100 / 10,   replay: null, exchangeAssumed: true },
+  dynam_yonezawa: { coinsPer1000: 89, exchangeYenPerCoin: 100 / 10, exchangeAssumed: true },
 };
 const DEFAULT_COINS_PER_1000 = 46;
 
-// ===== 再プレイ（持ちメダル遊技）の扱い =====
-// 【ここが結論を左右する最大の未確定要素】
-// 再プレイが無い前提だと、投入は全額「貸出単価」で買い、出玉は全額「換金単価」で売る。
-//   → ボーダー機械割 = 貸出 ÷ 換金 = 約112〜114%
-//   → ジャグラーの最高機械割(マイジャグ設定6 = 109.4%)を超えており、理論上どの台も打てない。
-// 一方、再プレイが無料・無制限なら、現金で買うのは最初のバンクロールだけ。
-//   利益 = 総回転枚数×(機械割-1)×換金 - 買った枚数×(貸出-換金)
-//   → ボーダー機械割 = 1 + 買った枚数×(貸出-換金) ÷ (総回転枚数×換金) ≒ 101%
-// 112%と101%では「打つ台が無い」と「設定5-6なら打てる」で結論が正反対になる。
-// よって replay が確認できるまでは保守側(=再プレイ無し)で計算し、UIに未確認である旨を必ず出す。
-const REPLAY_BUYIN_COINS = 1000;   // 再プレイありでも現金で買う枚数の目安（≒2万円分）
+// ===== 持ちメダル遊技とボーダー機械割 =====
+// 【2026-09-01 訂正】いったん「貸出÷換金＝112%」を保守側の既定として実装したが、これは誤り。
+// この式は「1枚1枚すべて現金で買い直す」打ち方を意味しており、現実には存在しない。
+// 実際は下皿のメダルでそのまま打ち続けられる（＝持ちメダル遊技。どの店でも当たり前にできる。
+// 手数料や上限の話が出るのは「貯メダル」＝カードに預けて後日使う方で、これとは別物）。
+//
+// 正しいモデル：現金で買うのは最初のバンクロールだけ。
+//   利益 = 総回転枚数×(機械割−1)×換金単価 − 買った枚数×(貸出単価−換金単価)
+//   ボーダー機械割 = 1 + 買った枚数×(貸出−換金) ÷ (総回転枚数×換金) ≒ 101%
+//
+// このボーダーは買い増し量にほとんど鈍感（1000枚→2000枚でも101.0%→101.6%）なので、
+// 定数で持って問題ない。非等価が効くのはボーダーの位置より「勝ったときの取り分が11%減る」方。
+const REPLAY_BUYIN_COINS = 1000;   // 現金で買う枚数の目安（≒2万円分）
 const REF_SESSION_GAMES = 5000;    // ボーダー算出用の基準セッション長
 
 function rentYenPerCoin(storeId) {
@@ -123,23 +125,14 @@ function isExchangeRateKnown(storeId) {
   const r = STORE_RATES[storeId];
   return !!(r && r.exchangeYenPerCoin && !r.exchangeAssumed);
 }
-function isReplayKnown(storeId) {
-  const r = STORE_RATES[storeId];
-  return !!(r && r.replay);
-}
-// 再プレイ無し前提のボーダー（保守側）
+// 【参考値】全額を現金で買い直した場合。実際の打ち方ではないので判定には使わない。
 function borderPayoutStrict(storeId) {
   return rentYenPerCoin(storeId) / exchangeYenPerCoin(storeId);
 }
-// 再プレイ無料・無制限前提のボーダー（楽観側）
-function borderPayoutReplay(storeId) {
+// 実運用のボーダー（持ちメダル遊技あり）
+function borderPayout(storeId) {
   const P = rentYenPerCoin(storeId), C = exchangeYenPerCoin(storeId);
   return 1 + (REPLAY_BUYIN_COINS * (P - C)) / (REF_SESSION_GAMES * 3 * C);
-}
-// 実運用で使うボーダー。再プレイが確認できるまでは保守側。
-function borderPayout(storeId) {
-  const r = STORE_RATES[storeId];
-  return (r && r.replay === 'free') ? borderPayoutReplay(storeId) : borderPayoutStrict(storeId);
 }
 // その台の期待収支(円/G)。設定確率で重み付けし、ボーダー超過分だけを利益とする。
 function evYenPerGame(probs, machineName, storeId) {
@@ -691,26 +684,20 @@ function renderStoreFreshness() {
 }
 
 // ===== 交換率ボーダーの告知 =====
-// 【なぜ常時出すか】交換率が判明した結果、保守側の計算ではどの店も設定6の機械割を超える
-// ボーダーになった。この状態でリストが空になったとき、原因が「今日は台が悪い」なのか
-// 「そもそも構造的に打てない」なのか区別できないと、また同じ間違いをする。
+// 【なぜ常時出すか】リストが薄い日に、原因が「今日は台が悪い」なのか「交換率で削られている」
+// なのかを区別できないと、また同じ間違いをする。前提を毎回見えるところに置く。
 function renderBorderNotice() {
   const ids = Object.keys(STORE_RATES);
   if (!ids.length) return '';
-  const strict = ids.map(borderPayoutStrict);
-  const lo = Math.min(...strict) * 100, hi = Math.max(...strict) * 100;
-  const optLo = Math.min(...ids.map(borderPayoutReplay)) * 100;
-  const optHi = Math.max(...ids.map(borderPayoutReplay)) * 100;
-  const anyReplayUnknown = ids.some(id => !isReplayKnown(id));
-  if (!anyReplayUnknown) return '';
+  const b = ids.map(borderPayout);
+  const lo = Math.min(...b) * 100, hi = Math.max(...b) * 100;
+  const cut = 100 - Math.min(...ids.map(id => exchangeYenPerCoin(id) / rentYenPerCoin(id))) * 100;
   const r = n => n.toFixed(1);
-  return `<div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:#fff3cd;color:#7a4d00;font-size:11px;line-height:1.6">
-    🟠 <b>交換率を反映しました（6店とも実質88〜89%の非等価）</b><br>
-    再プレイ無しで計算するとボーダー機械割は <b>${r(lo)}〜${r(hi)}%</b>。マイジャグ設定6(109.4%)でも届かないため、
-    この前提だと<b>打てる台は存在しません</b>。<br>
-    再プレイが無料・無制限なら <b>${r(optLo)}〜${r(optHi)}%</b> まで下がり、設定5・6は打てるようになります。
-    いまは安全側（再プレイ無し）で計算中です。<br>
-    <b>店で確認すること：</b>①再プレイ手数料の有無 ②1日の上限枚数 ③貯メダルを翌日使えるか
+  return `<div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:#eef4ff;color:#1c3d6e;font-size:11px;line-height:1.6">
+    ⚖️ <b>交換率を反映して計算しています（6店とも実質88〜89%の非等価）</b><br>
+    持ちメダル遊技があるので<b>ボーダー機械割は ${r(lo)}〜${r(hi)}%</b>。設定4(102.8%)から上がプラス域です。<br>
+    ただし勝ったときの取り分は等価より<b>約${Math.round(cut)}%目減り</b>します。効くのは「打てるかどうか」より「勝ち額」の方。<br>
+    <b>設定3以下(99.5%)はどう転んでもマイナス。</b>そこは絶対に座らないでください。
   </div>`;
 }
 
@@ -868,12 +855,6 @@ function calcManual() {
     } else {
       gateHtml = `<div class="calc-note" style="background:#eaf7ee">✔ 予算${calcBudget.toLocaleString()}円で約<b>${canPlay}G</b>回せます。
         期待値 <b>${yen(en.ev)}</b> / ブレ ±${Math.round(en.sd).toLocaleString()}円（${en.sn.toFixed(2)}）</div>`;
-    }
-    if (!isReplayKnown(calcStore)) {
-      const opt = Math.round(borderPayoutReplay(calcStore) * 1000) / 10;
-      gateHtml += `<div class="calc-note" style="background:#fff3cd;color:#7a4d00">🟠 <b>再プレイ条件が未確認</b>のため、いま保守側（再プレイ無し）で計算しています。<br>
-        ボーダー機械割 <b>${bd}%</b>（再プレイ無料・無制限なら <b>${opt}%</b> まで下がります）。<br>
-        店で①手数料の有無 ②1日の上限枚数 ③貯メダルの翌日使用可否 を確認してください。</div>`;
     }
     if (!isExchangeRateKnown(calcStore)) {
       gateHtml += `<div class="calc-note" style="background:#ffe9e9;color:#8b1a1a">🔴 この店の<b>交換枚数が未判明</b>です（「非等価」としか公開されていない）。同チェーン店と同じと仮定した暫定値で計算しています。</div>`;
