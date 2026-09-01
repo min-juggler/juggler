@@ -74,22 +74,41 @@ function getPayoutRate(machineName) {
 }
 
 // ===== 貸出レート / 交換率 =====
-// 【重要】店のサイトに載っているのは「貸出レート（借りる値段）」だけ。
-// 交換率（換金する値段）は法的に公表できないので、店頭の景品交換一覧で確認するしかない。
-// exchangeYenPerCoin が null の間は「等価（＝貸出単価と同じ）」と仮定する。
-// これは楽観側の仮定なので、UIに必ず「交換率未確定」と出すこと。黙って楽観値を出さない。
+// 【2026-09-01 確定】みんパチ(minpachi.com)の各店ページで6店とも交換率が判明した。
+// それまでは「等価と仮定」という楽観側のプレースホルダだったが、実際は6店とも88〜89%の非等価。
+// この差は判定を根本からひっくり返すので、以下は必ず実測値で運用すること。
+//
+//   換金単価 = 100円 ÷ 交換枚数     （例: 5.15枚交換 → 100/5.15 = 19.42円/枚）
+//   貸出単価 = 1000円 ÷ 貸出枚数     （例: 46枚貸し   → 1000/46  = 21.74円/枚）
+//
+// ※出典はユーザー投稿型サイトなので、店頭の景品交換一覧を見たら必ず突き合わせること。
 const STORE_RATES = {
-  yonezawa:       { coinsPer1000: 46, exchangeYenPerCoin: null },
-  kaminoyama:     { coinsPer1000: 46, exchangeYenPerCoin: null },
-  vegas_yonezawa: { coinsPer1000: 46, exchangeYenPerCoin: null },
-  vegas_narusawa: { coinsPer1000: 46, exchangeYenPerCoin: null },
-  dynam_yonezawa: { coinsPer1000: 88, exchangeYenPerCoin: null }, // 低貸(1000円88枚)
-  dynam_tendo:    { coinsPer1000: 88, exchangeYenPerCoin: null }, // 低貸(1000円88枚)
+  // 21.74円(46枚貸し) / 5.15枚交換 → 実質89.3%
+  yonezawa:       { coinsPer1000: 46, exchangeYenPerCoin: 100 / 5.15, replay: null },
+  // 21.27円(47枚貸し) / 5.3枚交換 → 実質88.7%
+  kaminoyama:     { coinsPer1000: 47, exchangeYenPerCoin: 100 / 5.3,  replay: null },
+  vegas_yonezawa: { coinsPer1000: 47, exchangeYenPerCoin: 100 / 5.3,  replay: null },
+  // 21.73円(46枚貸し) / 5.2枚交換 → 実質88.5%
+  vegas_narusawa: { coinsPer1000: 46, exchangeYenPerCoin: 100 / 5.2,  replay: null },
+  // 低貸(1000円88枚=11.36円) / 10枚交換 → 実質88.0%
+  dynam_tendo:    { coinsPer1000: 88, exchangeYenPerCoin: 100 / 10,   replay: null },
+  // 米沢は「非等価」としか出ておらず交換枚数が不明。同チェーンの天童と同じと仮定している。
+  dynam_yonezawa: { coinsPer1000: 89, exchangeYenPerCoin: 100 / 10,   replay: null, exchangeAssumed: true },
 };
-// 店舗によって46枚/47枚があるが、46で固定する。46の方が貸出単価が高く＝ボーダーが高く＝
-// 判定が辛くなるため、保守側に倒れる。差は+2.17%（設定4→5のギャップ2.5%とほぼ同等）なので、
-// 交換率が判明して本運用に入る段階では店ごとの正確な値に置き換えること。
 const DEFAULT_COINS_PER_1000 = 46;
+
+// ===== 再プレイ（持ちメダル遊技）の扱い =====
+// 【ここが結論を左右する最大の未確定要素】
+// 再プレイが無い前提だと、投入は全額「貸出単価」で買い、出玉は全額「換金単価」で売る。
+//   → ボーダー機械割 = 貸出 ÷ 換金 = 約112〜114%
+//   → ジャグラーの最高機械割(マイジャグ設定6 = 109.4%)を超えており、理論上どの台も打てない。
+// 一方、再プレイが無料・無制限なら、現金で買うのは最初のバンクロールだけ。
+//   利益 = 総回転枚数×(機械割-1)×換金 - 買った枚数×(貸出-換金)
+//   → ボーダー機械割 = 1 + 買った枚数×(貸出-換金) ÷ (総回転枚数×換金) ≒ 101%
+// 112%と101%では「打つ台が無い」と「設定5-6なら打てる」で結論が正反対になる。
+// よって replay が確認できるまでは保守側(=再プレイ無し)で計算し、UIに未確認である旨を必ず出す。
+const REPLAY_BUYIN_COINS = 1000;   // 再プレイありでも現金で買う枚数の目安（≒2万円分）
+const REF_SESSION_GAMES = 5000;    // ボーダー算出用の基準セッション長
 
 function rentYenPerCoin(storeId) {
   const r = STORE_RATES[storeId];
@@ -102,11 +121,25 @@ function exchangeYenPerCoin(storeId) {
 }
 function isExchangeRateKnown(storeId) {
   const r = STORE_RATES[storeId];
-  return !!(r && r.exchangeYenPerCoin);
+  return !!(r && r.exchangeYenPerCoin && !r.exchangeAssumed);
 }
-// ボーダー機械割 ＝ 貸出単価 ÷ 換金単価。これを上回る設定でないと打つ意味がない。
-function borderPayout(storeId) {
+function isReplayKnown(storeId) {
+  const r = STORE_RATES[storeId];
+  return !!(r && r.replay);
+}
+// 再プレイ無し前提のボーダー（保守側）
+function borderPayoutStrict(storeId) {
   return rentYenPerCoin(storeId) / exchangeYenPerCoin(storeId);
+}
+// 再プレイ無料・無制限前提のボーダー（楽観側）
+function borderPayoutReplay(storeId) {
+  const P = rentYenPerCoin(storeId), C = exchangeYenPerCoin(storeId);
+  return 1 + (REPLAY_BUYIN_COINS * (P - C)) / (REF_SESSION_GAMES * 3 * C);
+}
+// 実運用で使うボーダー。再プレイが確認できるまでは保守側。
+function borderPayout(storeId) {
+  const r = STORE_RATES[storeId];
+  return (r && r.replay === 'free') ? borderPayoutReplay(storeId) : borderPayoutStrict(storeId);
 }
 // その台の期待収支(円/G)。設定確率で重み付けし、ボーダー超過分だけを利益とする。
 function evYenPerGame(probs, machineName, storeId) {
@@ -382,14 +415,15 @@ function calcExpectedSetting(probs) {
   return Object.entries(probs).reduce((sum, [s, p]) => sum + parseInt(s) * p, 0);
 }
 
-function calcExpectedProfitFromProbs(probs, timeMin, budgetYen) {
+// 【2026-09-01 全面書き換え】以前はSETTING_EV_PER_GAMEという等価前提の固定表を使い、
+// 貸出単価を20円決め打ち・最後に謎の「×4」を掛けていた。店ごとの交換率をまったく見ておらず、
+// カードに「+3,000円」と出しながら実際の交換率ではマイナス、という致命的な食い違いが起きる。
+// 判定の心臓部(evYenPerGame)と同じ計算に一本化する。表示と根拠は必ず同じ式から出すこと。
+function calcExpectedProfitFromProbs(probs, timeMin, budgetYen, storeId, machineName) {
   if (!probs) return null;
-  const games = Math.floor(timeMin / 60 * GAME_SPEED);
-  const maxGamesFromBudget = Math.floor((budgetYen / 20) * (1000 / 3));
-  const actualGames = Math.min(games, maxGamesFromBudget);
-  const weightedEvCoins = Object.entries(SETTING_EV_PER_GAME)
-    .reduce((sum, [s, ev]) => sum + (probs[parseInt(s)] || 0) * ev, 0);
-  return Math.round(weightedEvCoins * actualGames * 4);
+  const actualGames = playableGames(budgetYen, timeMin, storeId);
+  if (!actualGames) return 0;
+  return Math.round(evYenPerGame(probs, machineName || '', storeId) * actualGames);
 }
 
 // 【辛口】RB確率ペナルティ。マイジャグ/アイム等はRBが設定の主軸。
@@ -652,7 +686,32 @@ function renderStoreFreshness() {
   const anyUnknown = Object.values(storeData.stores).some(st => !st.data_date);
   el.innerHTML = rows
     + (anyStale ? `<div style="font-size:11px;color:#c1121f;margin-top:4px">⚠が付いた店は取得に失敗して古いデータのままです。今日の狙い台からは外しています。</div>` : '')
-    + (anyUnknown ? `<div style="font-size:11px;color:#888;margin-top:4px">「日付不明」の店は、新しいスクリプトでまだ取り直していません。1回取得すると日付が入ります。</div>` : '');
+    + (anyUnknown ? `<div style="font-size:11px;color:#888;margin-top:4px">「日付不明」の店は、新しいスクリプトでまだ取り直していません。1回取得すると日付が入ります。</div>` : '')
+    + renderBorderNotice();
+}
+
+// ===== 交換率ボーダーの告知 =====
+// 【なぜ常時出すか】交換率が判明した結果、保守側の計算ではどの店も設定6の機械割を超える
+// ボーダーになった。この状態でリストが空になったとき、原因が「今日は台が悪い」なのか
+// 「そもそも構造的に打てない」なのか区別できないと、また同じ間違いをする。
+function renderBorderNotice() {
+  const ids = Object.keys(STORE_RATES);
+  if (!ids.length) return '';
+  const strict = ids.map(borderPayoutStrict);
+  const lo = Math.min(...strict) * 100, hi = Math.max(...strict) * 100;
+  const optLo = Math.min(...ids.map(borderPayoutReplay)) * 100;
+  const optHi = Math.max(...ids.map(borderPayoutReplay)) * 100;
+  const anyReplayUnknown = ids.some(id => !isReplayKnown(id));
+  if (!anyReplayUnknown) return '';
+  const r = n => n.toFixed(1);
+  return `<div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:#fff3cd;color:#7a4d00;font-size:11px;line-height:1.6">
+    🟠 <b>交換率を反映しました（6店とも実質88〜89%の非等価）</b><br>
+    再プレイ無しで計算するとボーダー機械割は <b>${r(lo)}〜${r(hi)}%</b>。マイジャグ設定6(109.4%)でも届かないため、
+    この前提だと<b>打てる台は存在しません</b>。<br>
+    再プレイが無料・無制限なら <b>${r(optLo)}〜${r(optHi)}%</b> まで下がり、設定5・6は打てるようになります。
+    いまは安全側（再プレイ無し）で計算中です。<br>
+    <b>店で確認すること：</b>①再プレイ手数料の有無 ②1日の上限枚数 ③貯メダルを翌日使えるか
+  </div>`;
 }
 
 function updateDataStatus() {
@@ -794,7 +853,14 @@ function calcManual() {
     const canPlay = playableGames(calcBudget, 24 * 60, calcStore); // 時間は予算側で律速させる
     const en = edgeVsNoise(probs, mn, calcStore, canPlay);
     const yen = v => (v >= 0 ? '+' : '') + Math.round(v).toLocaleString() + '円';
-    if (en.sn < MIN_SIGNAL_NOISE) {
+    const bd = Math.round(borderPayout(calcStore) * 1000) / 10;
+    if (en.ev <= 0) {
+      // 【交換率負け】資金を足しても解決しない。G数不足とは原因がまったく違うので分けて出す。
+      if (verdict.startsWith('✅')) { verdict = '❌ データは良いが交換率で負ける'; cls = 'calc-stop'; }
+      gateHtml = `<div class="calc-note" style="background:#ffe9e9;color:#8b1a1a">🔴 この店のボーダー機械割は <b>${bd}%</b>。<br>
+        推定される設定の機械割がこれに届かず、期待値は <b>${yen(en.ev)}</b>（${canPlay}G回した場合）。<br>
+        <b>資金を足しても解決しません。</b>交換率の分だけ、打つほど負ける台です。</div>`;
+    } else if (en.sn < MIN_SIGNAL_NOISE) {
       if (verdict.startsWith('✅')) { verdict = '⚠️ データは良いが資金不足'; cls = 'calc-mid'; }
       gateHtml = `<div class="calc-note" style="background:#fff3cd">⚠️ 予算${calcBudget.toLocaleString()}円では約<b>${canPlay}G</b>しか回せません。<br>
         期待値 <b>${yen(en.ev)}</b> に対しブレ <b>±${Math.round(en.sd).toLocaleString()}円</b>（期待値÷ブレ ${en.sn.toFixed(2)}）。<br>
@@ -803,9 +869,14 @@ function calcManual() {
       gateHtml = `<div class="calc-note" style="background:#eaf7ee">✔ 予算${calcBudget.toLocaleString()}円で約<b>${canPlay}G</b>回せます。
         期待値 <b>${yen(en.ev)}</b> / ブレ ±${Math.round(en.sd).toLocaleString()}円（${en.sn.toFixed(2)}）</div>`;
     }
+    if (!isReplayKnown(calcStore)) {
+      const opt = Math.round(borderPayoutReplay(calcStore) * 1000) / 10;
+      gateHtml += `<div class="calc-note" style="background:#fff3cd;color:#7a4d00">🟠 <b>再プレイ条件が未確認</b>のため、いま保守側（再プレイ無し）で計算しています。<br>
+        ボーダー機械割 <b>${bd}%</b>（再プレイ無料・無制限なら <b>${opt}%</b> まで下がります）。<br>
+        店で①手数料の有無 ②1日の上限枚数 ③貯メダルの翌日使用可否 を確認してください。</div>`;
+    }
     if (!isExchangeRateKnown(calcStore)) {
-      gateHtml += `<div class="calc-note" style="background:#ffe9e9;color:#8b1a1a">🔴 <b>交換率が未確定</b>です。今は等価と仮定して計算しています＝<b>楽観側の数字</b>。<br>
-        店頭の景品交換一覧（特殊景品◯枚＝◯◯円）を確認して教えてください。非等価だと設定5でもマイナスになり得ます。</div>`;
+      gateHtml += `<div class="calc-note" style="background:#ffe9e9;color:#8b1a1a">🔴 この店の<b>交換枚数が未判明</b>です（「非等価」としか公開されていない）。同チェーン店と同じと仮定した暫定値で計算しています。</div>`;
     }
   }
 
@@ -838,7 +909,7 @@ function scoreStands(stands, budget, timeMin) {
     const expectedSetting = calcExpectedSetting(probs);
     const fit = calcFitQuality(stand, settings);
     const score = calcScore(probs, expectedSetting, stand, fit, settings);
-    const expectedProfit = calcExpectedProfitFromProbs(probs, timeMin, budget);
+    const expectedProfit = calcExpectedProfitFromProbs(probs, timeMin, budget, stand.store_id, stand.machine_name || '');
     const tags = buildReasonTags(stand, probs, expectedSetting);
 
     // ===== 回転数ゲート =====
@@ -1203,6 +1274,21 @@ function renderVerdict(stands) {
       <div class="verdict-title">🚪 今日は打てる台なし</div>
       <div class="verdict-sub">基準（設定5以上の確率${Math.round(VERDICT_MIN_HIGH56*100)}%以上・${VERDICT_MIN_GAMES.toLocaleString()}G以上）を満たす台がありません。<br>無理に打たず<b>撤退推奨</b>です。</div>`;
     list.innerHTML = '';
+    return;
+  }
+
+  // 【重要】設定判別が「良い」ことと、収支がプラスになることは別問題。
+  // 交換率を入れた結果ボーダーが機械割の上限を超えている場合、鉄板でも打てば負ける。
+  // ここで止めないと「🔥鉄板候補＝打ち」という表示だけが独り歩きする。535の再発防止。
+  const allNegative = stands.every(s => s._edge && s._edge.ev <= 0);
+  if (allNegative) {
+    const b = Math.round(borderPayout(stands[0].store_id) * 1000) / 10;
+    banner.className = 'verdict-banner verdict-stop';
+    banner.innerHTML = `
+      <div class="verdict-title">⚠️ 設定は良いが、打つと負ける ${stands.length}台</div>
+      <div class="verdict-sub">設定判別としては高設定濃厚ですが、<b>交換率を引くと期待値がマイナス</b>です（ボーダー機械割 ${b}%）。<br>
+        再プレイ条件が確認できるまでは<b>座らないでください</b>。判別の練習台として見るだけにします。</div>`;
+    list.innerHTML = stands.map((s, i) => buildStandCard(s, i + 1, '判別◎/収支×')).join('');
     return;
   }
 
