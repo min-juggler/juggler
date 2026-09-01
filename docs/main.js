@@ -2001,9 +2001,10 @@ try{
 })();`;
 }
 
-// 1クリックで直近7日分を取得。既存日は上書きなので重複しない＝穴埋め用。
-// 各サイトが7日分持っているので、週1回まわせば取りこぼしが出ない。
-function buildInline3DayBookmarklet(token, repo, days = 7) {
+// 1クリックで直近FETCH_DAYS日分を取得。既存日は上書きなので重複しない＝穴埋め用。
+// 各サイトがD0〜D6の7日分を持っているので、週1回まわせば取りこぼしが出ない。
+const FETCH_DAYS = 7;
+function buildInline3DayBookmarklet(token, repo, days = FETCH_DAYS) {
   return `(async function(){
 var T='${token}',R='${repo}';
 try{
@@ -2171,8 +2172,10 @@ function buildBookmarklet() {
   // メイン: 1クリックで直近7日分を取得（穴埋め・自動リカバリ）
   const el = document.getElementById('bookmarklet-link');
   if (el) {
-    el.href = 'javascript:' + encodeURIComponent(buildInline3DayBookmarklet(token, repo, 3));
-    el.textContent = '🎰 データ取得（直近7日分）';
+    // 【注意】ここは日数を明示的に渡している。関数側の初期値だけ変えても効かない。
+    // 文言とズレると「7日と書いてあるのに3日しか取らない」事故になるので定数を共有する。
+    el.href = 'javascript:' + encodeURIComponent(buildInline3DayBookmarklet(token, repo, FETCH_DAYS));
+    el.textContent = `🎰 データ取得（直近${FETCH_DAYS}日分）`;
     el.style.background = '#e63946';
   }
 
