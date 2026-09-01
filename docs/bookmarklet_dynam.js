@@ -158,11 +158,21 @@ try{
   for(var mn in mmap)result.machines.push({machine_name:mn,count:mmap[mn].length,stands:mmap[mn]});
 
   // stores.json更新
-  var s1=await ghGet('docs/data/stores.json');
-  var cur=s1.data||{fetched_at:null,stores:{}};
-  if(!cur.stores)cur.stores={};
-  cur.fetched_at=new Date().toISOString();cur.stores[sid]=result;
-  var ok1=await ghPut('docs/data/stores.json',s1.sha,cur,msg);
+  // ※過去日(__OFF!==0)の取得では「今日のスナップショット」を汚さない。
+  //   テラモバ側には元からこのガードがあったが、こちらには無く、
+  //   さかのぼり取得のたびに stores.json が過去日で上書きされていた。
+  var ok1=true;
+  if(!__OFF){
+    var s1=await ghGet('docs/data/stores.json');
+    var cur=s1.data||{fetched_at:null,stores:{}};
+    if(!cur.stores)cur.stores={};
+    cur.fetched_at=new Date().toISOString();
+    // 店ごとの取得日時も持たせる（失敗した店の古いデータが「今日」の顔で残るのを防ぐ）
+    result.fetched_at=new Date().toISOString();
+    result.data_date=today2;
+    cur.stores[sid]=result;
+    ok1=await ghPut('docs/data/stores.json',s1.sha,cur,msg);
+  }
 
   // history.json追記
   var s2=await ghGet('docs/data/history.json');

@@ -139,7 +139,7 @@ https://www.dynam-data.jp/h/a736724/cgi-bin/nc-v13-001.php?cd_ps=2</div>
     初回は各店のURLをSafariで手動で開き、認証を通してください。
     Cookieが残るので、以降はショートカットだけで通ります。<br>
     <b>💡「待機」を必ず挟むこと</b>：ページ読み込みが終わる前にスクリプトが走ると失敗します。遅い店は5秒に伸ばしてください。<br>
-    <b>📅 全店とも1回の実行で直近3日分</b>（今日・昨日・一昨日）をまとめて取得します。完了バーに対象日が出るので確認できます。
+    <b>📅 全店とも1回の実行で直近7日分</b>をまとめて取得します。各サイトが7日分のデータを持っているので、<b>週1回まわせば穴が空きません</b>。完了バーに対象日が出るので確認できます。3日分だった頃は2日サボるとその日が永久に失われていました。
   </div>
 
   <!-- アイランド米沢 -->
@@ -264,6 +264,10 @@ function wrapForShortcut(code, token, repo) {
 
 // iOS用: 1回の実行で直近N日分（今日・昨日・…）を取得するラッパー
 // ※スクリプト内部の completion('done') はローカルで無効化し、全日終了後に本物を呼ぶ
+// 各サイトは7日分のデータを持っている。3日分しか取りに行かないと、2日サボった時点で
+// その日は永久に失われる（実際8/28が全滅した）。7日にすると週1回まわせば穴が空かない。
+const DAYS = 7;
+
 function wrapForShortcut3Day(code, token, repo, days) {
   const body = code
     .replace(/__TOKEN__/g, token)
@@ -309,14 +313,14 @@ async function updateUI() {
     const teramoba = await fetchScript('bookmarklet_code.js');
     const dynamCode = await fetchScript('bookmarklet_dynam.js');
 
-    document.getElementById('code-yonezawa').textContent  = wrapForShortcut3Day(teramoba, token, REPO, 3);
-    document.getElementById('code-kaminoyama').textContent = wrapForShortcut3Day(teramoba, token, REPO, 3);
-    document.getElementById('code-vegas').textContent     = wrapForShortcut3Day(teramoba, token, REPO, 3);
-    // 成沢(P'sCUBE)もbookmarklet_code.js内で自動判別される。D0〜D6があるので3日分取得に対応。
-    document.getElementById('code-narusawa').textContent  = wrapForShortcut3Day(teramoba, token, REPO, 3);
-    // ダイナムもDai[]にD0〜D6の7日分があるため3日分取得に対応
-    document.getElementById('code-dynam').textContent     = wrapForShortcut3Day(dynamCode, token, REPO, 3);
-    document.getElementById('code-dynam-tendo').textContent = wrapForShortcut3Day(dynamCode, token, REPO, 3);
+    document.getElementById('code-yonezawa').textContent  = wrapForShortcut3Day(teramoba, token, REPO, DAYS);
+    document.getElementById('code-kaminoyama').textContent = wrapForShortcut3Day(teramoba, token, REPO, DAYS);
+    document.getElementById('code-vegas').textContent     = wrapForShortcut3Day(teramoba, token, REPO, DAYS);
+    // 成沢(P'sCUBE)もbookmarklet_code.js内で自動判別される。D0〜D6の7日分に対応。
+    document.getElementById('code-narusawa').textContent  = wrapForShortcut3Day(teramoba, token, REPO, DAYS);
+    // ダイナムもDai[]にD0〜D6の7日分を持つ
+    document.getElementById('code-dynam').textContent     = wrapForShortcut3Day(dynamCode, token, REPO, DAYS);
+    document.getElementById('code-dynam-tendo').textContent = wrapForShortcut3Day(dynamCode, token, REPO, DAYS);
   } catch(e) {
     ['yonezawa','kaminoyama','vegas','narusawa','dynam','dynam-tendo'].forEach(id => {
       document.getElementById('code-' + id).textContent = '❌ 生成失敗: ' + e.message;

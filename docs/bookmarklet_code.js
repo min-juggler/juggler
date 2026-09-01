@@ -287,6 +287,10 @@ async function push(result,_sid,_sname,_ymd){
     var cur=s1.data||{fetched_at:null,stores:{}};
     if(!cur.stores)cur.stores={};
     cur.fetched_at=new Date().toISOString();
+    // 店ごとの取得日時も持たせる。全店共通の fetched_at だけだと、取得に失敗した店の
+    // 古いデータが「今日のデータ」の顔で残り続け、アプリが数日前の数字で判定してしまう。
+    result.fetched_at=new Date().toISOString();
+    result.data_date=today;
     cur.stores[_s]=result;
     ok1=await ghPut('docs/data/stores.json',s1.sha,cur,msg);
   }

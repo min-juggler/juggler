@@ -580,21 +580,57 @@ async function loadPrevData(url) {
   } catch { prevAllStands = []; }
 }
 
+// その店のデータが「何日前のものか」。stores.json は店ごとに上書きされるので、
+// 取得に失敗した店は古いデータが残り続ける。全店共通の fetched_at では気づけない。
+// data_date が無い（古い形式の）店は 0 扱いにする＝従来どおり今日のものとみなす。
+function storeDataAgeDays(store) {
+  if (!store || !store.data_date) return 0;
+  const d = new Date(store.data_date + 'T00:00:00');
+  if (isNaN(d)) return 0;
+  const today = new Date(businessDate() + 'T00:00:00');
+  return Math.max(0, Math.round((today - d) / 86400000));
+}
+// これ以上古い店は「今日の狙い台」から外す。前日データは朝イチ判定で別に使うので1日はOK。
+const STALE_STORE_DAYS = 2;
+
 function buildAllStands() {
   allStands = [];
   if (!storeData) return;
   for (const [storeId, store] of Object.entries(storeData.stores)) {
+    const age = storeDataAgeDays(store);
     for (const machine of store.machines) {
       // 半角カタカナ → 全角カタカナに変換して表示用に正規化
       const displayName = hw2fw(machine.machine_name);
       for (const stand of machine.stands) {
-        allStands.push({ ...stand, store_id: storeId, store_name: store.name, machine_name: displayName });
+        allStands.push({ ...stand, store_id: storeId, store_name: store.name,
+                         machine_name: displayName, _ageDays: age });
       }
     }
   }
+  // 古い店のデータで今日の判定をしない
+  allStands = allStands.filter(s => s._ageDays < STALE_STORE_DAYS);
+}
+
+// 店ごとの鮮度を一覧で出す。古い店を黙って混ぜないための表示。
+function renderStoreFreshness() {
+  const el = document.getElementById('data-freshness');
+  if (!el || !storeData) return;
+  const rows = Object.entries(storeData.stores).map(([id, st]) => {
+    const age = storeDataAgeDays(st);
+    const stale = age >= STALE_STORE_DAYS;
+    const label = age === 0 ? '今日' : `${age}日前`;
+    return `<span style="display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:10px;font-size:11px;
+      background:${stale ? '#ffe0e0' : '#e6f4ea'};color:${stale ? '#c1121f' : '#2d6a4f'}">
+      ${st.name || id} ${label}${stale ? ' ⚠除外' : ''}</span>`;
+  }).join('');
+  const anyStale = Object.values(storeData.stores).some(st => storeDataAgeDays(st) >= STALE_STORE_DAYS);
+  el.innerHTML = rows + (anyStale
+    ? `<div style="font-size:11px;color:#c1121f;margin-top:4px">⚠が付いた店は取得に失敗して古いデータのままです。今日の狙い台からは外しています。</div>`
+    : '');
 }
 
 function updateDataStatus() {
+  renderStoreFreshness();
   const el = document.getElementById('data-last-update');
   if (storeData?.fetched_at) {
     const d = new Date(storeData.fetched_at);
@@ -1939,8 +1975,9 @@ try{
 })();`;
 }
 
-// 1クリックで直近3日分（今日・昨日・一昨日）を取得。既存日は上書きなので重複しない＝穴埋め用。
-function buildInline3DayBookmarklet(token, repo, days = 3) {
+// 1クリックで直近7日分を取得。既存日は上書きなので重複しない＝穴埋め用。
+// 各サイトが7日分持っているので、週1回まわせば取りこぼしが出ない。
+function buildInline3DayBookmarklet(token, repo, days = 7) {
   return `(async function(){
 var T='${token}',R='${repo}';
 try{
@@ -2105,11 +2142,11 @@ function buildBookmarklet() {
     return;
   }
 
-  // メイン: 1クリックで直近3日分を取得（穴埋め・自動リカバリ）
+  // メイン: 1クリックで直近7日分を取得（穴埋め・自動リカバリ）
   const el = document.getElementById('bookmarklet-link');
   if (el) {
     el.href = 'javascript:' + encodeURIComponent(buildInline3DayBookmarklet(token, repo, 3));
-    el.textContent = '🎰 データ取得（直近3日分）';
+    el.textContent = '🎰 データ取得（直近7日分）';
     el.style.background = '#e63946';
   }
 

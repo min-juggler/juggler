@@ -60,6 +60,7 @@
         <span id="data-last-update">データ未取得</span>
         <button id="btn-reload" class="btn-ghost btn-sm">↻ 再読み込み</button>
       </div>
+      <div id="data-freshness" style="padding:0 16px 8px"></div>
 
       <!-- 現地で使う台判定電卓（一番よく使うので上に配置） -->
       <section class="card" id="calc-card">
@@ -135,8 +136,8 @@
 
         <div style="background:#f0f7ff;border-radius:8px;padding:12px;margin-bottom:12px">
           <div style="font-size:12px;color:#457b9d;margin-bottom:8px">① このリンクをブックマークバーにドラッグ ↓</div>
-          <a id="bookmarklet-link" href="" style="display:block;background:#e63946;color:white;border-radius:8px;padding:10px 14px;text-align:center;font-weight:700;font-size:15px;text-decoration:none">🎰 データ取得（直近3日分）</a>
-          <div style="font-size:11px;color:#888;margin:8px 0 6px">1クリックで今日・昨日・一昨日をまとめて取得。取り忘れた日も自動で穴埋め（既存日は上書きなので重複しません）。急ぎは下の時短版↓</div>
+          <a id="bookmarklet-link" href="" style="display:block;background:#e63946;color:white;border-radius:8px;padding:10px 14px;text-align:center;font-weight:700;font-size:15px;text-decoration:none">🎰 データ取得（直近7日分）</a>
+          <div style="font-size:11px;color:#888;margin:8px 0 6px">1クリックで直近7日分をまとめて取得。取り忘れた日も自動で穴埋め（既存日は上書きなので重複しません）。週1回でも穴が空きません。急ぎは下の時短版↓</div>
           <a id="bookmarklet-link-yesterday" href="" style="display:block;background:#457b9d;color:white;border-radius:8px;padding:8px 14px;text-align:center;font-weight:700;font-size:13px;text-decoration:none">⚡ 今日だけ取得（時短）</a>
         </div>
 
@@ -360,6 +361,6 @@
 
   </div><!-- /app -->
 
-  <script src="main.js?v=20260825a"></script>
+  <script src="main.js?v=20260901a"></script>
 </body>
 </html>
