@@ -4,6 +4,57 @@ var T='__TOKEN__',R='__REPO__';
 var __OFF=(typeof window!=='undefined'&&typeof window.__JUG_DAYOFF__==='number')?window.__JUG_DAYOFF__:0;
 function __baseDate(){var d=new Date();if(__OFF)d.setDate(d.getDate()+__OFF);return d;}
 
+// ===== GitHubの失敗理由を必ず表示する =====
+// 【2026-10-07】データが9/26で止まり、6店とも実行時に失敗していた。原因の切り分けに
+// 時間がかかったのは、ghPut が r.ok の真偽値しか返しておらず、
+// 401(トークン切れ)もネットワーク断も同じ「⚠️ 送信失敗」としか出なかったため。
+// ・失敗したらHTTPステータスとGitHubのメッセージをそのままバーに出す
+// ・7日ループを回す前に1回だけトークンを検証し、無効なら即座に止める
+//   （7日分スクレイプし終えてから「失敗」とだけ言われるのが一番たちが悪い）
+var __ghErr='';
+function __ghNote(){ return __ghErr?(' / '+__ghErr):''; }
+async function __ghRecord(r){
+  try{
+    var t=await r.text();
+    try{ __ghErr=r.status+' '+(JSON.parse(t).message||t.slice(0,60)); }
+    catch(e){ __ghErr=r.status+' '+t.slice(0,60); }
+  }catch(e){ __ghErr=String(r.status); }
+}
+// トークン検証。結果はwindowにキャッシュして7日ループ中に何度も叩かない。
+async function __ghCheck(){
+  if(window.__JUG_TOKEN_OK===true)return '';
+  if(typeof window.__JUG_TOKEN_MSG==='string')return window.__JUG_TOKEN_MSG;
+  var msg='';
+  try{
+    var r=await fetch('https://api.github.com/repos/'+R,{headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json'}});
+    if(r.status===401)      msg='❌ GitHubトークンが無効です(401)。期限切れか削除済み。アプリでトークンを入れ直し、スクリプトを貼り直してください。';
+    else if(r.status===403) msg='❌ GitHubに拒否されました(403)。権限不足かレート制限です。';
+    else if(r.status===404) msg='❌ リポジトリが見つかりません(404)。トークンに '+R+' への権限がありません。';
+    else if(!r.ok)          msg='❌ GitHub '+r.status+' '+(await r.text()).slice(0,70);
+    else{
+      // このリポジトリは公開なので、権限の無いトークンでもGET自体は200で通る。
+      // 書けるかどうかは permissions.push に出る。ただしトークン種別によって
+      // この項目の出方が違う可能性があるので、ここでは止めずに手がかりとして控えるだけにする。
+      // （誤判定で動くトークンをブロックする方が、原因が1つ増えるより害が大きい）
+      try{
+        var j=await r.json();
+        if(!j.permissions)           __ghErr='認証は通ったが権限情報なし(トークン形式を確認)';
+        else if(!j.permissions.push) __ghErr='このトークンは読み取り専用(Contents: Read and write が必要)';
+      }catch(e){}
+    }
+  }catch(e){ msg='❌ GitHubに接続できません: '+e.message; }
+  if(msg)window.__JUG_TOKEN_MSG=msg; else window.__JUG_TOKEN_OK=true;
+  return msg;
+}
+// 各店の処理の冒頭で呼ぶ。無効なら理由を出して中断する。
+async function __ghGate(bar){
+  var e=await __ghCheck();
+  if(!e)return false;
+  bar.style.background='#8b1a1a'; bar.textContent=e;
+  if(typeof completion==='function')completion('error');
+  return true;
+}
+
 // iOSショートカットで複数店舗を連続実行するための完了通知。
 // 以前は「送信前にcompletion()」していたが、ショートカットが次の店のURLを開くと
 // ページが破棄され、送信中のGitHubリクエストが途中で殺されていた（1タップ化が失敗する原因）。
@@ -33,6 +84,7 @@ if(location.href.includes('dynam-data.jp')){
   var bar=document.createElement('div');
   bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
   bar.textContent='🎰 ダイナム取得中...';document.body.appendChild(bar);
+  if(await __ghGate(bar))return;
   var dToday=__baseDate().toISOString().slice(0,10).replace(/-/g,'');
   // Dai[]はD0(当日)〜D6(6日前)の7日分を持つ。__OFFに応じてD{n}を選ぶ
   // （以前はD0固定だったため、3日分ループしても同じ当日データが重複保存されていた）。
@@ -112,6 +164,7 @@ if(location.href.includes('pscube.jp')){
   var bar=document.createElement('div');
   bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
   bar.textContent='🎰 '+pinfo.name+' 取得中...';document.body.appendChild(bar);
+  if(await __ghGate(bar))return;
   var pBase='/'+pSeg+'/'+pHall+'/cgi-bin/';
   var pToday=__baseDate().toISOString().slice(0,10).replace(/-/g,'');
   // Dai[]のD0〜D6が7日分に対応する。__OFF=0→D0(当日), -1→D1(1日前) …
@@ -192,6 +245,7 @@ var pathSeg={yonezawa:'yonezawa',kaminoyama:'kaminoyama',vegas_yonezawa:'hl-105'
 var bar=document.createElement('div');
 bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
 bar.textContent='🎰 v10 起動中...';document.body.appendChild(bar);
+if(await __ghGate(bar))return;
 
 // 全角カタカナ→半角カタカナ変換（APIが半角を要求するため必須）
 function fw2hw(s){
@@ -266,6 +320,7 @@ async function ghPut(path,sha,data,msg){
   var body={message:msg,content:btoa(unescape(encodeURIComponent(js))),branch:'main'};
   if(sha)body.sha=sha;
   var r=await fetch('https://api.github.com/repos/'+R+'/contents/'+path,{method:'PUT',headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok)await __ghRecord(r);
   return r.ok;
 }
 
@@ -327,8 +382,8 @@ async function push(result,_sid,_sname,_ymd){
 
   var dlabel=__OFF?('['+today+'] '):'';
   if(ok1&&ok2){bar.style.background='#2d6a4f';bar.textContent='✅ '+dlabel+_n+' '+total+'台 送信完了！(履歴も保存)';}
-  else if(ok1){bar.style.background='#2d6a4f';bar.textContent='✅ '+dlabel+_n+' '+total+'台 送信完了 (履歴保存失敗)';}
-  else{bar.style.background='#888';bar.textContent='⚠️ '+dlabel+'送信失敗';}
+  else if(ok1){bar.style.background='#b36b00';bar.textContent='⚠️ '+dlabel+_n+' '+total+'台 送信完了 (履歴保存失敗'+__ghNote()+')';}
+  else{bar.style.background='#8b1a1a';bar.textContent='❌ '+dlabel+'送信失敗'+__ghNote();}
 }
 
 try{

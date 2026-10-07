@@ -18,6 +18,48 @@ var bar=document.createElement('div');
 bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
 bar.textContent='🎰 ダイナム取得中...';document.body.appendChild(bar);
 
+// ===== GitHubの失敗理由を必ず表示する =====
+// 【2026-10-07】6店とも実行時に失敗していたが、ghPutがr.okしか返しておらず
+// 401(トークン切れ)もネットワーク断も同じ「⚠️ GitHub送信失敗」としか出ず切り分けできなかった。
+// 7日ループを回す前にトークンを検証し、ダメなら理由を出して即止める。
+var __ghErr='';
+function __ghNote(){ return __ghErr?(' / '+__ghErr):''; }
+async function __ghRecord(r){
+  try{
+    var t=await r.text();
+    try{ __ghErr=r.status+' '+(JSON.parse(t).message||t.slice(0,60)); }
+    catch(e){ __ghErr=r.status+' '+t.slice(0,60); }
+  }catch(e){ __ghErr=String(r.status); }
+}
+if(window.__JUG_TOKEN_OK!==true){
+  var __tm=(typeof window.__JUG_TOKEN_MSG==='string')?window.__JUG_TOKEN_MSG:null;
+  if(__tm===null){
+    __tm='';
+    try{
+      var __tr=await fetch('https://api.github.com/repos/'+R,{headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json'}});
+      if(__tr.status===401)      __tm='❌ GitHubトークンが無効です(401)。期限切れか削除済み。アプリでトークンを入れ直し、スクリプトを貼り直してください。';
+      else if(__tr.status===403) __tm='❌ GitHubに拒否されました(403)。権限不足かレート制限です。';
+      else if(__tr.status===404) __tm='❌ リポジトリが見つかりません(404)。トークンに '+R+' への権限がありません。';
+      else if(!__tr.ok)          __tm='❌ GitHub '+__tr.status+' '+(await __tr.text()).slice(0,70);
+      else{
+        // 公開リポなので権限の無いトークンでもGETは200。書けるかは permissions.push に出るが、
+        // 誤判定で動くトークンを止めると害が大きいので、ここでは手がかりとして控えるだけにする。
+        try{
+          var __tj=await __tr.json();
+          if(!__tj.permissions)           __ghErr='認証は通ったが権限情報なし(トークン形式を確認)';
+          else if(!__tj.permissions.push) __ghErr='このトークンは読み取り専用(Contents: Read and write が必要)';
+        }catch(e){}
+      }
+    }catch(e){ __tm='❌ GitHubに接続できません: '+e.message; }
+    if(__tm)window.__JUG_TOKEN_MSG=__tm; else window.__JUG_TOKEN_OK=true;
+  }
+  if(__tm){
+    bar.style.background='#8b1a1a';bar.textContent=__tm;
+    if(typeof completion==='function')completion('error');
+    return;
+  }
+}
+
 var __baseDate=function(){var d=new Date();if(__OFF)d.setDate(d.getDate()+__OFF);return d;};
 var today=__baseDate().toISOString().slice(0,10).replace(/-/g,'');
 // Dai[]はD0(当日)〜D6(6日前)の7日分を持つ。__OFFに応じてD{n}を選ぶ。
@@ -144,6 +186,7 @@ try{
     var body={message:msg,content:btoa(unescape(encodeURIComponent(js))),branch:'main'};
     if(sha)body.sha=sha;
     var r=await fetch('https://api.github.com/repos/'+R+'/contents/'+path,{method:'PUT',headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok)await __ghRecord(r);
     return r.ok;
   }
 
@@ -186,7 +229,7 @@ try{
   }
 
   if(ok1){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+allStands.length+'台 ('+today2+') 送信完了！';}
-  else{bar.style.background='#888';bar.textContent='⚠️ GitHub送信失敗';}
+  else{bar.style.background='#8b1a1a';bar.textContent='❌ GitHub送信失敗'+__ghNote();}
   // 送信完了を確認してからcompletion()を呼ぶ。以前は送信前に呼んでいたため、
   // iOSショートカットの連続実行だとページ破棄で送信が途中で殺されていた。
   if(typeof completion==='function')completion('done');
