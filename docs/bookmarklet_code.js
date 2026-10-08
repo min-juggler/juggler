@@ -13,6 +13,22 @@ function __baseDate(){var d=new Date();if(__OFF)d.setDate(d.getDate()+__OFF);ret
 //   （7日分スクレイプし終えてから「失敗」とだけ言われるのが一番たちが悪い）
 var __ghErr='';
 function __ghNote(){ return __ghErr?(' / '+__ghErr):''; }
+
+// ===== 自分が直前に書いた内容のキャッシュ =====
+// 【2026-10-07 判明】history.json(4.7MB)の保存が409 "does not match <sha>" で失敗していた。
+// 1MB超のファイルはContents APIが403になるため、SHAをディレクトリ一覧から取っている。
+// ところがこの一覧はGitHub側で1分ほどキャッシュされ、PUT直後でも古いSHAを返す。
+// 7日ループのように連続で書くと、2回目以降はほぼ必ず古いSHAを掴んで409になっていた。
+// → 自分でPUTした結果に入っている新しいSHAを覚えておき、それを最優先で使う。
+//   ついでに4.7MBを7回ダウンロードしなくて済むので実行時間も大幅に縮む。
+//
+// 【宣言位置の注意 2026-10-08】この3行は必ずファイル先頭側に置くこと。
+// 一度 ghGet の直前(ファイル中ほど)に置いてしまい、ダイナム/P'sCUBE/p-townの各分岐が
+// そこへ到達する前に return するため __ghSha が undefined のままになり、
+// ghGet の1行目で TypeError になってベガス成沢が丸ごと動かなくなった。
+var __ghSha=(window.__JUG_SHA=window.__JUG_SHA||{});
+var __ghDat=(window.__JUG_DAT=window.__JUG_DAT||{});
+function __ghForget(path){ delete __ghSha[path]; delete __ghDat[path]; }
 async function __ghRecord(r){
   try{
     var t=await r.text();
@@ -269,17 +285,6 @@ function jsonUnescape(s){
 
 // GitHub APIでファイルを読み書きするヘルパー
 // ※ Contents APIは1MB超のファイルでcontentが空になるため、その場合はraw URLから取得
-// ===== 自分が直前に書いた内容のキャッシュ =====
-// 【2026-10-07 判明】history.json(4.7MB)の保存が409 "does not match <sha>" で失敗していた。
-// 1MB超のファイルはContents APIが403になるため、SHAをディレクトリ一覧から取っている。
-// ところがこの一覧はGitHub側で1分ほどキャッシュされ、PUT直後でも古いSHAを返す。
-// 7日ループのように連続で書くと、2回目以降はほぼ必ず古いSHAを掴んで409になっていた。
-// → 自分でPUTした結果に入っている新しいSHAを覚えておき、それを最優先で使う。
-//   ついでに4.7MBを7回ダウンロードしなくて済むので実行時間も大幅に縮む。
-var __ghSha=(window.__JUG_SHA=window.__JUG_SHA||{});
-var __ghDat=(window.__JUG_DAT=window.__JUG_DAT||{});
-function __ghForget(path){ delete __ghSha[path]; delete __ghDat[path]; }
-
 async function ghGet(path){
   // この実行で既に書いていれば、それが最新。APIに聞くと古いSHAが返る。
   if(__ghSha[path]&&__ghDat[path])return{sha:__ghSha[path],data:__ghDat[path]};
