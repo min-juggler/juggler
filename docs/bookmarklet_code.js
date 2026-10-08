@@ -404,8 +404,12 @@ async function push(result,_sid,_sname,_ymd){
   var realStands=result.machines.reduce((a,m)=>a+m.stands.filter(s=>s.games>0).length,0);
   var ok2=true;
   if(realStands>0){
-    bar.textContent='📡 history.json 追記中...';
-    ok2=await ghUpdate('docs/data/history.json',function(histIn){
+    // 【2026-10-08】1本の history.json が6.0MBになり、1日分を足すだけでも毎回6MBを
+    // 送り直すことになって25秒のガードに間に合わなくなった（履歴だけ保存されない状態）。
+    // 月ごとのファイルに分割し、書き込むのは当月分だけにする。
+    var hpath='docs/data/history/'+today.slice(0,7)+'.json';
+    bar.textContent='📡 '+today.slice(0,7)+' の履歴に追記中...';
+    ok2=await ghUpdate(hpath,function(histIn){
       var hist=histIn||{};
       if(!hist[today])hist[today]={stores:{}};
       if(!hist[today].stores)hist[today].stores={};

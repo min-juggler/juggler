@@ -253,7 +253,8 @@ try{
   // 「✅ 送信完了！」と出ていた。失敗は失敗として出す。
   var ok2=true;
   if(realStands>0){
-    ok2=await ghUpdate('docs/data/history.json',function(histIn){
+    // 履歴は月ごとのファイルに分割している（1本だと6MBになり送り直しが成立しなくなった）
+    ok2=await ghUpdate('docs/data/history/'+today2.slice(0,7)+'.json',function(histIn){
       var hist=histIn||{};
       if(!hist[today2])hist[today2]={stores:{}};
       if(!hist[today2].stores)hist[today2].stores={};

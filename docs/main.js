@@ -565,7 +565,7 @@ async function loadData() {
       updateDataStatus();
       populateStoreSelect();
       // 履歴データを読み込む（朝イチ用の前日データもここで作る）
-      await loadHistoryData(url.replace('stores.json', 'history.json'));
+      await loadHistoryData(url.replace('stores.json', ''));
       return true;
     } catch { continue; }
   }
@@ -573,11 +573,56 @@ async function loadData() {
   return false;
 }
 
-async function loadHistoryData(url) {
+// ===== 履歴は月ごとのファイルに分割している =====
+// 【2026-10-08】1本の history.json が6.0MBまで育ち、書き込みが成立しなくなった。
+// GitHubのContents APIはファイル全体を送り直す方式なので、1日分を足すだけでも
+// 6MB(base64で約8MB)のアップロードになる。7日ループ×5店で200MB超。
+// 当然25秒のガードに間に合わず、履歴だけが永久に保存されない状態になっていた。
+// → docs/data/history/YYYY-MM.json に分割。書き込むのは当月分だけなので
+//   1回あたり数百KBで済み、月が変われば自然にリセットされる。
+const HISTORY_START = '2026-05';   // これより前のデータは存在しない
+
+function historyMonths() {
+  const months = [];
+  const [sy, sm] = HISTORY_START.split('-').map(Number);
+  const now = new Date(businessDate() + 'T00:00:00');
+  let y = sy, m = sm;
+  // 無限ループ防止の上限付き（240ヶ月＝20年）
+  for (let guard = 0; guard < 240; guard++) {
+    months.push(`${y}-${String(m).padStart(2, '0')}`);
+    if (y > now.getFullYear() || (y === now.getFullYear() && m >= now.getMonth() + 1)) break;
+    m++; if (m > 12) { m = 1; y++; }
+  }
+  return months;
+}
+
+async function loadHistoryData(base) {
   try {
-    const res = await fetch(url + '?t=' + Date.now(), { cache: 'no-store' });
-    if (!res.ok) return;
-    historyData = await res.json();
+    const months = historyMonths();
+    // 月ファイルを並列で取る。存在しない月は404なので黙って飛ばす。
+    const parts = await Promise.all(months.map(async (m) => {
+      try {
+        const r = await fetch(`${base}history/${m}.json?t=${Date.now()}`, { cache: 'no-store' });
+        return r.ok ? await r.json() : null;
+      } catch { return null; }
+    }));
+    // 旧 history.json も読む。貼り直していない古いスクリプトはこちらに書き込むので、
+    // 黙って消えるのを防ぐ（移行済みなので中身は通常ほぼ空）。
+    try {
+      const r = await fetch(`${base}history.json?t=${Date.now()}`, { cache: 'no-store' });
+      if (r.ok) parts.push(await r.json());
+    } catch {}
+
+    historyData = {};
+    for (const p of parts) {
+      if (!p) continue;
+      for (const [d, v] of Object.entries(p)) {
+        if (!historyData[d]) { historyData[d] = v; continue; }
+        // 同じ日が複数ファイルにある場合は店舗単位でマージ（旧ファイルとの重複対策）
+        historyData[d].stores = Object.assign({}, v.stores || {}, historyData[d].stores || {});
+      }
+    }
+    if (!Object.keys(historyData).length) return;
     // 各日の店舗IDも正規化（旧版スクリプト対策）
     for (const day of Object.values(historyData)) {
       if (day && day.stores) normalizeStoresDict(day.stores);
