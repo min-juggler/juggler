@@ -24,6 +24,9 @@ bar.textContent='🎰 ダイナム取得中...';document.body.appendChild(bar);
 // 7日ループを回す前にトークンを検証し、ダメなら理由を出して即止める。
 var __ghErr='';
 function __ghNote(){ return __ghErr?(' / '+__ghErr):''; }
+var __ghSha=(window.__JUG_SHA=window.__JUG_SHA||{});
+var __ghDat=(window.__JUG_DAT=window.__JUG_DAT||{});
+function __ghForget(path){ delete __ghSha[path]; delete __ghDat[path]; }
 async function __ghRecord(r){
   try{
     var t=await r.text();
@@ -137,7 +140,11 @@ try{
   var msg='データ更新 '+new Date().toLocaleString('ja')+' (対象日:'+today2+')';
 
   // ※ Contents APIは1MB超でcontentが空になるため、その場合はraw URLから取得
+  // 自分が直前にPUTして得た新しいSHAを覚えておく。1MB超のhistory.jsonはSHAを
+  // ディレクトリ一覧から取るしかないが、その一覧はPUT直後も1分ほど古いSHAを返すため、
+  // 連続で書くと409 "does not match <sha>" になる。PUTの応答SHAが唯一確実な入手経路。
   async function ghGet(path){
+    if(__ghSha[path]&&__ghDat[path])return{sha:__ghSha[path],data:__ghDat[path]};
     var sha=null,data=null;
     var r=await fetch('https://api.github.com/repos/'+R+'/contents/'+path,{headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json'}});
     if(r.ok){
@@ -181,13 +188,36 @@ try{
     }
     return{sha:sha,data:data};
   }
-  async function ghPut(path,sha,data,msg){
+  async function ghPutRaw(path,sha,data,msg){
     var js=path.indexOf('history')>=0?JSON.stringify(data):JSON.stringify(data,null,2); // historyは圧縮
     var body={message:msg,content:btoa(unescape(encodeURIComponent(js))),branch:'main'};
     if(sha)body.sha=sha;
     var r=await fetch('https://api.github.com/repos/'+R+'/contents/'+path,{method:'PUT',headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
-    if(!r.ok)await __ghRecord(r);
-    return r.ok;
+    if(r.ok){
+      try{ var rj=await r.json(); if(rj&&rj.content&&rj.content.sha){__ghSha[path]=rj.content.sha;__ghDat[path]=data;} }catch(e){}
+    }
+    return r;
+  }
+  // 読む→変更する→書く。409(競合)は読み直して自分の変更を当て直してからやり直す。
+  // 最新SHAだけ付け替えて投げ直すと、割り込んだ書き込みを消してしまうので絶対にやらないこと。
+  async function ghUpdate(path,mutate,msg){
+    for(var i=0;i<4;i++){
+      var cur=await ghGet(path);
+      var next=mutate(cur.data);
+      if(next===null)return true;
+      var r=await ghPutRaw(path,cur.sha,next,msg);
+      if(r.ok){ __ghErr=''; return true; }
+      if(r.status===409||r.status===422){
+        __ghForget(path);
+        __ghErr='409で再試行中('+(i+1)+'/4)';
+        await new Promise(function(z){setTimeout(z,900*(i+1));});
+        continue;
+      }
+      await __ghRecord(r);
+      return false;
+    }
+    __ghErr='409が4回続いたため中断（他の端末で同時に実行していませんか）';
+    return false;
   }
 
   // 機種ごとにまとめる
@@ -206,29 +236,35 @@ try{
   //   さかのぼり取得のたびに stores.json が過去日で上書きされていた。
   var ok1=true;
   if(!__OFF){
-    var s1=await ghGet('docs/data/stores.json');
-    var cur=s1.data||{fetched_at:null,stores:{}};
-    if(!cur.stores)cur.stores={};
-    cur.fetched_at=new Date().toISOString();
-    // 店ごとの取得日時も持たせる（失敗した店の古いデータが「今日」の顔で残るのを防ぐ）
-    result.fetched_at=new Date().toISOString();
-    result.data_date=today2;
-    cur.stores[sid]=result;
-    ok1=await ghPut('docs/data/stores.json',s1.sha,cur,msg);
+    ok1=await ghUpdate('docs/data/stores.json',function(curIn){
+      var cur=curIn||{fetched_at:null,stores:{}};
+      if(!cur.stores)cur.stores={};
+      cur.fetched_at=new Date().toISOString();
+      // 店ごとの取得日時も持たせる（失敗した店の古いデータが「今日」の顔で残るのを防ぐ）
+      result.fetched_at=new Date().toISOString();
+      result.data_date=today2;
+      cur.stores[sid]=result;
+      return cur;
+    },msg);
   }
 
   // history.json追記
-  var s2=await ghGet('docs/data/history.json');
-  var hist=s2.data||{};
+  // 【修正】以前はここのPUT結果を捨てていたので、履歴の保存に失敗しても
+  // 「✅ 送信完了！」と出ていた。失敗は失敗として出す。
+  var ok2=true;
   if(realStands>0){
-    if(!hist[today2])hist[today2]={stores:{}};
-    if(!hist[today2].stores)hist[today2].stores={};
-    hist[today2].stores[sid]=result;
-    hist[today2].fetched_at=new Date().toISOString();
-    await ghPut('docs/data/history.json',s2.sha,hist,msg);
+    ok2=await ghUpdate('docs/data/history.json',function(histIn){
+      var hist=histIn||{};
+      if(!hist[today2])hist[today2]={stores:{}};
+      if(!hist[today2].stores)hist[today2].stores={};
+      hist[today2].stores[sid]=result;
+      hist[today2].fetched_at=new Date().toISOString();
+      return hist;
+    },msg);
   }
 
-  if(ok1){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+allStands.length+'台 ('+today2+') 送信完了！';}
+  if(ok1&&ok2){bar.style.background='#2d6a4f';bar.textContent='✅ '+sname+' '+allStands.length+'台 ('+today2+') 送信完了！';}
+  else if(ok1){bar.style.background='#b36b00';bar.textContent='⚠️ '+sname+' '+allStands.length+'台 ('+today2+') 送信完了 (履歴保存失敗'+__ghNote()+')';}
   else{bar.style.background='#8b1a1a';bar.textContent='❌ GitHub送信失敗'+__ghNote();}
   // 送信完了を確認してからcompletion()を呼ぶ。以前は送信前に呼んでいたため、
   // iOSショートカットの連続実行だとページ破棄で送信が途中で殺されていた。

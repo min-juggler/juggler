@@ -269,7 +269,20 @@ function jsonUnescape(s){
 
 // GitHub APIでファイルを読み書きするヘルパー
 // ※ Contents APIは1MB超のファイルでcontentが空になるため、その場合はraw URLから取得
+// ===== 自分が直前に書いた内容のキャッシュ =====
+// 【2026-10-07 判明】history.json(4.7MB)の保存が409 "does not match <sha>" で失敗していた。
+// 1MB超のファイルはContents APIが403になるため、SHAをディレクトリ一覧から取っている。
+// ところがこの一覧はGitHub側で1分ほどキャッシュされ、PUT直後でも古いSHAを返す。
+// 7日ループのように連続で書くと、2回目以降はほぼ必ず古いSHAを掴んで409になっていた。
+// → 自分でPUTした結果に入っている新しいSHAを覚えておき、それを最優先で使う。
+//   ついでに4.7MBを7回ダウンロードしなくて済むので実行時間も大幅に縮む。
+var __ghSha=(window.__JUG_SHA=window.__JUG_SHA||{});
+var __ghDat=(window.__JUG_DAT=window.__JUG_DAT||{});
+function __ghForget(path){ delete __ghSha[path]; delete __ghDat[path]; }
+
 async function ghGet(path){
+  // この実行で既に書いていれば、それが最新。APIに聞くと古いSHAが返る。
+  if(__ghSha[path]&&__ghDat[path])return{sha:__ghSha[path],data:__ghDat[path]};
   var sha=null,data=null;
   var r=await fetch('https://api.github.com/repos/'+R+'/contents/'+path,{headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json'}});
   if(r.ok){
@@ -315,13 +328,44 @@ async function ghGet(path){
   }
   return{sha:sha,data:data};
 }
-async function ghPut(path,sha,data,msg){
+async function ghPutRaw(path,sha,data,msg){
   var js=path.indexOf('history')>=0?JSON.stringify(data):JSON.stringify(data,null,2); // historyは圧縮
   var body={message:msg,content:btoa(unescape(encodeURIComponent(js))),branch:'main'};
   if(sha)body.sha=sha;
   var r=await fetch('https://api.github.com/repos/'+R+'/contents/'+path,{method:'PUT',headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
-  if(!r.ok)await __ghRecord(r);
-  return r.ok;
+  if(r.ok){
+    // PUTの応答に新しいSHAが入っている。これが唯一確実に新しいSHAの入手経路。
+    try{ var rj=await r.json(); if(rj&&rj.content&&rj.content.sha){__ghSha[path]=rj.content.sha;__ghDat[path]=data;} }catch(e){}
+  }
+  return r;
+}
+// ※ここに ghPut(path,sha,data,msg) という「読んだSHAをそのまま使って1回だけ書く」
+//   関数があったが、競合時に黙って失敗するため削除した。書き込みは必ず ghUpdate を通すこと。
+
+// 読む→変更する→書く、を競合したらやり直す。
+// 【重要】409が返ったときに、最新のSHAだけ付け替えて同じ中身を投げ直してはいけない。
+// 409は「読んでから書くまでの間に別の書き込みが入った」という意味なので、
+// それをやると割り込んだ方の書き込みをまるごと消す。必ず読み直して、
+// 最新の内容の上に自分の変更を当て直してから書くこと。
+// mutate(現在の中身) は「書き込むべき新しい中身」を返す。nullなら書かずに成功扱い。
+async function ghUpdate(path,mutate,msg){
+  for(var i=0;i<4;i++){
+    var cur=await ghGet(path);
+    var next=mutate(cur.data);
+    if(next===null)return true;
+    var r=await ghPutRaw(path,cur.sha,next,msg);
+    if(r.ok){ __ghErr=''; return true; }   // 再試行中のメッセージを残さない
+    if(r.status===409||r.status===422){
+      __ghForget(path);                                   // 掴んでいたSHAを捨てて読み直す
+      __ghErr='409で再試行中('+(i+1)+'/4)';
+      await new Promise(function(z){setTimeout(z,900*(i+1));});
+      continue;
+    }
+    await __ghRecord(r);
+    return false;
+  }
+  __ghErr='409が4回続いたため中断（他の端末で同時に実行していませんか）';
+  return false;
 }
 
 // _ymd: 'YYYY-MM-DD' を渡すとその日付で保存する（P'sCUBEは営業日YMD_bizが取れるので
@@ -338,47 +382,50 @@ async function push(result,_sid,_sname,_ymd){
   var ok1=true;
   if(!__OFF){
     bar.textContent='📡 stores.json 送信中...('+total+'台)';
-    var s1=await ghGet('docs/data/stores.json');
-    var cur=s1.data||{fetched_at:null,stores:{}};
-    if(!cur.stores)cur.stores={};
-    cur.fetched_at=new Date().toISOString();
-    // 店ごとの取得日時も持たせる。全店共通の fetched_at だけだと、取得に失敗した店の
-    // 古いデータが「今日のデータ」の顔で残り続け、アプリが数日前の数字で判定してしまう。
-    result.fetched_at=new Date().toISOString();
-    result.data_date=today;
-    cur.stores[_s]=result;
-    ok1=await ghPut('docs/data/stores.json',s1.sha,cur,msg);
+    ok1=await ghUpdate('docs/data/stores.json',function(curIn){
+      var cur=curIn||{fetched_at:null,stores:{}};
+      if(!cur.stores)cur.stores={};
+      cur.fetched_at=new Date().toISOString();
+      // 店ごとの取得日時も持たせる。全店共通の fetched_at だけだと、取得に失敗した店の
+      // 古いデータが「今日のデータ」の顔で残り続け、アプリが数日前の数字で判定してしまう。
+      result.fetched_at=new Date().toISOString();
+      result.data_date=today;
+      cur.stores[_s]=result;
+      return cur;
+    },msg);
   }
 
   // ② history.json（日別蓄積）に当日分を追記
-  bar.textContent='📡 history.json 追記中...';
-  var s2=await ghGet('docs/data/history.json');
-  var hist=s2.data||{};
   var realStands=result.machines.reduce((a,m)=>a+m.stands.filter(s=>s.games>0).length,0);
+  var ok2=true;
   if(realStands>0){
-    if(!hist[today])hist[today]={stores:{}};
-    if(!hist[today].stores)hist[today].stores={};
-    // 既存の同日データがあれば台番号でマージし、G数が大きい方（=より完全なスナップショット）を採用。
-    // 部分取得(例:150/190)が既存の完全データ(190/190)を上書きして壊すのを防ぐ。
-    var prev=hist[today].stores[_s];
-    if(prev&&prev.machines){
-      var byRack={};
-      function collect(res){res.machines.forEach(function(m){m.stands.forEach(function(s){
-        var k=String(s.rack_no);var ex=byRack[k];
-        if(!ex||(parseInt(s.games)||0)>=(parseInt(ex.games)||0))byRack[k]=s;
-      });});}
-      collect(prev);collect(result); // resultを後にして同G数なら新しい方を優先
-      var mmap2={};
-      Object.keys(byRack).forEach(function(k){var s=byRack[k];var mn=s.machine_name||'不明';if(!mmap2[mn])mmap2[mn]=[];mmap2[mn].push(s);});
-      var merged={name:result.name,machines:[]};
-      for(var mn2 in mmap2)merged.machines.push({machine_name:mn2,count:mmap2[mn2].length,stands:mmap2[mn2]});
-      hist[today].stores[_s]=merged;
-    }else{
-      hist[today].stores[_s]=result;
-    }
-    hist[today].fetched_at=new Date().toISOString();
+    bar.textContent='📡 history.json 追記中...';
+    ok2=await ghUpdate('docs/data/history.json',function(histIn){
+      var hist=histIn||{};
+      if(!hist[today])hist[today]={stores:{}};
+      if(!hist[today].stores)hist[today].stores={};
+      // 既存の同日データがあれば台番号でマージし、G数が大きい方（=より完全なスナップショット）を採用。
+      // 部分取得(例:150/190)が既存の完全データ(190/190)を上書きして壊すのを防ぐ。
+      var prev=hist[today].stores[_s];
+      if(prev&&prev.machines){
+        var byRack={};
+        var collect=function(res){res.machines.forEach(function(m){m.stands.forEach(function(s){
+          var k=String(s.rack_no);var ex=byRack[k];
+          if(!ex||(parseInt(s.games)||0)>=(parseInt(ex.games)||0))byRack[k]=s;
+        });});};
+        collect(prev);collect(result); // resultを後にして同G数なら新しい方を優先
+        var mmap2={};
+        Object.keys(byRack).forEach(function(k){var s=byRack[k];var mn=s.machine_name||'不明';if(!mmap2[mn])mmap2[mn]=[];mmap2[mn].push(s);});
+        var merged={name:result.name,machines:[]};
+        for(var mn2 in mmap2)merged.machines.push({machine_name:mn2,count:mmap2[mn2].length,stands:mmap2[mn2]});
+        hist[today].stores[_s]=merged;
+      }else{
+        hist[today].stores[_s]=result;
+      }
+      hist[today].fetched_at=new Date().toISOString();
+      return hist;
+    },msg);
   }
-  var ok2=realStands>0?await ghPut('docs/data/history.json',s2.sha,hist,msg):true;
 
   var dlabel=__OFF?('['+today+'] '):'';
   if(ok1&&ok2){bar.style.background='#2d6a4f';bar.textContent='✅ '+dlabel+_n+' '+total+'台 送信完了！(履歴も保存)';}
