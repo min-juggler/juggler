@@ -58,6 +58,9 @@
       <!-- データ更新ボタン -->
       <div class="data-status" id="data-status">
         <span id="data-last-update">データ未取得</span>
+        <!-- 端末が古いキャッシュを掴んでいないかを一目で確かめるための版表示。
+             スマホで新機能が見えないとき、原因がキャッシュか未実装かをこれで切り分ける。 -->
+        <span id="app-version" style="font-size:10px;color:#bbb;margin-left:6px"></span>
         <button id="btn-reload" class="btn-ghost btn-sm">↻ 再読み込み</button>
       </div>
       <div id="data-freshness" style="padding:0 16px 8px"></div>
@@ -364,6 +367,6 @@
 
   </div><!-- /app -->
 
-  <script src="main.js?v=20261014b"></script>
+  <script src="main.js?v=20261014c"></script>
 </body>
 </html>

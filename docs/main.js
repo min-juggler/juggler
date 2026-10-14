@@ -530,21 +530,34 @@ let storeTendencyMap = {};    // sid -> analyzeStoreTendency結果（朝イチ�
 const GITHUB_BASE = 'https://raw.githubusercontent.com/min-juggler/juggler/main/docs/data/';
 
 // 古いスクリプト由来の店舗IDを正規IDへ寄せる（iOSショートカットの旧版対策）
+// 旧スクリプトが勝手に作ったIDを正しい店舗に読み替える。
+// 自動生成IDは廃止したが、既に保存されてしまった分と、古いコードが残っている端末からの
+// 書き込みに備えて読み替えは残す（消すと同じ店が二重に並ぶ）。
 const STORE_ALIAS = {
   'dynam_a736724': 'dynam_tendo',
   'dynam-a736724': 'dynam_tendo',
   'dynam-a725254': 'dynam_yonezawa',
+  'pscube_c741309': 'mgm_yonezawa',
+  'pscube_c721220': 'vegas_narusawa',
 };
 const STORE_NAME_FIX = {
   'dynam_tendo': 'ダイナム天童店',
   'dynam_yonezawa': 'ダイナム米沢店',
+  'mgm_yonezawa': 'MGM米沢店',
+  'vegas_narusawa': 'ベガスベガス成沢店',
 };
 function normalizeStoresDict(stores) {
   if (!stores) return stores;
+  // 【重要】台数ではなく「G数が入っている台の数」で比べる。
+  // 旧コードが別キー(toku0/toku1)を読んで全台G数0のまま保存した実例があり、
+  // 台数だけで比べると、その空っぽのスナップショットが本物を上書きしかねない。
+  const live = s => (s.machines || [])
+    .reduce((a, m) => a + (m.stands || []).filter(x => (parseInt(x.games) || 0) > 0).length, 0);
   const cnt = s => (s.machines || []).reduce((a, m) => a + (m.stands ? m.stands.length : 0), 0);
+  const better = (a, b) => live(a) !== live(b) ? live(a) > live(b) : cnt(a) > cnt(b);
   for (const [bad, good] of Object.entries(STORE_ALIAS)) {
     if (!stores[bad]) continue;
-    if (!stores[good] || cnt(stores[bad]) > cnt(stores[good])) {
+    if (!stores[good] || better(stores[bad], stores[good])) {
       stores[good] = stores[bad];
     }
     delete stores[bad];
@@ -749,7 +762,14 @@ function renderBorderNotice() {
   </div>`;
 }
 
+// アプリの版。index.html の main.js?v=... と揃えること。
+// 【なぜ画面に出すか】スマホで新機能が見えないとき、キャッシュが古いのか
+// そもそも入っていないのかが分からず、原因切り分けに何往復もしたため。
+const APP_VERSION = '20261014c';
+
 function updateDataStatus() {
+  const vEl = document.getElementById('app-version');
+  if (vEl) vEl.textContent = 'v' + APP_VERSION;
   renderStoreFreshness();
   const el = document.getElementById('data-last-update');
   if (storeData?.fetched_at) {
