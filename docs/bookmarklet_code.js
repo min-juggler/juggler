@@ -175,7 +175,22 @@ if(location.href.includes('pscube.jp')){
   var pm=location.href.match(/pscube\.jp\/([^\/]+)\/([^\/]+)\//);
   if(!pm){alert('P\'sCUBEの店舗ページで実行してください');return;}
   var pSeg=pm[1], pHall=pm[2];
-  var PSTORES={'c721220':{sid:'vegas_narusawa',name:'ベガスベガス成沢店'}};
+  var PSTORES={'c721220':{sid:'vegas_narusawa',name:'ベガスベガス成沢店'},
+               'c741309':{sid:'mgm_yonezawa',name:'MGM米沢店'}};
+  // 【店ごとの差 2026-10-14】同じP'sCUBEでも中身が揃っていない。
+  //  ・合算データのキー: 成沢=toku0 / MGM=toku1 → 決め打ちするとG数が全部0になる
+  //  ・保持日数:         成沢=D0〜D6(7日) / MGM=D0〜D2(3日)
+  // どちらも実機で確認済み。キーは走査して見つけ、日数はデータ側に合わせる。
+  var pToku=function(d){
+    if(!d)return null;
+    for(var k in d){ if(/^toku\d+$/.test(k)&&d[k]&&typeof d[k].ratio!=='undefined')return d[k]; }
+    return null;
+  };
+  var pMaxDay=function(dai){
+    var n=0;
+    for(var k in dai){ var m=/^D(\d)$/.exec(k); if(m&&dai[k])n=Math.max(n,parseInt(m[1])); }
+    return n;
+  };
   var pinfo=PSTORES[pHall]||{sid:'pscube_'+pHall,name:'P\'sCUBE'+pHall};
   var bar=document.createElement('div');
   bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
@@ -195,7 +210,7 @@ if(location.href.includes('pscube.jp')){
     var pKi=(j1.Ki||[]).filter(function(k){return /ｼﾞｬｸﾞﾗｰ|ジャグラー/.test(k.nmk_kisyu||'');});
     if(pKi.length===0)throw new Error('ジャグラー機種なし');
     // ② 機種ごとの台データ（JSON・合算のみ）
-    var pStands=[];
+    var pStands=[]; var pKept=-1;   // この店が実際に保持している日数(D0起点の最大index)
     for(var pi=0;pi<pKi.length;pi++){
       var php=pKi[pi].php||'';
       var qs=php.indexOf('?')>=0?php.slice(php.indexOf('?')):'?cd_ps=2';
@@ -207,12 +222,15 @@ if(location.href.includes('pscube.jp')){
         var t2=await r2.text();
         if(t2[0]!=='{')continue;
         (JSON.parse(t2).Dai||[]).forEach(function(dai){
-          // Dai[] は D0(当日)〜D6(6日前) の7日分を持つ。__OFF に対応する日を選ぶ。
+          // Dai[] が持つ日数は店による（成沢7日 / MGM3日）。保持期間を超えた日は飛ばす。
+          var mx=pMaxDay(dai); if(mx>pKept)pKept=mx;
+          if(pDn>mx)return;
           var d0=dai[pDkey]; if(!d0||!d0.YMD_biz)return;
           var rack=String(d0.cd_dai||'?');
           if(/^0\d{3,4}$/.test(rack))rack=String(parseInt(rack));
-          var bonus=parseInt((d0.toku0&&d0.toku0.count)||0);
-          var prob=parseFloat((d0.toku0&&d0.toku0.ratio)||0);
+          var tk=pToku(d0);
+          var bonus=parseInt((tk&&tk.count)||0);
+          var prob=parseFloat((tk&&tk.ratio)||0);
           var games=(bonus>0&&prob>0)?Math.round(bonus*prob):0;
           pStands.push({rack_no:rack,machine_name:pKi[pi].nmk_kisyu||'不明',games:games,
             bb:0,rb:0,diff:0,total_bonus:bonus,combined_prob:prob,combined_only:true,
@@ -220,7 +238,12 @@ if(location.href.includes('pscube.jp')){
         });
       }catch(e2){}
     }
-    if(pStands.length===0)throw new Error('台データ0');
+    // 保持期間を超えた日は「失敗」ではない。7日ループで毎回赤いバーが出ると、
+    // 本物の異常が埋もれるので区別して出す。
+    if(pStands.length===0)throw new Error(
+      (pKept>=0&&pDn>pKept)
+        ? ('この店は'+(pKept+1)+'日分しか保持していません（'+pDn+'日前は取得対象外）')
+        : '台データ0');
     // データ自身の営業日を採用（YMD_biz。全台で同じはずなので最多のものを使う）
     var pYmdCount={};
     pStands.forEach(function(s){if(s._ymd)pYmdCount[s._ymd]=(pYmdCount[s._ymd]||0)+1;});

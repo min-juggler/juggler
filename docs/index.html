@@ -83,7 +83,7 @@
         </div>
         <div class="form-row">
           <label>機種</label>
-          <select id="calc-machine" onchange="toggleBudou()">
+          <select id="calc-machine" onchange="toggleBudou();renderProbPanel()">
             <option value="マイジャグラーⅤ" data-budou="1">マイジャグ</option>
             <option value="ファンキージャグラー2" data-budou="1">ファンキー</option>
             <option value="ミスタージャグラー" data-budou="1">ミスター</option>
@@ -94,16 +94,19 @@
         </div>
         <div class="form-row">
           <label>ゲーム数</label>
-          <div class="input-group"><input type="number" id="calc-games" placeholder="例: 3000" step="100"><span class="unit">G</span></div>
+          <div class="input-group"><input type="number" id="calc-games" oninput="renderProbPanel()" placeholder="例: 3000" step="100"><span class="unit">G</span></div>
         </div>
         <div class="form-row">
           <label>BB回数</label>
-          <div class="input-group"><input type="number" id="calc-bb" placeholder="例: 12"><span class="unit">回</span></div>
+          <div class="input-group"><input type="number" id="calc-bb" oninput="renderProbPanel()" placeholder="例: 12"><span class="unit">回</span></div>
         </div>
         <div class="form-row">
           <label>RB回数</label>
-          <div class="input-group"><input type="number" id="calc-rb" placeholder="例: 12"><span class="unit">回</span></div>
+          <div class="input-group"><input type="number" id="calc-rb" oninput="renderProbPanel()" placeholder="例: 12"><span class="unit">回</span></div>
         </div>
+        <!-- 確率の自動計算。合算しか出ていない店(ダイナム/P'sCUBE系)でも、
+             台のデータ機でB回数とR回数を読めばここで確率に直せる。 -->
+        <div id="prob-panel" style="margin-top:10px"></div>
         <div id="calc-budou-row" style="border-top:1px solid #eee;margin-top:10px;padding-top:10px">
           <div style="font-weight:700;font-size:13px;color:#2d6a4f;margin-bottom:4px">🍇 ぶどうカウンター（座ってから数える）</div>
           <p style="font-size:11px;color:#aaa;margin:0 0 8px">前の人のぶどうは分からないので、<b>自分が座ってから</b>のぶどうを数えます。出るたびに「＋1」。</p>
@@ -361,6 +364,6 @@
 
   </div><!-- /app -->
 
-  <script src="main.js?v=20261008a"></script>
+  <script src="main.js?v=20261014a"></script>
 </body>
 </html>

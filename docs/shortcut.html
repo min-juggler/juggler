@@ -195,6 +195,20 @@ https://www.dynam-data.jp/h/a736724/cgi-bin/nc-v13-001.php?cd_ps=2</div>
 
   <div class="flow-arrow">↓</div>
 
+  <!-- MGM米沢 -->
+  <div class="store-card">
+    <h3>🏪 MGM米沢</h3>
+    <div class="step-desc" style="margin-bottom:8px">※ 成沢と同じ<strong>P'sCUBE</strong>。<b>この店は3日分しか残らない</b>ので、3日に1回は回してください（他店は7日分）</div>
+    <div class="step-desc" style="margin-bottom:8px">「<strong>URLを開く</strong>」アクション追加 → URLを貼り付け</div>
+    <div class="code-block" id="url-mgm">https://www.pscube.jp/dedamajyoho-P-townDMMpachi/c741309/</div>
+    <button class="btn btn-copy" onclick="copyText('url-mgm',this)">📋 URLをコピー</button>
+    <div class="step-desc" style="margin-top:10px;margin-bottom:8px">「<strong>待機</strong>」3秒 → 「<strong>Safariでスクリプトを実行</strong>」アクション追加 → スクリプトを貼り付け（他店と同じスクリプトでOK・URLで自動判別）</div>
+    <div class="code-block" id="code-mgm">⏳ 生成中...</div>
+    <button class="btn btn-copy" onclick="copyText('code-mgm',this)">📋 スクリプトをコピー</button>
+  </div>
+
+  <div class="flow-arrow">↓</div>
+
   <!-- ダイナム米沢 -->
   <div class="store-card">
     <h3>🏪 ダイナム米沢</h3>
@@ -327,11 +341,13 @@ async function updateUI() {
     document.getElementById('code-vegas').textContent     = wrapForShortcut3Day(teramoba, token, REPO, DAYS);
     // 成沢(P'sCUBE)もbookmarklet_code.js内で自動判別される。D0〜D6の7日分に対応。
     document.getElementById('code-narusawa').textContent  = wrapForShortcut3Day(teramoba, token, REPO, DAYS);
+    // MGM米沢も同じP'sCUBE。スクリプトはURLで店を自動判別するので中身は共通。
+    document.getElementById('code-mgm').textContent       = wrapForShortcut3Day(teramoba, token, REPO, DAYS);
     // ダイナムもDai[]にD0〜D6の7日分を持つ
     document.getElementById('code-dynam').textContent     = wrapForShortcut3Day(dynamCode, token, REPO, DAYS);
     document.getElementById('code-dynam-tendo').textContent = wrapForShortcut3Day(dynamCode, token, REPO, DAYS);
   } catch(e) {
-    ['yonezawa','kaminoyama','vegas','narusawa','dynam','dynam-tendo'].forEach(id => {
+    ['yonezawa','kaminoyama','vegas','narusawa','mgm','dynam','dynam-tendo'].forEach(id => {
       document.getElementById('code-' + id).textContent = '❌ 生成失敗: ' + e.message;
     });
   }

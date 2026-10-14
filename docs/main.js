@@ -90,6 +90,9 @@ const STORE_RATES = {
   vegas_yonezawa: { coinsPer1000: 47, exchangeYenPerCoin: 100 / 5.3 },
   // 21.73円(46枚貸し) / 5.2枚交換 → 実質88.5%
   vegas_narusawa: { coinsPer1000: 46, exchangeYenPerCoin: 100 / 5.2 },
+  // 21.74円(46枚貸し) / 5.2枚交換 → 実質88.5%。P'sCUBE系(成沢と同じ仕組み)。
+  // DMMぱちタウンの店舗情報に「貯メダル再プレイ無制限」の記載あり＝持ちメダル前提でよい。
+  mgm_yonezawa:   { coinsPer1000: 46, exchangeYenPerCoin: 100 / 5.2 },
   // 低貸(1000円88枚=11.36円) / 10枚交換 → 実質88.0%
   dynam_tendo:    { coinsPer1000: 88, exchangeYenPerCoin: 100 / 10 },
   // 米沢は「非等価」としか出ておらず交換枚数が不明。同チェーンの天童と同じと仮定している。
@@ -838,6 +841,79 @@ function refreshBudou() {
   const mg = parseInt(document.getElementById('calc-mygames').value) || 0;
   cEl.textContent = _budouCount;
   rEl.textContent = (_budouCount > 0 && mg > 0) ? `1/${(mg / _budouCount).toFixed(2)}` : '1/-';
+}
+
+// ===== 確率の自動計算 =====
+// 【なぜ必要か】ダイナムとP'sCUBE系(成沢・MGM)は合算しか公開していない。
+// でも台のデータ機にはB回数とR回数が出ているので、G数と一緒に入れれば確率に直せる。
+// ジャグラーの設定判別はRBが主軸なので、ここが分かるかどうかで精度がまるで違う。
+//
+// 表示は「1/何回」だけでなく、その数字が設定いくつ相当かまで出す。
+// 1/350と言われてもピンと来ないが「設定2〜3相当」なら即座に判断できる。
+function _probOf(games, count) {
+  return (games > 0 && count > 0) ? games / count : null;
+}
+// 実測値が設定1〜6のどのあたりかを返す。設定間は線形で補間する（例: 2.4）。
+// 設定1より悪ければ 1未満、設定6より良ければ 6超 を返して振り切れを隠さない。
+function _settingScale(actual, table, key) {
+  if (!actual) return null;
+  const v = s => table[s][key];           // 設定が上がるほど小さい値（1/Xが軽くなる）
+  if (actual >= v(1)) return 1 - Math.min(1, (actual - v(1)) / Math.max(1, v(1) * 0.2));
+  if (actual <= v(6)) return 6 + Math.min(1, (v(6) - actual) / Math.max(1, v(6) * 0.2));
+  for (let s = 1; s < 6; s++) {
+    const hi = v(s), lo = v(s + 1);
+    if (actual <= hi && actual >= lo) return s + (hi - actual) / (hi - lo);
+  }
+  return null;
+}
+function _scaleLabel(x) {
+  if (x === null) return { txt: '—', color: '#bbb' };
+  if (x < 1.0) return { txt: '設定1以下', color: '#c1121f' };
+  if (x > 6.0) return { txt: '設定6以上', color: '#1b7a3d' };
+  const color = x >= 5 ? '#1b7a3d' : x >= 4 ? '#2d6a4f' : x >= 3 ? '#b36b00' : '#c1121f';
+  return { txt: `設定${x.toFixed(1)}相当`, color };
+}
+
+function renderProbPanel() {
+  const el = document.getElementById('prob-panel');
+  if (!el) return;
+  const mn = document.getElementById('calc-machine')?.value || '';
+  const g  = parseInt(document.getElementById('calc-games')?.value) || 0;
+  const bb = parseInt(document.getElementById('calc-bb')?.value) || 0;
+  const rb = parseInt(document.getElementById('calc-rb')?.value) || 0;
+
+  if (!g) { el.innerHTML = ''; return; }
+
+  const t = getMachineSettings(mn);
+  const pBB = _probOf(g, bb), pRB = _probOf(g, rb), pCO = _probOf(g, bb + rb);
+  const fmt = p => p ? `1/${p.toFixed(1)}` : '—';
+  const row = (name, p, key, weight) => {
+    const lab = _scaleLabel(_settingScale(p, t, key));
+    return `<tr>
+      <td style="padding:5px 6px;color:#666">${name}</td>
+      <td style="padding:5px 6px;font-weight:800;font-size:15px;text-align:right">${fmt(p)}</td>
+      <td style="padding:5px 6px;color:${lab.color};font-weight:700;text-align:right">${lab.txt}</td>
+      <td style="padding:5px 6px;color:#bbb;font-size:10px">${weight}</td>
+    </tr>`;
+  };
+  // 設定1と設定6の目安も併記する。判断の物差しが無いと数字だけ見ても意味が取れない。
+  const ref = `設定1 RB1/${t[1].rb.toFixed(0)}・合算1/${t[1].combined.toFixed(0)} ／ 設定6 RB1/${t[6].rb.toFixed(0)}・合算1/${t[6].combined.toFixed(0)}`;
+  // サンプル不足の警告。RBが少ないうちは確率がいくら良くても意味がない。
+  let warn = '';
+  if (g < 1500) warn = `⚠️ ${g.toLocaleString()}Gはまだ判断材料になりません（最低1,500G、できれば3,000G）`;
+  else if (rb < 5) warn = `⚠️ RB${rb}回では確率がブレすぎます。RBが10回を超えてから信用してください`;
+
+  el.innerHTML = `
+    <div style="background:#f7f9fc;border:1px solid #e3e8ef;border-radius:10px;padding:8px 6px">
+      <div style="font-size:11px;color:#888;padding:0 6px 4px">🧮 ${g.toLocaleString()}G / BB${bb}回 / RB${rb}回 から自動計算</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        ${row('RB（主軸）', pRB, 'rb', '最重要')}
+        ${row('合算', pCO, 'combined', '補助')}
+        ${row('BB', pBB, 'bb', '参考程度')}
+      </table>
+      <div style="font-size:10px;color:#aaa;padding:4px 6px 0;border-top:1px solid #eef1f5;margin-top:4px">${ref}</div>
+      ${warn ? `<div style="font-size:11px;color:#b36b00;padding:4px 6px 0">${warn}</div>` : ''}
+    </div>`;
 }
 
 function calcManual() {
@@ -2081,6 +2157,9 @@ const STORE_AUTH_URLS = [
   // DMMぱちタウンはそれを別オリジンのiframeで埋め込んでいるだけ＝DMM側では中身を読めない。
   // よってpscube.jpを直接開く。ホールコード c721220。取得はダイナム同様に合算のみ。
   { name: 'ベガスベガス成沢店', url: 'https://www.pscube.jp/dedamajyoho-P-townDMMpachi/c721220/' },
+  // MGM米沢も同じP'sCUBE。DMMぱちタウン(shops/yamagata/12631)はiframeで埋めているだけなので直接開く。
+  // ※この店はD0〜D2の3日分しか持たない（成沢は7日）。週1回だと穴が空くので3日に1回は回すこと。
+  { name: 'MGM米沢店', url: 'https://www.pscube.jp/dedamajyoho-P-townDMMpachi/c741309/' },
   { name: 'ダイナム米沢店', url: 'https://www.dynam-data.jp/h/a725254/cgi-bin/nc-v13-001.php?cd_ps=2' },
   { name: 'ダイナム天童店', url: 'https://www.dynam-data.jp/h/a736724/cgi-bin/nc-v13-001.php?cd_ps=2' },
   // ニラク吉原店(pscube.jp/h/a720930/)は削除。Cloudflareのボット認証を突破できず、
