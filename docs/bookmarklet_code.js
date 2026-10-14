@@ -95,7 +95,13 @@ if(location.href.includes('dynam-data.jp')){
   if(!dm){alert('店舗のページで実行してください');return;}
   var storeCode=dm[1];
   var DSTORES={'a725254':{sid:'dynam_yonezawa',name:'ダイナム米沢店'},'a736724':{sid:'dynam_tendo',name:'ダイナム天童店'}};
-  var dinfo=DSTORES[storeCode]||{sid:'dynam_'+storeCode,name:'ダイナム'+storeCode};
+  // 【2026-10-14】未知のホールコードで勝手にIDを作らないこと。
+  // 以前 dynam_a736724 という重複IDができ、今回も古いコードが動いた結果
+  // pscube_c741309(全台G数0)がstores.jsonに紛れ込んだ。どちらも、本来は
+  // 「対応していない／コードが古い」と気づくべき場面で黙って動いてしまったのが原因。
+  // 知らない店は知らないと言って止める。
+  var dinfo=DSTORES[storeCode];
+  if(!dinfo){alert('未対応の店舗です (ダイナム '+storeCode+')\n\nスクリプトが古い可能性があります。アプリを開き直してブックマークを作り直すか、この店舗コードを伝えてください。');return;}
   var dsid=dinfo.sid, dsname=dinfo.name;
   var bar=document.createElement('div');
   bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
@@ -191,7 +197,13 @@ if(location.href.includes('pscube.jp')){
     for(var k in dai){ var m=/^D(\d)$/.exec(k); if(m&&dai[k])n=Math.max(n,parseInt(m[1])); }
     return n;
   };
-  var pinfo=PSTORES[pHall]||{sid:'pscube_'+pHall,name:'P\'sCUBE'+pHall};
+  // 【2026-10-14】未知のホールコードで勝手にIDを作らないこと。
+  // 以前 dynam_a736724 という重複IDができ、今回も古いコードが動いた結果
+  // pscube_c741309(全台G数0)がstores.jsonに紛れ込んだ。どちらも、本来は
+  // 「対応していない／コードが古い」と気づくべき場面で黙って動いてしまったのが原因。
+  // 知らない店は知らないと言って止める。
+  var pinfo=PSTORES[pHall];
+  if(!pinfo){alert('未対応の店舗です (P\'sCUBE '+pHall+')\n\nスクリプトが古い可能性があります。アプリを開き直してブックマークを作り直すか、この店舗コードを伝えてください。');return;}
   var bar=document.createElement('div');
   bar.style='position:fixed;top:10px;right:10px;background:#e63946;color:#fff;padding:10px 16px;border-radius:8px;z-index:99999;font-size:12px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:85vw;word-break:break-all';
   bar.textContent='🎰 '+pinfo.name+' 取得中...';document.body.appendChild(bar);

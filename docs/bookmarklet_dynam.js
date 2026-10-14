@@ -11,7 +11,9 @@ if(!m){alert('店舗のページで実行してください');return;}
 var storeCode=m[1]; // 例: a725254
 
 var STORES={'a725254':{sid:'dynam_yonezawa',name:'ダイナム米沢店'},'a736724':{sid:'dynam_tendo',name:'ダイナム天童店'}};
-var storeInfo=STORES[storeCode]||{sid:'dynam_'+storeCode,name:'ダイナム'+storeCode};
+// 未知のコードで勝手にIDを作ると、重複店舗が履歴に紛れ込む(過去に dynam_a736724 で発生)。
+var storeInfo=STORES[storeCode];
+if(!storeInfo){alert('未対応の店舗です (ダイナム '+storeCode+')\n\nスクリプトが古い可能性があります。設定ページから貼り直してください。');return;}
 var sid=storeInfo.sid, sname=storeInfo.name;
 
 var bar=document.createElement('div');

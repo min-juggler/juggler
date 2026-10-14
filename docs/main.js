@@ -2185,7 +2185,13 @@ function buildInlineBookmarklet(token, repo, dayOffset = 0) {
 var T='${token}',R='${repo}';
 window.__JUG_DAYOFF__=${dayOffset};
 try{
-  var r=await fetch('https://raw.githubusercontent.com/'+R+'/main/docs/bookmarklet_code.js?_='+Date.now(),{cache:'no-store'});
+  // 【2026-10-14】raw.githubusercontent.com はエッジキャッシュが数分残り、
+  // ?_=Date.now() を付けても古いコードを返すことがある。実際MGM追加の2分後に実行して
+  // 旧コードが動き、店名が'P'sCUBEc741309'・全台G数0で保存される事故が起きた。
+  // トークンを持っているのだから、CDNを経由しないGitHub APIから取る。rawは保険。
+  var r=await fetch('https://api.github.com/repos/'+R+'/contents/docs/bookmarklet_code.js?ref=main',
+        {cache:'no-store',headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.raw'}});
+  if(!r.ok)r=await fetch('https://raw.githubusercontent.com/'+R+'/main/docs/bookmarklet_code.js?_='+Date.now(),{cache:'no-store'});
   if(!r.ok){alert('コード取得失敗 '+r.status);return;}
   eval((await r.text()).replace(/__TOKEN__/g,T).replace(/__REPO__/g,R));
 }catch(e){alert('ローダーエラー: '+e.message);}
@@ -2199,7 +2205,13 @@ function buildInline3DayBookmarklet(token, repo, days = FETCH_DAYS) {
   return `(async function(){
 var T='${token}',R='${repo}';
 try{
-  var r=await fetch('https://raw.githubusercontent.com/'+R+'/main/docs/bookmarklet_code.js?_='+Date.now(),{cache:'no-store'});
+  // 【2026-10-14】raw.githubusercontent.com はエッジキャッシュが数分残り、
+  // ?_=Date.now() を付けても古いコードを返すことがある。実際MGM追加の2分後に実行して
+  // 旧コードが動き、店名が'P'sCUBEc741309'・全台G数0で保存される事故が起きた。
+  // トークンを持っているのだから、CDNを経由しないGitHub APIから取る。rawは保険。
+  var r=await fetch('https://api.github.com/repos/'+R+'/contents/docs/bookmarklet_code.js?ref=main',
+        {cache:'no-store',headers:{'Authorization':'token '+T,'Accept':'application/vnd.github.raw'}});
+  if(!r.ok)r=await fetch('https://raw.githubusercontent.com/'+R+'/main/docs/bookmarklet_code.js?_='+Date.now(),{cache:'no-store'});
   if(!r.ok){alert('コード取得失敗 '+r.status);return;}
   var code=(await r.text()).replace(/__TOKEN__/g,T).replace(/__REPO__/g,R);
   for(var o=0;o>-${days};o--){
