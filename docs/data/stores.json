@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-10-12T15:04:37.437Z",
+  "fetched_at": "2026-10-14T07:37:57.993Z",
   "stores": {
     "yonezawa": {
       "name": "アイランド米沢店",
@@ -6047,6 +6047,643 @@
       ],
       "fetched_at": "2026-10-08T21:37:35.032Z",
       "data_date": "2026-10-08"
+    },
+    "pscube_c741309": {
+      "name": "P'sCUBEc741309",
+      "machines": [
+        {
+          "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+          "count": 22,
+          "stands": [
+            {
+              "rack_no": "501",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "502",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "503",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "504",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "505",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "506",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "507",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "508",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "509",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "530",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "531",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "532",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "533",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "534",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "535",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "536",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "537",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "538",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "581",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "582",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "583",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "584",
+              "machine_name": "ﾈｵｱｲﾑｼﾞｬｸﾞﾗｰEX",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            }
+          ]
+        },
+        {
+          "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+          "count": 11,
+          "stands": [
+            {
+              "rack_no": "588",
+              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "589",
+              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "590",
+              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "591",
+              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "592",
+              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "593",
+              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "594",
+              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "595",
+              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "596",
+              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "597",
+              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "598",
+              "machine_name": "ｺﾞｰｺﾞｰｼﾞｬｸﾞﾗｰ3",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            }
+          ]
+        },
+        {
+          "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
+          "count": 8,
+          "stands": [
+            {
+              "rack_no": "611",
+              "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "612",
+              "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "613",
+              "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "614",
+              "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "615",
+              "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "616",
+              "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "617",
+              "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "618",
+              "machine_name": "ﾌｧﾝｷｰｼﾞｬｸﾞﾗｰ2KT",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            }
+          ]
+        },
+        {
+          "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
+          "count": 5,
+          "stands": [
+            {
+              "rack_no": "601",
+              "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "602",
+              "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "603",
+              "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "604",
+              "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "605",
+              "machine_name": "ｳﾙﾄﾗﾐﾗｸﾙｼﾞｬｸﾞﾗｰ",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            }
+          ]
+        },
+        {
+          "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰVIII",
+          "count": 5,
+          "stands": [
+            {
+              "rack_no": "606",
+              "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰVIII",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "607",
+              "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰVIII",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "608",
+              "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰVIII",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "609",
+              "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰVIII",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "610",
+              "machine_name": "ﾊｯﾋﾟｰｼﾞｬｸﾞﾗｰVIII",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            }
+          ]
+        },
+        {
+          "machine_name": "ｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS",
+          "count": 3,
+          "stands": [
+            {
+              "rack_no": "585",
+              "machine_name": "ｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "586",
+              "machine_name": "ｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            },
+            {
+              "rack_no": "587",
+              "machine_name": "ｼﾞｬｸﾞﾗｰｶﾞｰﾙｽﾞSS",
+              "games": 0,
+              "bb": 0,
+              "rb": 0,
+              "diff": 0,
+              "total_bonus": 0,
+              "combined_prob": 0,
+              "combined_only": true
+            }
+          ]
+        }
+      ],
+      "fetched_at": "2026-10-14T07:37:57.993Z",
+      "data_date": "2026-10-14"
     }
   }
 }
